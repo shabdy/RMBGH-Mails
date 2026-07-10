@@ -1,0 +1,474 @@
+[
+  {
+    "id": 1001,
+    "type": "mail",
+    "title": "Patient Safety Week Advisory",
+    "content": "<p>This is to inform all employees that <strong>Patient Safety Week</strong> will be celebrated from May 27 to May 31, 2026.</p><p>Please see the schedule below and ensure full participation from all departments.</p><p>Thank you for your cooperation.</p>",
+    "emailType": "memorandum",
+    "emailTypeLabel": "Memorandum",
+    "from": {
+      "id": 1,
+      "name": "Super Admin",
+      "email": "superadmin@rmbgh.com",
+      "department": "Administration",
+      "departmentId": "ADMIN"
+    },
+    "recipients": [
+      {
+        "id": 2,
+        "name": "John Doe",
+        "email": "user@rmbgh.com",
+        "department": "Information Technology",
+        "departmentId": "IT"
+      },
+      {
+        "id": 3,
+        "name": "Jane Smith",
+        "email": "staff@rmbgh.com",
+        "department": "Human Resources",
+        "departmentId": "HR"
+      }
+    ],
+    "recipientType": "all",
+    "date": "2026-07-01T09:00:00.000Z",
+    "attachment": null,
+    "readBy": [
+      {
+        "id": 1,
+        "name": "Super Admin",
+        "dept": "Unknown",
+        "time": "3:50 AM",
+        "date": "Jul 3, 2026"
+      }
+    ],
+    "pinnedBy": [],
+    "importantBy": [],
+    "deletedBy": [],
+    "priority": "urgent",
+    "status": "delivered"
+  },
+  {
+    "id": 1002,
+    "type": "mail",
+    "title": "IT System Maintenance Notice",
+    "content": "<p>System maintenance is scheduled for <strong>Saturday, July 5, 2026</strong> from 12:00 AM to 4:00 AM.</p><p>Please save all work beforehand and log out of all hospital systems before midnight on Friday.</p>",
+    "emailType": "notice",
+    "emailTypeLabel": "Notice",
+    "from": {
+      "id": 2,
+      "name": "John Doe",
+      "email": "user@rmbgh.com",
+      "department": "Information Technology",
+      "departmentId": "IT"
+    },
+    "recipients": [
+      {
+        "id": 1,
+        "name": "Super Admin",
+        "email": "superadmin@rmbgh.com",
+        "department": "Administration",
+        "departmentId": "ADMIN"
+      },
+      {
+        "id": 3,
+        "name": "Jane Smith",
+        "email": "staff@rmbgh.com",
+        "department": "Human Resources",
+        "departmentId": "HR"
+      }
+    ],
+    "recipientType": "all",
+    "date": "2026-06-28T10:00:00.000Z",
+    "attachment": null,
+    "readBy": [
+      {
+        "id": 1,
+        "name": "Super Admin",
+        "dept": "Administration",
+        "time": "10:15 AM",
+        "date": "Jun 28, 2026"
+      },
+      {
+        "id": 3,
+        "name": "Jane Smith",
+        "dept": "Unknown",
+        "time": "3:55 AM",
+        "date": "Jul 3, 2026"
+      }
+    ],
+    "pinnedBy": [],
+    "importantBy": [],
+    "deletedBy": [],
+    "priority": "important",
+    "status": "delivered"
+  },
+  {
+    "id": 1003,
+    "type": "mail",
+    "title": "New Leave Policy Effective August 2026",
+    "content": "<p>Management announces updates to the <strong>Leave Policy</strong> effective August 1, 2026.</p><ul><li>Addition of Emergency Leave credits (5 days/year)</li><li>Revised maternity leave: 105 days</li><li>Revised paternity leave: 14 days</li></ul><p>Please coordinate with HR for any questions.</p>",
+    "emailType": "circular",
+    "emailTypeLabel": "Circular",
+    "from": {
+      "id": 3,
+      "name": "Jane Smith",
+      "email": "staff@rmbgh.com",
+      "department": "Human Resources",
+      "departmentId": "HR"
+    },
+    "recipients": [
+      {
+        "id": 1,
+        "name": "Super Admin",
+        "email": "superadmin@rmbgh.com",
+        "department": "Administration",
+        "departmentId": "ADMIN"
+      },
+      {
+        "id": 2,
+        "name": "John Doe",
+        "email": "user@rmbgh.com",
+        "department": "Information Technology",
+        "departmentId": "IT"
+      }
+    ],
+    "recipientType": "all",
+    "date": "2026-06-25T08:30:00.000Z",
+    "attachment": "Leave_Policy_Update_2026.pdf",
+    "readBy": [
+      {
+        "id": 1,
+        "name": "Super Admin",
+        "dept": "Unknown",
+        "time": "3:50 AM",
+        "date": "Jul 3, 2026"
+      }
+    ],
+    "pinnedBy": [],
+    "importantBy": [],
+    "deletedBy": [],
+    "priority": "normal",
+    "status": "delivered"
+  },
+  {
+    "id": 1004,
+    "type": "mail",
+    "title": "Annual Physical Exam Schedules",
+    "content": "<p>HR reminds all employees that <strong>Annual Physical Examinations (APE)</strong> are scheduled for the third week of July 2026.</p><p>Please coordinate with your department head for your assigned time slot. Bring your HMO card and employee ID.</p>",
+    "emailType": "advisory",
+    "emailTypeLabel": "Advisory",
+    "from": {
+      "id": 3,
+      "name": "Jane Smith",
+      "email": "staff@rmbgh.com",
+      "department": "Human Resources",
+      "departmentId": "HR"
+    },
+    "recipients": [
+      {
+        "id": 2,
+        "name": "John Doe",
+        "email": "user@rmbgh.com",
+        "department": "Information Technology",
+        "departmentId": "IT"
+      }
+    ],
+    "recipientType": "specific",
+    "date": "2026-06-20T14:00:00.000Z",
+    "attachment": null,
+    "readBy": [
+      {
+        "id": 2,
+        "name": "John Doe",
+        "dept": "Information Technology",
+        "time": "2:30 PM",
+        "date": "Jun 20, 2026"
+      }
+    ],
+    "pinnedBy": [
+      2
+    ],
+    "importantBy": [],
+    "deletedBy": [],
+    "priority": "normal",
+    "status": "delivered"
+  },
+  {
+    "id": 1783050671765,
+    "type": "mail",
+    "readBy": [
+      {
+        "id": 1,
+        "name": "Super Admin",
+        "dept": "Unknown",
+        "time": "3:51 AM",
+        "date": "Jul 3, 2026"
+      },
+      {
+        "id": 2,
+        "name": "John Doe",
+        "dept": "Unknown",
+        "time": "3:51 AM",
+        "date": "Jul 3, 2026"
+      },
+      {
+        "id": 3,
+        "name": "Jane Smith",
+        "dept": "Unknown",
+        "time": "3:55 AM",
+        "date": "Jul 3, 2026"
+      },
+      {
+        "id": 4,
+        "name": "Maria Santos",
+        "dept": "Nursing",
+        "time": "10:36 AM",
+        "date": "Jul 5, 2026"
+      },
+      {
+        "id": 1783254640228,
+        "name": "Juan Cruz",
+        "dept": "Information Technology",
+        "time": "12:32 PM",
+        "date": "Jul 5, 2026"
+      }
+    ],
+    "pinnedBy": [],
+    "importantBy": [],
+    "deletedBy": [
+      2,
+      1
+    ],
+    "status": "delivered",
+    "priority": "normal",
+    "title": "Sample",
+    "content": "<p>asdfasdfasdfasdfsad</p>",
+    "recipients": [
+      {
+        "id": 2,
+        "name": "John Doe",
+        "email": "user@rmbgh.com",
+        "department": "Information Technology",
+        "departmentId": "",
+        "role": "user"
+      },
+      {
+        "id": 3,
+        "name": "Jane Smith",
+        "email": "staff@rmbgh.com",
+        "department": "Human Resources",
+        "departmentId": "",
+        "role": "staff"
+      }
+    ],
+    "recipientType": "all",
+    "emailType": "",
+    "emailTypeLabel": "",
+    "attachment": null,
+    "from": {
+      "id": 1,
+      "name": "Super Admin",
+      "email": "superadmin@rmbgh.com",
+      "department": "Unknown",
+      "departmentId": "NONE"
+    },
+    "userId": 1,
+    "date": "2026-07-03T03:51:11.765Z"
+  },
+  {
+    "readBy": [
+      {
+        "id": 1,
+        "name": "Super Admin",
+        "dept": "Administration",
+        "time": "12:23 PM",
+        "date": "Jul 5, 2026"
+      },
+      {
+        "id": 4,
+        "name": "Maria Santos",
+        "dept": "Nursing",
+        "time": "12:27 PM",
+        "date": "Jul 5, 2026"
+      }
+    ],
+    "pinnedBy": [],
+    "importantBy": [],
+    "deletedBy": [],
+    "status": "delivered",
+    "priority": "normal",
+    "title": "Sample",
+    "content": "<p>SAmple</p>",
+    "recipients": [
+      {
+        "id": 4,
+        "name": "Maria Santos",
+        "email": "maria.santos@rmbgh.com",
+        "department": "Nursing",
+        "departmentId": "NUR",
+        "role": "user"
+      }
+    ],
+    "recipientType": "specific",
+    "targetDepartmentId": null,
+    "emailType": "",
+    "emailTypeLabel": "",
+    "attachment": null,
+    "from": {
+      "id": 1,
+      "name": "Super Admin",
+      "email": "superadmin@rmbgh.com",
+      "department": "Administration",
+      "departmentId": "ADMIN"
+    },
+    "userId": 1,
+    "id": 1783254174174,
+    "type": "mail",
+    "date": "2026-07-05T12:22:54.174Z"
+  },
+  {
+    "readBy": [
+      {
+        "id": 1783254640228,
+        "name": "Juan Cruz",
+        "dept": "Information Technology",
+        "time": "12:32 PM",
+        "date": "Jul 5, 2026"
+      },
+      {
+        "id": 1783051261533,
+        "name": "Ransh Dy",
+        "dept": "Information Technology",
+        "time": "12:34 PM",
+        "date": "Jul 5, 2026"
+      },
+      {
+        "id": 2,
+        "name": "John Doe",
+        "dept": "Information Technology",
+        "time": "12:40 PM",
+        "date": "Jul 5, 2026"
+      },
+      {
+        "id": 1,
+        "name": "IT Superadmin",
+        "dept": "Information Technology",
+        "time": "12:33 AM",
+        "date": "Jul 10, 2026"
+      }
+    ],
+    "pinnedBy": [],
+    "importantBy": [],
+    "deletedBy": [],
+    "status": "delivered",
+    "priority": "normal",
+    "title": "Sample",
+    "content": "<p>Sample</p>",
+    "recipients": [],
+    "recipientType": "department",
+    "targetDepartmentId": "IT",
+    "emailType": "",
+    "emailTypeLabel": "",
+    "attachment": null,
+    "from": {
+      "id": 1783254640228,
+      "name": "Juan Cruz",
+      "email": "jcruz@rmbgh.com",
+      "department": "Information Technology",
+      "departmentId": "IT"
+    },
+    "userId": 1783254640228,
+    "id": 1783254739756,
+    "type": "mail",
+    "date": "2026-07-05T12:32:19.756Z"
+  },
+  {
+    "readBy": [
+      {
+        "id": 1783051261533,
+        "name": "Ransh Dy",
+        "dept": "Information Technology",
+        "time": "3:26 AM",
+        "date": "Jul 6, 2026"
+      },
+      {
+        "id": 1783255824240,
+        "name": "Colin Arias",
+        "dept": "Information Technology",
+        "time": "3:27 AM",
+        "date": "Jul 6, 2026"
+      }
+    ],
+    "pinnedBy": [],
+    "importantBy": [],
+    "deletedBy": [],
+    "status": "delivered",
+    "priority": "normal",
+    "title": "Sample Subject",
+    "content": "<h1 style=\"text-align: center;\">Lorem Ipsum</h1><p><em>\"Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...\"</em></p><p>\"There is no one who loves pain itself, who seeks after it and wants to have it, simply because it is pain...\"</p><hr><h2 style=\"text-align: left;\">What is Lorem Ipsum?</h2><p style=\"text-align: justify;\"><strong>Lorem Ipsum</strong> is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers at Letraset and James Mosley, the librarian at St Bride Printing Library in London, took a 1914 Cicero translation and scrambled it to make dummy text for Letraset's Body Type sheets. It has survived not only many decades, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised thanks to these sheets and more recently with desktop publishing software like Aldus PageMaker and Microsoft Word including versions of Lorem Ipsum.</p><h2 style=\"text-align: left;\">Why do we use it?</h2><p style=\"text-align: justify;\">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).</p>",
+    "recipients": [
+      {
+        "id": 1783255824240,
+        "name": "Colin Arias",
+        "email": "carias@rmbgh.com",
+        "department": "Information Technology",
+        "departmentId": "IT",
+        "role": "user"
+      }
+    ],
+    "recipientType": "specific",
+    "targetDepartmentId": null,
+    "emailType": "memorandum",
+    "emailTypeLabel": "Memorandum",
+    "attachment": null,
+    "from": {
+      "id": 1783051261533,
+      "name": "Ransh Dy",
+      "email": "rdy@rmbgh.com",
+      "department": "Information Technology",
+      "departmentId": "IT"
+    },
+    "userId": 1783051261533,
+    "id": 1783308403411,
+    "type": "mail",
+    "date": "2026-07-06T03:26:43.411Z"
+  },
+  {
+    "readBy": [],
+    "pinnedBy": [],
+    "importantBy": [],
+    "deletedBy": [],
+    "status": "delivered",
+    "priority": "normal",
+    "title": "Fwd: Sample",
+    "content": "<p>Sample</p><hr style=\"margin:12px 0;border:none;border-top:1px solid #e2e8f0\"/><p style=\"font-size:11px;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;font-weight:600\">Original Message — from Juan Cruz</p><p>Sample</p>",
+    "recipients": [
+      {
+        "id": 1783051261533,
+        "name": "Ransh Dy",
+        "email": "rdy@rmbgh.com",
+        "department": "Information Technology",
+        "departmentId": "IT",
+        "role": "user"
+      }
+    ],
+    "recipientType": "specific",
+    "targetDepartmentId": null,
+    "emailType": "forwarded",
+    "emailTypeLabel": "Forwarded",
+    "attachment": null,
+    "from": {
+      "id": 1,
+      "name": "IT Superadmin",
+      "email": "superadmin@rmbgh.com",
+      "department": "Information Technology",
+      "departmentId": "IT"
+    },
+    "userId": 1,
+    "isForwarded": true,
+    "originalSender": "Juan Cruz",
+    "id": 1783643656178,
+    "type": "mail",
+    "date": "2026-07-10T00:34:16.178Z"
+  }
+]

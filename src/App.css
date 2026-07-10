@@ -1,0 +1,197 @@
+.p-organizationchart .p-organizationchart-line-down {
+  background-color: #000000 !important;
+}
+
+.p-organizationchart .p-organizationchart-line-left {
+  border-right: 2px solid #000000 !important;
+}
+
+.p-organizationchart .p-organizationchart-line-right {
+  border-left: 2px solid #000000 !important;
+}
+
+.p-organizationchart .p-organizationchart-line-top {
+  border-top: 2px solid #000000 !important;
+}
+
+.dark .p-organizationchart .p-organizationchart-line-down {
+  background-color: #ffffff !important;
+}
+
+.dark .p-organizationchart .p-organizationchart-line-left {
+  border-right: 2px solid #ffffff !important;
+}
+
+.dark .p-organizationchart .p-organizationchart-line-right {
+  border-left: 2px solid #ffffff !important;
+}
+
+.dark .p-organizationchart .p-organizationchart-line-top {
+  border-top: 2px solid #ffffff !important;
+}
+
+.rich-content {
+  line-height: 1.75;
+}
+
+.rich-content p {
+  margin: 0 0 1.25rem 0;
+}
+
+.rich-content {
+  line-height: 1.75;
+}
+
+.rich-content p {
+  display: block;
+  margin-bottom: 1.25rem !important;
+}
+
+.rich-content p:last-child {
+  margin-bottom: 0 !important;
+}
+
+.rich-content p:last-child {
+  margin-bottom: 0;
+}
+
+.rich-content h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 1.5rem 0 0.75rem;
+}
+
+.rich-content h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 1.25rem 0 0.5rem;
+}
+
+.rich-content ul,
+.rich-content ol {
+  margin: 0 0 1rem;
+  padding-left: 1.5rem;
+}
+
+.rich-content li {
+  margin-bottom: 0.25rem;
+}
+
+.rich-content blockquote {
+  border-left: 4px solid #cbd5e1;
+  padding-left: 1rem;
+  color: #64748b;
+  font-style: italic;
+  margin: 1rem 0;
+}
+
+.rich-content pre {
+  background: #f1f5f9;
+  border-radius: 0.375rem;
+  padding: 0.75rem;
+  font-size: 0.75rem;
+  font-family: monospace;
+  margin: 1rem 0;
+}
+
+.rich-content a {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+.rich-content strong {
+  font-weight: 700;
+}
+
+.rich-content em {
+  font-style: italic;
+}
+
+.rich-content u {
+  text-decoration: underline;
+}
+
+
+
+
+/* ── PRINT STYLES ── */
+@media print {
+  @page {
+    size: A4;
+    margin: 8mm 10mm;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  body {
+    background: white !important;
+    font-size: 9px;
+  }
+
+  /* hide toolbar and toast */
+  .print\:hidden {
+    display: none !important;
+  }
+
+  /* each .print-page breaks to its own A4 sheet */
+  .print-page {
+    page-break-after: always;
+    break-after: page;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 4mm 6mm !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  .print-page:last-child {
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+
+  /* inputs: remove chrome date picker UI, show only the value */
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    display: none;
+  }
+
+  input[type="date"],
+  input[type="text"],
+  input[type="number"] {
+    border: none !important;
+    border-bottom: 1px solid black !important;
+    outline: none !important;
+    background: transparent !important;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  /* placeholder text hidden on print */
+  input::placeholder {
+    color: transparent !important;
+  }
+
+  /* checkboxes print clearly */
+  input[type="checkbox"] {
+    accent-color: black;
+  }
+
+  /* sticky toolbar off */
+  .sticky {
+    position: static !important;
+  }
+}
+
+/* ── SCREEN: subtle focus ring on all inputs ── */
+input[type="text"]:focus,
+input[type="date"]:focus,
+input[type="number"]:focus {
+  background-color: #fafbff;
+  border-bottom-color: #2563eb !important;
+}
+
+input[type="checkbox"] {
+  cursor: pointer;
+}

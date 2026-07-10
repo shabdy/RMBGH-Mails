@@ -1,0 +1,1 @@
+- [HRIS Project Setup](hris-setup.md) — RMBGH Mailing System only; scope, architecture, startup quirks, backend-context wiring.

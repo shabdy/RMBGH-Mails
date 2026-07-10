@@ -1,0 +1,104 @@
+[
+  {
+    "readBy": [],
+    "status": "delivered",
+    "title": "Sample",
+    "content": "<p>Sample</p>",
+    "originalSender": "Juan Cruz",
+    "originalTitle": "Sample",
+    "forwardedTo": [
+      {
+        "id": 3,
+        "name": "Jane Smith",
+        "email": "staff@rmbgh.com",
+        "department": "Human Resources",
+        "departmentId": "HR",
+        "role": "staff"
+      }
+    ],
+    "forwardedToLabel": "Jane Smith",
+    "note": "<p>Sample Forward</p>",
+    "attachment": null,
+    "from": {
+      "id": 2,
+      "name": "John Doe",
+      "email": "user@rmbgh.com",
+      "department": "Information Technology",
+      "departmentId": "IT"
+    },
+    "userId": 2,
+    "sender": "John Doe",
+    "senderDept": "Information Technology",
+    "id": 1783255245054,
+    "type": "forwarded",
+    "date": "2026-07-05T12:40:45.054Z"
+  },
+  {
+    "readBy": [],
+    "status": "delivered",
+    "title": "Sample Subject",
+    "content": "<h1 style=\"text-align: center;\">Lorem Ipsum</h1><p><em>\"Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...\"</em></p><p>\"There is no one who loves pain itself, who seeks after it and wants to have it, simply because it is pain...\"</p><hr><h2 style=\"text-align: left;\">What is Lorem Ipsum?</h2><p style=\"text-align: justify;\"><strong>Lorem Ipsum</strong> is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers at Letraset and James Mosley, the librarian at St Bride Printing Library in London, took a 1914 Cicero translation and scrambled it to make dummy text for Letraset's Body Type sheets. It has survived not only many decades, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised thanks to these sheets and more recently with desktop publishing software like Aldus PageMaker and Microsoft Word including versions of Lorem Ipsum.</p><h2 style=\"text-align: left;\">Why do we use it?</h2><p style=\"text-align: justify;\">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).</p>",
+    "originalSender": "Ransh Dy",
+    "originalTitle": "Sample Subject",
+    "forwardedTo": [
+      {
+        "id": 1783255864907,
+        "name": "JC Goco",
+        "email": "jgoco@rmbgh.com",
+        "department": "Information Technology",
+        "departmentId": "IT",
+        "role": "user"
+      }
+    ],
+    "forwardedToLabel": "JC Goco",
+    "note": "<p>Sample</p>",
+    "attachment": null,
+    "from": {
+      "id": 1783255824240,
+      "name": "Colin Arias",
+      "email": "carias@rmbgh.com",
+      "department": "Information Technology",
+      "departmentId": "IT"
+    },
+    "userId": 1783255824240,
+    "sender": "Colin Arias",
+    "senderDept": "Information Technology",
+    "id": 1783308462154,
+    "type": "forwarded",
+    "date": "2026-07-06T03:27:42.154Z"
+  },
+  {
+    "readBy": [],
+    "status": "delivered",
+    "title": "Sample",
+    "content": "<p>Sample</p>",
+    "originalSender": "Juan Cruz",
+    "originalTitle": "Sample",
+    "forwardedTo": [
+      {
+        "id": 1783051261533,
+        "name": "Ransh Dy",
+        "email": "rdy@rmbgh.com",
+        "department": "Information Technology",
+        "departmentId": "IT",
+        "role": "user"
+      }
+    ],
+    "forwardedToLabel": "Ransh Dy",
+    "note": "<p>Sample</p>",
+    "attachment": null,
+    "from": {
+      "id": 1,
+      "name": "IT Superadmin",
+      "email": "superadmin@rmbgh.com",
+      "department": "Information Technology",
+      "departmentId": "IT"
+    },
+    "userId": 1,
+    "sender": "IT Superadmin",
+    "senderDept": "Information Technology",
+    "id": 1783643656063,
+    "type": "forwarded",
+    "date": "2026-07-10T00:34:16.063Z"
+  }
+]
