@@ -434,7 +434,15 @@
     "date": "2026-07-06T03:26:43.411Z"
   },
   {
-    "readBy": [],
+    "readBy": [
+      {
+        "id": 1783051261533,
+        "name": "Ransh Dy",
+        "dept": "Information Technology",
+        "time": "1:41 PM",
+        "date": "Jul 10, 2026"
+      }
+    ],
     "pinnedBy": [],
     "importantBy": [],
     "deletedBy": [],
