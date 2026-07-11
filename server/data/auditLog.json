@@ -198,5 +198,13 @@
     "action": "role_change",
     "targetUser": "JB Doquenia",
     "details": "Changed role from admin to user"
+  },
+  {
+    "id": 1783729919261,
+    "timestamp": "2026-07-11T00:31:59.261Z",
+    "performedBy": "IT Superadmin",
+    "action": "role_change",
+    "targetUser": "Ransh Dy",
+    "details": "Changed role from user to admin"
   }
 ]

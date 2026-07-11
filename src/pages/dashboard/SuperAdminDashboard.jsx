@@ -75,9 +75,18 @@ function SectionLabel({ icon: Icon, label }) {
 
 /* ── Shared panel shell — gives every side-panel the same
      header / divider / padding rhythm ─────────────────────────────── */
-function Panel({ icon: Icon, title, action, children, noBodyPadding }) {
+function Panel({
+  icon: Icon,
+  title,
+  action,
+  children,
+  noBodyPadding,
+  className = "",
+}) {
   return (
-    <div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden">
+    <div
+  className={`bg-card border border-border rounded-xl shadow-sm overflow-hidden flex flex-col h-full ${className}`}
+>
       <div className="flex items-center justify-between gap-2 px-4 py-3.5 border-b border-border">
         <div className="flex items-center gap-2">
           {Icon && <Icon size={14} className="text-muted-foreground" />}
@@ -85,7 +94,7 @@ function Panel({ icon: Icon, title, action, children, noBodyPadding }) {
         </div>
         {action}
       </div>
-      <div className={noBodyPadding ? "" : "p-4"}>{children}</div>
+     <div className={`${noBodyPadding ? "" : "p-4"} flex-1`}>{children}</div>
     </div>
   );
 }
@@ -334,88 +343,80 @@ export default function SuperAdminDashboard() {
         </div>
 
         {/* Right: actions + recent */}
-        <div className="space-y-4">
-          {/* Admin quick actions */}
-          <Panel icon={ClipboardList} title="Admin Actions">
-            <div className="-mx-1 space-y-0.5">
-              <ActionItem
-                icon={Users}
-                label="Manage Users"
-                sub="Approve, assign roles & depts"
-                color="bg-blue-100 text-blue-600 dark:bg-blue-500/15 dark:text-blue-400"
-                onClick={() => navigate("/admin/users")}
-              />
-              <ActionItem
-                icon={Megaphone}
-                label="Announcements Hub"
-                sub="View all broadcast mails"
-                color="bg-purple-100 text-purple-600 dark:bg-purple-500/15 dark:text-purple-400"
-                onClick={() => navigate("/admin/announcements")}
-              />
-              <ActionItem
-                icon={Building2}
-                label="Departments"
-                sub="Manage org departments"
-                color="bg-teal-100 text-teal-600 dark:bg-teal-500/15 dark:text-teal-400"
-                onClick={() => navigate("/admin/departments")}
-              />
-              <ActionItem
-                icon={BarChart3}
-                label="Reports"
-                sub="Usage & activity reports"
-                color="bg-green-100 text-green-600 dark:bg-green-500/15 dark:text-green-400"
-                onClick={() => navigate("/admin/reports")}
-              />
-              <ActionItem
-                icon={ClipboardList}
-                label="Audit Log"
-                sub="Track all admin actions"
-                color="bg-slate-100 text-slate-600 dark:bg-slate-500/15 dark:text-slate-400"
-                onClick={() => navigate("/admin/audit")}
-              />
-            </div>
-          </Panel>
+<div className="grid grid-rows-2 gap-4 h-[660px]">
 
-          {/* Dept breakdown */}
-          {deptBreakdown.length > 0 && (
-            <Panel icon={Building2} title="Users by Dept">
-              <div className="space-y-3.5">
-                {deptBreakdown.map((d, i) => (
-                  <DeptRow
-                    key={d.name}
-                    name={d.name}
-                    count={d.count}
-                    total={userCounts.total}
-                    accent={DEPT_ACCENTS[i % DEPT_ACCENTS.length]}
-                  />
-                ))}
-              </div>
-            </Panel>
-          )}
+  {/* Admin Actions */}
+  <Panel icon={ClipboardList} title="Admin Actions">
+    <div className="-mx-1 space-y-0.5">
+      <ActionItem
+        icon={Users}
+        label="Manage Users"
+        sub="Approve, assign roles & depts"
+        color="bg-blue-100 text-blue-600 dark:bg-blue-500/15 dark:text-blue-400"
+        onClick={() => navigate("/admin/users")}
+      />
 
-          {/* Recent inbox */}
-          {recent.length > 0 && (
-            <Panel
-              icon={Send}
-              title="Recent Mail"
-              action={
-                <button
-                  onClick={() => navigate("/inbox")}
-                  className="text-xs text-primary hover:underline font-medium flex-shrink-0"
-                >
-                  View all
-                </button>
-              }
-              noBodyPadding
-            >
-              <div className="divide-y divide-border">
-                {recent.map((m) => (
-                  <MailRow key={m.id} item={m} onClick={() => navigate("/inbox")} />
-                ))}
-              </div>
-            </Panel>
-          )}
-        </div>
+      <ActionItem
+        icon={Megaphone}
+        label="Announcements Hub"
+        sub="View all broadcast mails"
+        color="bg-purple-100 text-purple-600 dark:bg-purple-500/15 dark:text-purple-400"
+        onClick={() => navigate("/admin/announcements")}
+      />
+
+      <ActionItem
+        icon={Building2}
+        label="Departments"
+        sub="Manage org departments"
+        color="bg-teal-100 text-teal-600 dark:bg-teal-500/15 dark:text-teal-400"
+        onClick={() => navigate("/admin/departments")}
+      />
+
+      <ActionItem
+        icon={BarChart3}
+        label="Reports"
+        sub="Usage & activity reports"
+        color="bg-green-100 text-green-600 dark:bg-green-500/15 dark:text-green-400"
+        onClick={() => navigate("/admin/reports")}
+      />
+
+      <ActionItem
+        icon={ClipboardList}
+        label="Audit Log"
+        sub="Track all admin actions"
+        color="bg-slate-100 text-slate-600 dark:bg-slate-500/15 dark:text-slate-400"
+        onClick={() => navigate("/admin/audit")}
+      />
+    </div>
+  </Panel>
+
+  {/* Recent Mail */}
+  {recent.length > 0 && (
+    <Panel
+      icon={Send}
+      title="Recent Mail"
+      action={
+        <button
+          onClick={() => navigate("/inbox")}
+          className="text-xs text-primary hover:underline font-medium"
+        >
+          View all
+        </button>
+      }
+      noBodyPadding
+    >
+      <div className="divide-y divide-border h-full overflow-y-auto">
+        {recent.map((m) => (
+          <MailRow
+            key={m.id}
+            item={m}
+            onClick={() => navigate("/inbox")}
+          />
+        ))}
+      </div>
+    </Panel>
+  )}
+</div>
       </div>
 
       {/* ── Pending users ── */}

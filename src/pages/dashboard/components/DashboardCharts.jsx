@@ -58,14 +58,14 @@ export default function UserRegistrationChart() {
   const totalThisMonth = registrationData.reduce((sum, d) => sum + d.users, 0);
 
   return (
-    <div className="flex flex-col bg-card border border-border rounded-xl shadow-sm overflow-hidden">
+    <div className="flex h-[320px] flex-col bg-card border border-border rounded-xl shadow-sm overflow-hidden">
       <ChartHeader title="User Registration" />
       <div className="flex items-baseline gap-2 px-4 pt-3">
         <span className="text-2xl font-bold text-foreground tabular-nums leading-none">{totalThisMonth}</span>
         <span className="text-xs text-muted-foreground">new users this month</span>
       </div>
-      <div className="px-2 pb-3 pt-2">
-        <ResponsiveContainer width="100%" height={220}>
+<div className="flex-1 px-2 pb-3 pt-2">
+  <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={registrationData} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
             <defs>
               <linearGradient id="userRegFill" x1="0" y1="0" x2="0" y2="1">
@@ -98,11 +98,11 @@ export function UsersByDepartmentChart() {
   const total = departmentData.reduce((sum, d) => sum + d.value, 0);
 
   return (
-    <div className="flex flex-col bg-card border border-border rounded-xl shadow-sm overflow-hidden">
+    <div className="flex h-[320px] flex-col bg-card border border-border rounded-xl shadow-sm overflow-hidden">
       <div className="px-4 py-3.5 border-b border-border">
         <h3 className="text-sm font-semibold text-foreground">Users by Department</h3>
       </div>
-      <div className="flex flex-col items-center justify-center gap-5 px-4 py-5 sm:flex-row sm:justify-start">
+      <div className="flex-1 flex items-center justify-center gap-8 px-6">
         <div className="relative flex-shrink-0" style={{ width: 150, height: 150 }}>
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
