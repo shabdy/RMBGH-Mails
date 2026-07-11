@@ -14,7 +14,7 @@ function getFileIcon(file) {
   if (file.type?.includes("image")) return <FileImage className="h-4 w-4 text-blue-500" />;
   if (file.type?.includes("pdf"))   return <FileText  className="h-4 w-4 text-red-500" />;
   if (file.name?.match(/\.(doc|docx)$/)) return <FileText className="h-4 w-4 text-blue-600" />;
-  return <File className="h-4 w-4 text-slate-400" />;
+  return <File className="h-4 w-4 text-muted-foreground" />;
 }
 
 const tbtn = "h-7 w-7 flex items-center justify-center rounded transition hover:bg-muted active:scale-95 text-foreground";
@@ -50,7 +50,7 @@ function NoteEditor({ editor }) {
           [&_.ProseMirror_ol]:list-decimal [&_.ProseMirror_ol]:pl-4
           [&_.ProseMirror_strong]:font-bold [&_.ProseMirror_em]:italic [&_.ProseMirror_u]:underline
           [&_.ProseMirror_p.is-editor-empty:first-child::before]:content-['Add_a_note_to_include_with_this_forward...']
-          [&_.ProseMirror_p.is-editor-empty:first-child::before]:text-slate-400
+          [&_.ProseMirror_p.is-editor-empty:first-child::before]:text-muted-foreground
           [&_.ProseMirror_p.is-editor-empty:first-child::before]:pointer-events-none
           [&_.ProseMirror_p.is-editor-empty:first-child::before]:float-left
           [&_.ProseMirror_p.is-editor-empty:first-child::before]:h-0
@@ -63,9 +63,9 @@ function NoteEditor({ editor }) {
 export function ForwardModal({ open, onClose, selected }) {
   const { forwardMail, currentUser } = useAnnouncements();
 
-  const [recipients, setRecipients]   = useState([]);
-  const [status, setStatus]           = useState("idle");
-  const [attachments, setAttachments] = useState([]);
+  const [recipients, setRecipients]         = useState([]);
+  const [status, setStatus]                 = useState("idle");
+  const [attachments, setAttachments]       = useState([]);
   const [recipientError, setRecipientError] = useState("");
   const fileInputRef = useRef(null);
 
@@ -154,7 +154,7 @@ export function ForwardModal({ open, onClose, selected }) {
                 </div>
               )}
 
-              {/* TO — recipient picker */}
+              {/* TO */}
               <div className="space-y-1.5">
                 <Label>Forward To</Label>
                 <RecipientPicker
@@ -165,7 +165,7 @@ export function ForwardModal({ open, onClose, selected }) {
                 {recipientError && <p className="text-xs text-red-500">{recipientError}</p>}
               </div>
 
-              {/* NOTE WITH TOOLBAR */}
+              {/* NOTE */}
               <div className="space-y-2">
                 <Label>Add a note <span className="text-muted-foreground font-normal">(optional)</span></Label>
                 <NoteEditor editor={noteEditor} />
@@ -173,7 +173,7 @@ export function ForwardModal({ open, onClose, selected }) {
 
               {/* ATTACHMENT */}
               <div className="space-y-2">
-                <Label>Attachment <span className="text-slate-400 font-normal">(optional)</span></Label>
+                <Label>Attachment <span className="text-muted-foreground font-normal">(optional)</span></Label>
                 <div className="flex items-center gap-3">
                   <Button type="button" variant="outline" size="sm" onClick={() => fileInputRef.current?.click()} className="rounded-lg text-xs">
                     <Paperclip size={13} className="mr-1.5" /> Attach File

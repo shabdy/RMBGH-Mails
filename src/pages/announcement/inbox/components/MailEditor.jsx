@@ -25,7 +25,7 @@ function LinkModal({ open, onClose, onConfirm }) {
     <Dialog open={open} onOpenChange={(v) => { if (!v) { setUrl(""); onClose(); } }}>
       <DialogContent className="max-w-sm rounded-2xl p-0 overflow-hidden">
         <div className="px-6 py-5 space-y-4">
-          <h3 className="text-base font-semibold text-slate-900">Insert Link</h3>
+          <h3 className="text-base font-semibold text-foreground">Insert Link</h3>
           <div className="space-y-1.5">
             <Label>URL</Label>
             <Input
@@ -125,12 +125,12 @@ const editorClasses = `
   [&_.ProseMirror_ul]:list-disc [&_.ProseMirror_ul]:pl-5 [&_.ProseMirror_ul]:mb-3
   [&_.ProseMirror_ol]:list-decimal [&_.ProseMirror_ol]:pl-5 [&_.ProseMirror_ol]:mb-3
   [&_.ProseMirror_li]:mb-1
-  [&_.ProseMirror_blockquote]:border-l-4 [&_.ProseMirror_blockquote]:border-slate-300 [&_.ProseMirror_blockquote]:pl-4 [&_.ProseMirror_blockquote]:text-slate-500 [&_.ProseMirror_blockquote]:italic [&_.ProseMirror_blockquote]:mb-3
-  [&_.ProseMirror_pre]:bg-slate-100 [&_.ProseMirror_pre]:rounded [&_.ProseMirror_pre]:p-3 [&_.ProseMirror_pre]:text-xs [&_.ProseMirror_pre]:font-mono [&_.ProseMirror_pre]:mb-3
+  [&_.ProseMirror_blockquote]:border-l-4 [&_.ProseMirror_blockquote]:border-border [&_.ProseMirror_blockquote]:pl-4 [&_.ProseMirror_blockquote]:text-muted-foreground [&_.ProseMirror_blockquote]:italic [&_.ProseMirror_blockquote]:mb-3
+  [&_.ProseMirror_pre]:bg-muted [&_.ProseMirror_pre]:rounded [&_.ProseMirror_pre]:p-3 [&_.ProseMirror_pre]:text-xs [&_.ProseMirror_pre]:font-mono [&_.ProseMirror_pre]:mb-3
   [&_.ProseMirror_a]:text-blue-600 [&_.ProseMirror_a]:underline
   [&_.ProseMirror_strong]:font-bold [&_.ProseMirror_em]:italic [&_.ProseMirror_u]:underline
   [&_.ProseMirror_p.is-editor-empty:first-child::before]:content-['Type_your_message_here...']
-  [&_.ProseMirror_p.is-editor-empty:first-child::before]:text-slate-400
+  [&_.ProseMirror_p.is-editor-empty:first-child::before]:text-muted-foreground
   [&_.ProseMirror_p.is-editor-empty:first-child::before]:pointer-events-none
   [&_.ProseMirror_p.is-editor-empty:first-child::before]:float-left
   [&_.ProseMirror_p.is-editor-empty:first-child::before]:h-0
@@ -144,8 +144,6 @@ export function MailEditor({ editor, error }) {
     <div className="flex-1 min-h-0 flex flex-col">
       <Label className="mb-2 block shrink-0">Message</Label>
 
-      {/* Editor mounts in ONLY ONE place at a time — either here, or inside the modal below.
-          Rendering EditorContent twice for the same editor instance is what breaks expand/collapse. */}
       {!expanded && (
         <div
           className={`flex-1 min-h-0 max-h-full flex flex-col border rounded-xl bg-card shadow-sm cursor-text ${error ? "border-red-400" : ""}`}
@@ -160,7 +158,6 @@ export function MailEditor({ editor, error }) {
 
       {error && !expanded && <p className="text-xs text-red-500 mt-1 shrink-0">{error}</p>}
 
-      {/* EXPANDED MODAL — editor only mounts here when expanded=true */}
       <Dialog open={expanded} onOpenChange={setExpanded}>
         <DialogContent className="!grid-rows-none !grid-cols-none !flex !flex-col !gap-0 !max-w-4xl !w-[90vw] !h-[85vh] !p-0 rounded-2xl overflow-hidden">
           <div className="shrink-0 flex items-center justify-between px-5 py-3 border-b bg-card">
@@ -182,7 +179,6 @@ export function MailEditor({ editor, error }) {
         </DialogContent>
       </Dialog>
 
-      {/* LINK MODAL */}
       <LinkModal
         open={showLink}
         onClose={() => setShowLink(false)}

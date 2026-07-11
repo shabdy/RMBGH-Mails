@@ -31,10 +31,10 @@ export default function Forward() {
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
-      <div className="shrink-0 px-6 py-4 flex items-center justify-between bg-white border-b">
+      <div className="shrink-0 px-6 py-4 flex items-center justify-between bg-background border-b">
         <div>
-          <h1 className="text-xl font-semibold text-slate-900">Forwarded</h1>
-          <p className="text-xs text-slate-500">Announcements you've forwarded</p>
+          <h1 className="text-xl font-semibold text-foreground">Forwarded</h1>
+          <p className="text-xs text-muted-foreground">Announcements you've forwarded</p>
         </div>
         <Button className="flex items-center gap-2" onClick={() => setOpenCreate(true)}>
           <Plus size={16} /> New
