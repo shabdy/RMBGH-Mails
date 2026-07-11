@@ -24,7 +24,8 @@ export function AnnouncementProvider({ children }) {
       department:   user.department   || "Unknown",
       departmentId: user.departmentId || "NONE",
     };
-  }, [user]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id, user?.firstName, user?.lastName, user?.email, user?.department, user?.departmentId]);
 
   /* ─── Enrich raw backend mail with derived UI fields ─── */
   const enrich = useCallback((m) => {

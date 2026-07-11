@@ -2,6 +2,7 @@
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
+@custom-variant system (&:is(.system *));
 
 * {
   font-family: "Poppins", sans-serif;
@@ -119,6 +120,40 @@ body,
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+}
+
+.system {
+  --background: oklch(0.97 0.022 85);
+  --foreground: oklch(0.22 0.025 65);
+  --card: oklch(0.99 0.014 85);
+  --card-foreground: oklch(0.22 0.025 65);
+  --popover: oklch(0.99 0.014 85);
+  --popover-foreground: oklch(0.22 0.025 65);
+  --primary: oklch(0.35 0.055 65);
+  --primary-foreground: oklch(0.98 0.01 85);
+  --secondary: oklch(0.93 0.026 85);
+  --secondary-foreground: oklch(0.25 0.03 65);
+  --muted: oklch(0.93 0.026 85);
+  --muted-foreground: oklch(0.52 0.03 75);
+  --accent: oklch(0.93 0.026 85);
+  --accent-foreground: oklch(0.25 0.03 65);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.88 0.03 80);
+  --input: oklch(0.88 0.03 80);
+  --ring: oklch(0.6 0.04 75);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.95 0.028 85);
+  --sidebar-foreground: oklch(0.22 0.025 65);
+  --sidebar-primary: oklch(0.35 0.055 65);
+  --sidebar-primary-foreground: oklch(0.98 0.01 85);
+  --sidebar-accent: oklch(0.91 0.03 85);
+  --sidebar-accent-foreground: oklch(0.25 0.03 65);
+  --sidebar-border: oklch(0.88 0.03 80);
+  --sidebar-ring: oklch(0.6 0.04 75);
 }
 
 @layer base {

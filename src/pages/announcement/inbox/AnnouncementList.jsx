@@ -143,8 +143,10 @@ export function AnnouncementList({ tab, setTab, search, setSearch, items, pinned
             const RecipientIcon = isDept ? Building2 : isAll ? Globe : null;
 
             return (
-              <button key={item.id} onClick={() => onSelect(item)}
-                className={"w-full text-left px-3 py-2.5 border-b hover:bg-background transition " +
+              <div key={item.id} role="button" tabIndex={0}
+                onClick={() => onSelect(item)}
+                onKeyDown={(e) => e.key === "Enter" && onSelect(item)}
+                className={"w-full text-left px-3 py-2.5 border-b hover:bg-muted/50 cursor-pointer transition " +
                   (selected?.id === item.id ? "bg-accent border-l-2 border-l-primary" : "")}>
                 <div className="flex items-start gap-2.5">
 
@@ -183,7 +185,7 @@ export function AnnouncementList({ tab, setTab, search, setSearch, items, pinned
                   </div>
 
                 </div>
-              </button>
+              </div>
             );
           })
         )}

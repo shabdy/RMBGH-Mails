@@ -36,19 +36,19 @@ function Toggle({ checked, onChange }) {
 
 function Section({ title, description, icon: Icon, children }) {
   return (
-    <div className="bg-white border rounded-2xl shadow-sm overflow-hidden">
-      <div className="flex items-center gap-3 px-6 py-4 border-b bg-slate-50/60">
+    <div className="bg-background border rounded-2xl shadow-sm overflow-hidden">
+      <div className="flex items-center gap-3 px-6 py-4 border-b bg-muted/40">
         <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
           <Icon size={15} className="text-blue-600" />
         </div>
         <div>
-          <h2 className="text-sm font-semibold text-slate-900">{title}</h2>
+          <h2 className="text-sm font-semibold text-foreground">{title}</h2>
           {description && (
-            <p className="text-xs text-slate-400">{description}</p>
+            <p className="text-xs text-muted-foreground">{description}</p>
           )}
         </div>
       </div>
-      <div className="divide-y divide-slate-100">{children}</div>
+      <div className="divide-y divide-border">{children}</div>
     </div>
   );
 }
@@ -57,9 +57,9 @@ function SettingRow({ label, description, control }) {
   return (
     <div className="flex items-center justify-between px-6 py-4">
       <div>
-        <p className="text-sm font-medium text-slate-800">{label}</p>
+        <p className="text-sm font-medium text-foreground">{label}</p>
         {description && (
-          <p className="text-xs text-slate-400 mt-0.5">{description}</p>
+          <p className="text-xs text-muted-foreground mt-0.5">{description}</p>
         )}
       </div>
       <div className="ml-4 shrink-0">{control}</div>
@@ -121,8 +121,8 @@ export default function SettingsPage() {
   return (
     <div className="max-w-8xl mx-auto py-8 px-6 space-y-6">
       <div>
-        <h1 className="text-xl font-bold text-slate-900">Settings</h1>
-        <p className="text-sm text-slate-500">
+        <h1 className="text-xl font-bold text-foreground">Settings</h1>
+        <p className="text-sm text-muted-foreground">
           Manage your preferences and app behavior
         </p>
       </div>
@@ -248,7 +248,7 @@ export default function SettingsPage() {
           <SettingRow
             key={label}
             label={label}
-            control={<span className="text-sm text-slate-500">{value}</span>}
+            control={<span className="text-sm text-muted-foreground">{value}</span>}
           />
         ))}
       </Section>

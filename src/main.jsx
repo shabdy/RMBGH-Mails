@@ -8,7 +8,7 @@ import "./index.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <ThemeProvider attribute="class" defaultTheme="light" disableTransitionOnChange>
+    <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} themes={["light", "dark", "system"]} disableTransitionOnChange>
       <AuthProvider>
         <App />
         <Toaster position="top-right" richColors />
