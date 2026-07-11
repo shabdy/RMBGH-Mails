@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useContext } from "react";
 import {
-  Search, UserCheck, UserX, Trash2, Shield, ShieldOff,
+  Search, UserCheck, UserX, Trash2, Shield,
   Users, Clock, Building2, ChevronDown, X, Loader2,
   CheckCircle, XCircle, Edit2, Eye, EyeOff,
 } from "lucide-react";
@@ -31,7 +31,7 @@ const DEPARTMENTS = [
 const STATUS_CONFIG = {
   Active:   { label: "Active",   class: "bg-green-50 text-green-700 border-green-200" },
   Pending:  { label: "Pending",  class: "bg-amber-50 text-amber-700 border-amber-200" },
-  Inactive: { label: "Inactive", class: "bg-slate-100 text-slate-500 border-slate-200" },
+  Inactive: { label: "Inactive", class: "bg-muted text-muted-foreground border-border" },
 };
 
 const DEPT_MAP = {
@@ -69,13 +69,13 @@ function Avatar({ name, src, size = "md" }) {
 
 function StatCard({ icon: Icon, label, value, color }) {
   return (
-    <div className="bg-white border rounded-xl p-4 flex items-center gap-4 shadow-sm">
+    <div className="bg-background border rounded-xl p-4 flex items-center gap-4 shadow-sm">
       <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${color}`}>
         <Icon size={18} />
       </div>
       <div>
-        <p className="text-2xl font-bold text-slate-900">{value}</p>
-        <p className="text-xs text-slate-500">{label}</p>
+        <p className="text-2xl font-bold text-foreground">{value}</p>
+        <p className="text-xs text-muted-foreground">{label}</p>
       </div>
     </div>
   );
@@ -113,61 +113,58 @@ function UserModal({ user, onClose, onSaved, isSuperAdmin }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden">
+      <div className="bg-background rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden border border-border">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b">
-          <h2 className="text-base font-semibold text-slate-900">Edit User</h2>
-          <button onClick={onClose} className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition">
+          <h2 className="text-base font-semibold text-foreground">Edit User</h2>
+          <button onClick={onClose} className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition">
             <X size={16} />
           </button>
         </div>
 
         {/* User info */}
         <div className="px-6 py-5">
-          <div className="flex items-center gap-3 mb-6 pb-5 border-b">
+          <div className="flex items-center gap-3 mb-6 pb-5 border-b border-border">
             <Avatar name={fullName} src={user.profileImage} size="lg" />
             <div>
-              <p className="font-semibold text-slate-900">{fullName}</p>
-              <p className="text-sm text-slate-500">{user.email}</p>
-              <p className="text-xs text-slate-400">{department || user.department || "No department"}</p>
+              <p className="font-semibold text-foreground">{fullName}</p>
+              <p className="text-sm text-muted-foreground">{user.email}</p>
+              <p className="text-xs text-muted-foreground">{department || user.department || "No department"}</p>
             </div>
           </div>
 
           <div className="space-y-4">
-            {/* Department — superadmin only */}
             {isSuperAdmin && (
               <div>
-                <label className="text-sm font-medium text-slate-700 block mb-1.5">Department</label>
+                <label className="text-sm font-medium text-foreground block mb-1.5">Department</label>
                 <select
                   value={department}
                   onChange={e => setDepartment(e.target.value)}
-                  className="w-full h-10 px-3 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full h-10 px-3 border border-border rounded-lg bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   {EDITABLE_DEPTS.map(d => <option key={d} value={d}>{d}</option>)}
                 </select>
               </div>
             )}
 
-            {/* Role */}
             <div>
-              <label className="text-sm font-medium text-slate-700 block mb-1.5">Role</label>
+              <label className="text-sm font-medium text-foreground block mb-1.5">Role</label>
               <select
                 value={role}
                 onChange={e => setRole(e.target.value)}
-                className="w-full h-10 px-3 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full h-10 px-3 border border-border rounded-lg bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="user">Staff</option>
                 <option value="admin">Admin (Head of Dept)</option>
               </select>
             </div>
 
-            {/* Status */}
             <div>
-              <label className="text-sm font-medium text-slate-700 block mb-1.5">Account Status</label>
+              <label className="text-sm font-medium text-foreground block mb-1.5">Account Status</label>
               <select
                 value={status}
                 onChange={e => setStatus(e.target.value)}
-                className="w-full h-10 px-3 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full h-10 px-3 border border-border rounded-lg bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="Active">Active</option>
                 <option value="Pending">Pending</option>
@@ -178,7 +175,7 @@ function UserModal({ user, onClose, onSaved, isSuperAdmin }) {
         </div>
 
         {/* Actions */}
-        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t bg-slate-50">
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-border bg-muted/40">
           <Button variant="outline" onClick={onClose} disabled={saving}>Cancel</Button>
           <Button onClick={handleSave} disabled={saving} className="min-w-[80px]">
             {saving ? <Loader2 size={14} className="animate-spin" /> : "Save"}
@@ -202,15 +199,15 @@ function DeleteModal({ user, onClose, onConfirm }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4 p-6">
+      <div className="bg-background border border-border rounded-2xl shadow-2xl w-full max-w-sm mx-4 p-6">
         <div className="flex flex-col items-center text-center gap-3">
           <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center">
             <Trash2 size={20} className="text-red-500" />
           </div>
           <div>
-            <h3 className="font-semibold text-slate-900">Delete User?</h3>
-            <p className="text-sm text-slate-500 mt-1">
-              <span className="font-medium text-slate-700">{fullName}</span> will be permanently removed.
+            <h3 className="font-semibold text-foreground">Delete User?</h3>
+            <p className="text-sm text-muted-foreground mt-1">
+              <span className="font-medium text-foreground">{fullName}</span> will be permanently removed.
               This cannot be undone.
             </p>
           </div>
@@ -231,16 +228,16 @@ export default function UsersPage() {
   const { user: adminUser } = useContext(AuthContext);
   const adminName = adminUser ? `${adminUser.firstName} ${adminUser.lastName}` : "Admin";
 
-  const [users,       setUsers]       = useState([]);
-  const [loading,     setLoading]     = useState(true);
-  const [search,      setSearch]      = useState("");
-  const [statusFilter,setStatusFilter]= useState("All");
-  const [deptFilter,  setDeptFilter]  = useState("All Departments");
-  const [editUser,    setEditUser]    = useState(null);
-  const [deleteUser,  setDeleteUser]  = useState(null);
-  const [busy,        setBusy]        = useState({});
+  const [users,        setUsers]        = useState([]);
+  const [loading,      setLoading]      = useState(true);
+  const [search,       setSearch]       = useState("");
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [deptFilter,   setDeptFilter]   = useState("All Departments");
+  const [editUser,     setEditUser]     = useState(null);
+  const [deleteUser,   setDeleteUser]   = useState(null);
+  const [busy,         setBusy]         = useState({});
   const PAGE_SIZE = 10;
-  const [page,      setPage]         = useState(1);
+  const [page, setPage] = useState(1);
 
   const load = async () => {
     setLoading(true);
@@ -251,15 +248,13 @@ export default function UsersPage() {
 
   useEffect(() => { load(); }, []);
 
-  /* ── Computed stats ── */
   const stats = useMemo(() => ({
-    total:    users.length,
-    active:   users.filter(u => u.status === "Active").length,
-    pending:  users.filter(u => u.status === "Pending").length,
-    depts:    new Set(users.map(u => u.departmentId).filter(Boolean)).size,
+    total:   users.length,
+    active:  users.filter(u => u.status === "Active").length,
+    pending: users.filter(u => u.status === "Pending").length,
+    depts:   new Set(users.map(u => u.departmentId).filter(Boolean)).size,
   }), [users]);
 
-  /* ── Filtered list ── */
   const filtered = useMemo(() => {
     return users.filter(u => {
       const name = `${u.firstName || ""} ${u.lastName || ""} ${u.email || ""}`.toLowerCase();
@@ -270,7 +265,6 @@ export default function UsersPage() {
     });
   }, [users, search, statusFilter, deptFilter]);
 
-  /* Reset to page 1 when filters change */
   useEffect(() => setPage(1), [search, statusFilter, deptFilter]);
 
   const paginated = useMemo(
@@ -278,7 +272,6 @@ export default function UsersPage() {
     [filtered, page]
   );
 
-  /* ── Actions ── */
   const doActivate = async (id) => {
     setBusy(b => ({ ...b, [id]: "activate" }));
     try {
@@ -343,13 +336,13 @@ export default function UsersPage() {
   };
 
   return (
-    <div className="p-6 space-y-6 overflow-y-auto h-full bg-slate-50/50">
+    <div className="p-6 space-y-6 overflow-y-auto h-full bg-background">
 
       {/* ── PAGE HEADER ── */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-slate-900">User Management</h1>
-          <p className="text-sm text-slate-500">Manage employee accounts and access levels</p>
+          <h1 className="text-xl font-bold text-foreground">User Management</h1>
+          <p className="text-sm text-muted-foreground">Manage employee accounts and access levels</p>
         </div>
       </div>
 
@@ -362,10 +355,9 @@ export default function UsersPage() {
       </div>
 
       {/* ── FILTERS ── */}
-      <div className="bg-white border rounded-xl px-5 py-4 flex flex-wrap items-center gap-3 shadow-sm">
-        {/* Search */}
+      <div className="bg-background border rounded-xl px-5 py-4 flex flex-wrap items-center gap-3 shadow-sm">
         <div className="relative flex-1 min-w-[200px]">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder="Search by name or email…"
             value={search}
@@ -374,16 +366,15 @@ export default function UsersPage() {
           />
         </div>
 
-        {/* Status filter */}
-        <div className="flex items-center gap-1 rounded-lg border p-0.5 bg-slate-50 text-xs">
+        <div className="flex items-center gap-1 rounded-lg border border-border p-0.5 bg-muted/50 text-xs">
           {["All", "Active", "Pending", "Inactive"].map(s => (
             <button
               key={s}
               onClick={() => setStatusFilter(s)}
               className={`px-3 py-1.5 rounded-md font-medium transition ${
                 statusFilter === s
-                  ? "bg-white shadow-sm text-slate-900 border border-slate-200"
-                  : "text-slate-400 hover:text-slate-700"
+                  ? "bg-background shadow-sm text-foreground border border-border"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
             >
               {s}
@@ -391,34 +382,32 @@ export default function UsersPage() {
           ))}
         </div>
 
-        {/* Department filter */}
         <div className="relative">
           <select
             value={deptFilter}
             onChange={e => setDeptFilter(e.target.value)}
-            className="h-9 pl-3 pr-8 border rounded-lg bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer"
+            className="h-9 pl-3 pr-8 border border-border rounded-lg bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer"
           >
             {DEPARTMENTS.map(d => <option key={d} value={d}>{d}</option>)}
           </select>
-          <ChevronDown size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+          <ChevronDown size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
         </div>
 
-        {/* Result count */}
-        <span className="text-xs text-slate-400 ml-auto">
+        <span className="text-xs text-muted-foreground ml-auto">
           {filtered.length} of {users.length} users
         </span>
       </div>
 
       {/* ── TABLE ── */}
-      <div className="bg-white border rounded-xl shadow-sm overflow-hidden">
+      <div className="bg-background border rounded-xl shadow-sm overflow-hidden">
         {loading ? (
-          <div className="flex items-center justify-center py-20 gap-2 text-slate-400">
+          <div className="flex items-center justify-center py-20 gap-2 text-muted-foreground">
             <Loader2 size={18} className="animate-spin" />
             <span className="text-sm">Loading users…</span>
           </div>
         ) : filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-slate-400 gap-2">
-            <Users size={32} className="text-slate-200" />
+          <div className="flex flex-col items-center justify-center py-20 text-muted-foreground gap-2">
+            <Users size={32} className="text-muted-foreground/30" />
             <p className="text-sm font-medium">No users found</p>
             <p className="text-xs">Try adjusting your search or filters</p>
           </div>
@@ -426,38 +415,38 @@ export default function UsersPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b bg-slate-50/80">
-                  <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Employee</th>
-                  <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Department</th>
-                  <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Role</th>
-                  <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Status</th>
-                  <th className="px-5 py-3 text-right text-xs font-semibold text-slate-500 uppercase tracking-wide">Actions</th>
+                <tr className="border-b bg-muted/40">
+                  <th className="px-5 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wide">Employee</th>
+                  <th className="px-5 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wide">Department</th>
+                  <th className="px-5 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wide">Role</th>
+                  <th className="px-5 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wide">Status</th>
+                  <th className="px-5 py-3 text-right text-xs font-semibold text-muted-foreground uppercase tracking-wide">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-border">
                 {paginated.map(user => {
-                  const fullName   = `${user.firstName || ""} ${user.lastName || ""}`.trim();
-                  const isBusy     = !!busy[user.id];
-                  const statusCfg  = STATUS_CONFIG[user.status] || STATUS_CONFIG.Pending;
-                  const roleCfg    = getRoleConfig(user.role);
+                  const fullName  = `${user.firstName || ""} ${user.lastName || ""}`.trim();
+                  const isBusy    = !!busy[user.id];
+                  const statusCfg = STATUS_CONFIG[user.status] || STATUS_CONFIG.Pending;
+                  const roleCfg   = getRoleConfig(user.role);
 
                   return (
-                    <tr key={user.id} className="hover:bg-slate-50/60 transition-colors">
+                    <tr key={user.id} className="hover:bg-muted/50 transition-colors">
                       {/* Employee */}
                       <td className="px-5 py-3.5">
                         <div className="flex items-center gap-3">
                           <Avatar name={fullName} src={user.profileImage} />
                           <div>
-                            <p className="font-medium text-slate-900">{fullName || "Unknown"}</p>
-                            <p className="text-xs text-slate-400">{user.email}</p>
+                            <p className="font-medium text-foreground">{fullName || "Unknown"}</p>
+                            <p className="text-xs text-muted-foreground">{user.email}</p>
                           </div>
                         </div>
                       </td>
 
                       {/* Department */}
                       <td className="px-5 py-3.5">
-                        <div className="flex items-center gap-1.5 text-slate-600">
-                          <Building2 size={13} className="text-slate-300 shrink-0" />
+                        <div className="flex items-center gap-1.5 text-foreground">
+                          <Building2 size={13} className="text-muted-foreground/50 shrink-0" />
                           <span className="text-sm">{user.department || "—"}</span>
                         </div>
                       </td>
@@ -487,10 +476,9 @@ export default function UsersPage() {
                       <td className="px-5 py-3.5">
                         <div className="flex items-center justify-end gap-1.5">
                           {isBusy ? (
-                            <Loader2 size={14} className="animate-spin text-slate-400" />
+                            <Loader2 size={14} className="animate-spin text-muted-foreground" />
                           ) : (
                             <>
-                              {/* Pending → Approve + Reject */}
                               {user.status === "Pending" && (
                                 <>
                                   <button
@@ -510,18 +498,16 @@ export default function UsersPage() {
                                 </>
                               )}
 
-                              {/* Active → Deactivate */}
                               {user.status === "Active" && user.role !== "superadmin" && (
                                 <button
                                   onClick={() => doDeactivate(user.id)}
                                   title="Deactivate"
-                                  className="flex items-center gap-1 text-xs font-medium px-2.5 py-1.5 rounded-lg bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200 transition"
+                                  className="flex items-center gap-1 text-xs font-medium px-2.5 py-1.5 rounded-lg bg-muted text-muted-foreground hover:bg-muted/80 border border-border transition"
                                 >
                                   <EyeOff size={13} /> Deactivate
                                 </button>
                               )}
 
-                              {/* Inactive → Activate */}
                               {user.status === "Inactive" && (
                                 <button
                                   onClick={() => doActivate(user.id)}
@@ -532,21 +518,19 @@ export default function UsersPage() {
                                 </button>
                               )}
 
-                              {/* Edit */}
                               <button
                                 onClick={() => setEditUser(user)}
                                 title="Edit"
-                                className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
+                                className="p-1.5 text-muted-foreground hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/30 rounded-lg transition"
                               >
                                 <Edit2 size={14} />
                               </button>
 
-                              {/* Delete (not for superadmin) */}
                               {user.role !== "superadmin" && (
                                 <button
                                   onClick={() => setDeleteUser(user)}
                                   title="Delete"
-                                  className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition"
+                                  className="p-1.5 text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition"
                                 >
                                   <Trash2 size={14} />
                                 </button>

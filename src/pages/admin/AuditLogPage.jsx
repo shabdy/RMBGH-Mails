@@ -12,7 +12,7 @@ const api = axios.create({ baseURL: "/api" });
 const ACTION_CONFIG = {
   approve:      { label: "Approved",      icon: UserCheck, class: "bg-green-50 text-green-700 border-green-200"    },
   reject:       { label: "Rejected",      icon: UserX,     class: "bg-red-50 text-red-700 border-red-200"          },
-  deactivate:   { label: "Deactivated",   icon: EyeOff,    class: "bg-slate-100 text-slate-600 border-slate-200"   },
+  deactivate:   { label: "Deactivated",   icon: EyeOff,    class: "bg-muted text-muted-foreground border-border"   },
   activate:     { label: "Activated",     icon: UserCheck, class: "bg-blue-50 text-blue-700 border-blue-200"       },
   role_change:  { label: "Role Changed",  icon: Edit2,     class: "bg-purple-50 text-purple-700 border-purple-200" },
   delete:       { label: "Deleted",       icon: Trash2,    class: "bg-red-50 text-red-600 border-red-200"          },
@@ -60,7 +60,6 @@ export default function AuditLogPage() {
     });
   }, [logs, search, actionFilter]);
 
-  /* Reset to page 1 whenever filters change */
   useEffect(() => setPage(1), [search, actionFilter]);
 
   const paginated = useMemo(
@@ -69,16 +68,16 @@ export default function AuditLogPage() {
   );
 
   return (
-    <div className="p-6 space-y-6 h-full overflow-y-auto bg-slate-50/50">
+    <div className="p-6 space-y-6 h-full overflow-y-auto bg-background">
       <div>
-        <h1 className="text-xl font-bold text-slate-900">Audit Log</h1>
-        <p className="text-sm text-slate-500">Track all admin actions performed in the system</p>
+        <h1 className="text-xl font-bold text-foreground">Audit Log</h1>
+        <p className="text-sm text-muted-foreground">Track all admin actions performed in the system</p>
       </div>
 
       {/* ── Filters ── */}
-      <div className="bg-white border rounded-xl px-5 py-4 flex flex-wrap items-center gap-3 shadow-sm">
+      <div className="bg-background border rounded-xl px-5 py-4 flex flex-wrap items-center gap-3 shadow-sm">
         <div className="relative flex-1 min-w-[200px]">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder="Search by user, action, or details…"
             value={search}
@@ -90,7 +89,7 @@ export default function AuditLogPage() {
           <select
             value={actionFilter}
             onChange={e => setActionFilter(e.target.value)}
-            className="h-9 pl-3 pr-8 border rounded-lg bg-white text-sm focus:outline-none appearance-none cursor-pointer"
+            className="h-9 pl-3 pr-8 border rounded-lg bg-background text-foreground text-sm focus:outline-none appearance-none cursor-pointer"
           >
             {allActions.map(a => (
               <option key={a} value={a}>
@@ -98,21 +97,21 @@ export default function AuditLogPage() {
               </option>
             ))}
           </select>
-          <ChevronDown size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+          <ChevronDown size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
         </div>
-        <span className="text-xs text-slate-400 ml-auto">{filtered.length} entries</span>
+        <span className="text-xs text-muted-foreground ml-auto">{filtered.length} entries</span>
       </div>
 
       {/* ── Table ── */}
-      <div className="bg-white border rounded-xl shadow-sm overflow-hidden">
+      <div className="bg-background border rounded-xl shadow-sm overflow-hidden">
         {loading ? (
-          <div className="flex items-center justify-center py-20 gap-2 text-slate-400">
+          <div className="flex items-center justify-center py-20 gap-2 text-muted-foreground">
             <Loader2 size={18} className="animate-spin" />
             <span className="text-sm">Loading audit log…</span>
           </div>
         ) : filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-slate-400 gap-2">
-            <ClipboardList size={32} className="text-slate-200" />
+          <div className="flex flex-col items-center justify-center py-20 text-muted-foreground gap-2">
+            <ClipboardList size={32} className="text-muted-foreground/30" />
             <p className="text-sm font-medium">No audit entries found</p>
             <p className="text-xs">Actions taken by admins will appear here</p>
           </div>
@@ -120,23 +119,23 @@ export default function AuditLogPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b bg-slate-50/80">
-                  <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Timestamp</th>
-                  <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Performed By</th>
-                  <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Action</th>
-                  <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Target User</th>
-                  <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Details</th>
+                <tr className="border-b bg-muted/40">
+                  <th className="px-5 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wide">Timestamp</th>
+                  <th className="px-5 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wide">Performed By</th>
+                  <th className="px-5 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wide">Action</th>
+                  <th className="px-5 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wide">Target User</th>
+                  <th className="px-5 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wide">Details</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-border">
                 {paginated.map(log => {
-                  const cfg  = ACTION_CONFIG[log.action] || { label: log.action, icon: Shield, class: "bg-slate-100 text-slate-600 border-slate-200" };
+                  const cfg  = ACTION_CONFIG[log.action] || { label: log.action, icon: Shield, class: "bg-muted text-muted-foreground border-border" };
                   const Icon = cfg.icon;
                   const ts   = new Date(log.timestamp);
                   return (
-                    <tr key={log.id} className="hover:bg-slate-50/60 transition-colors">
-                      <td className="px-5 py-3.5 text-xs text-slate-400 whitespace-nowrap">
-                        <p className="font-medium text-slate-600">
+                    <tr key={log.id} className="hover:bg-muted/50 transition-colors">
+                      <td className="px-5 py-3.5 text-xs text-muted-foreground whitespace-nowrap">
+                        <p className="font-medium text-foreground">
                           {ts.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                         </p>
                         <p>{ts.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}</p>
@@ -144,7 +143,7 @@ export default function AuditLogPage() {
                       <td className="px-5 py-3.5">
                         <div className="flex items-center gap-2">
                           <AvatarBadge name={log.performedBy} />
-                          <span className="text-sm font-medium text-slate-700">{log.performedBy}</span>
+                          <span className="text-sm font-medium text-foreground">{log.performedBy}</span>
                         </div>
                       </td>
                       <td className="px-5 py-3.5">
@@ -155,10 +154,10 @@ export default function AuditLogPage() {
                       <td className="px-5 py-3.5">
                         <div className="flex items-center gap-2">
                           <AvatarBadge name={log.targetUser} />
-                          <span className="text-sm text-slate-700">{log.targetUser}</span>
+                          <span className="text-sm text-foreground">{log.targetUser}</span>
                         </div>
                       </td>
-                      <td className="px-5 py-3.5 text-sm text-slate-500 max-w-xs truncate">{log.details}</td>
+                      <td className="px-5 py-3.5 text-sm text-muted-foreground max-w-xs truncate">{log.details}</td>
                     </tr>
                   );
                 })}

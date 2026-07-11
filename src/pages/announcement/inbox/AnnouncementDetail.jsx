@@ -9,7 +9,7 @@ import { useAnnouncements } from "../../../context/AnnouncementContext";
 const PRIORITY_CONFIG = {
   urgent:    { label: "Urgent",    class: "bg-red-50 text-red-600 border border-red-200" },
   important: { label: "Important", class: "bg-amber-50 text-amber-600 border border-amber-200" },
-  normal:    { label: "Normal",    class: "bg-slate-100 text-muted-foreground border border-border" },
+  normal:    { label: "Normal",    class: "bg-muted text-muted-foreground border border-border" },
 };
 
 function Avatar({ name }) {
@@ -27,7 +27,7 @@ function SeenByIndicator({ readBy, onClick }) {
   return (
     <button
       onClick={onClick}
-      className="flex items-center gap-1.5 text-[11px] text-muted-foreground hover:text-slate-600 transition group"
+      className="flex items-center gap-1.5 text-[11px] text-muted-foreground hover:text-foreground transition group"
     >
       {count > 0 ? (
         <>
@@ -35,7 +35,7 @@ function SeenByIndicator({ readBy, onClick }) {
             {readBy.slice(0, 3).map((r, i) => (
               <div
                 key={i}
-                className="w-5 h-5 rounded-full bg-blue-500 text-white flex items-center justify-center text-[9px] font-semibold border-2 border-white group-hover:border-slate-50 transition"
+                className="w-5 h-5 rounded-full bg-blue-500 text-white flex items-center justify-center text-[9px] font-semibold border-2 border-background transition"
                 title={r.name}
               >
                 {(r.name || "?").split(" ").map((w) => w[0] || "").slice(0, 2).join("").toUpperCase() || "?"}
@@ -46,7 +46,7 @@ function SeenByIndicator({ readBy, onClick }) {
         </>
       ) : (
         <>
-          <Eye size={12} className="text-slate-300" />
+          <Eye size={12} className="text-muted-foreground/40" />
           <span>Not yet seen</span>
         </>
       )}
@@ -90,13 +90,13 @@ function AttachmentCard({ attachment }) {
   return (
     <div
       onClick={handlePreview}
-      className="inline-flex items-center gap-3 px-4 py-3 bg-background border border-border rounded-xl hover:border-blue-300 hover:bg-blue-50 transition group cursor-pointer"
+      className="inline-flex items-center gap-3 px-4 py-3 bg-background border border-border rounded-xl hover:border-blue-300 hover:bg-blue-50 dark:hover:bg-blue-950/30 transition group cursor-pointer"
     >
       <div className="w-8 h-8 bg-red-50 rounded-lg flex items-center justify-center shrink-0">
         <FileText size={15} className="text-red-500" />
       </div>
       <div className="flex flex-col">
-        <span className="text-xs font-medium text-slate-800">{name}</span>
+        <span className="text-xs font-medium text-foreground">{name}</span>
         <span className="text-[10px] text-muted-foreground">{size}</span>
       </div>
       <button
@@ -127,7 +127,7 @@ function MoreMenu({ selected, onMarkRead, onMarkUnread, onToggleUrgent, isUrgent
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen((o) => !o)}
-        className="p-1.5 text-muted-foreground hover:bg-slate-100 rounded-lg transition"
+        className="p-1.5 text-muted-foreground hover:bg-muted rounded-lg transition"
       >
         <MoreHorizontal size={16} />
       </button>
@@ -158,7 +158,7 @@ function MoreMenu({ selected, onMarkRead, onMarkUnread, onToggleUrgent, isUrgent
             {isUrgent ? "Remove Urgent" : "Mark as Urgent"}
           </button>
 
-          <div className="h-px bg-slate-100 my-1" />
+          <div className="h-px bg-border my-1" />
 
           <button
             onClick={() => { onViewReceipts(); setOpen(false); }}
@@ -226,8 +226,8 @@ export function AnnouncementDetail({ selected, isPinned, onTogglePin, onDelete, 
 
   if (!selected) return (
     <div className="flex-1 flex flex-col items-center justify-center text-foreground gap-4">
-      <div className="w-20 h-20 rounded-full bg-slate-100 flex items-center justify-center">
-        <MailOpen className="h-9 w-9 text-slate-300" />
+      <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center">
+        <MailOpen className="h-9 w-9 text-muted-foreground/40" />
       </div>
       <div className="text-center">
         <p className="text-sm font-medium text-foreground">No announcement selected</p>
@@ -247,13 +247,13 @@ export function AnnouncementDetail({ selected, isPinned, onTogglePin, onDelete, 
         <div className="flex items-center gap-1">
           <button
             onClick={() => setShowForward(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-100 rounded-lg transition">
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-muted-foreground hover:bg-muted rounded-lg transition">
             <Forward size={13} /> Forward
           </button>
-          <div className="w-px h-4 bg-slate-200 mx-1" />
+          <div className="w-px h-4 bg-border mx-1" />
           <button
             onClick={() => setShowDelete(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-red-400 hover:bg-red-50 rounded-lg transition">
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition">
             <Trash2 size={13} /> Delete
           </button>
         </div>
@@ -262,7 +262,7 @@ export function AnnouncementDetail({ selected, isPinned, onTogglePin, onDelete, 
           <button
             onClick={onTogglePin}
             className={`flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg transition ${
-              isPinned ? "text-amber-500 bg-amber-50 hover:bg-amber-100" : "text-muted-foreground hover:bg-slate-100"
+              isPinned ? "text-amber-500 bg-amber-50 hover:bg-amber-100" : "text-muted-foreground hover:bg-muted"
             }`}>
             <Pin size={13} className={isPinned ? "fill-amber-400" : ""} />
             {isPinned ? "Pinned" : "Pin"}
@@ -324,7 +324,7 @@ export function AnnouncementDetail({ selected, isPinned, onTogglePin, onDelete, 
               [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:mb-4
               [&_li]:mb-1
               [&_blockquote]:border-l-4 [&_blockquote]:border-border [&_blockquote]:pl-4 [&_blockquote]:text-muted-foreground [&_blockquote]:italic [&_blockquote]:mb-4
-              [&_pre]:bg-slate-100 [&_pre]:rounded [&_pre]:p-3 [&_pre]:text-xs [&_pre]:font-mono [&_pre]:mb-4
+              [&_pre]:bg-muted [&_pre]:rounded [&_pre]:p-3 [&_pre]:text-xs [&_pre]:font-mono [&_pre]:mb-4
               [&_a]:text-blue-600 [&_a]:underline
               [&_strong]:font-bold [&_em]:italic [&_u]:underline"
             dangerouslySetInnerHTML={{
@@ -341,7 +341,7 @@ export function AnnouncementDetail({ selected, isPinned, onTogglePin, onDelete, 
             </div>
           )}
 
-          <div className="mt-16 pt-6 border-t border-border text-[11px] text-slate-300 text-center">
+          <div className="mt-16 pt-6 border-t border-border text-[11px] text-muted-foreground/40 text-center">
             End of message
           </div>
 

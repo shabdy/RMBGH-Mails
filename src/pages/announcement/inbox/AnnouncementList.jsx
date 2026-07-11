@@ -29,7 +29,7 @@ function SeenAvatars({ readBy }) {
       <div className="flex -space-x-1.5">
         {readBy.slice(0, 3).map((r, i) => (
           <div key={i} title={`${r.name} (${r.dept})`}
-            className="w-4 h-4 rounded-full bg-slate-300 text-white flex items-center justify-center text-[8px] font-semibold border border-white">
+            className="w-4 h-4 rounded-full bg-muted-foreground/30 text-white flex items-center justify-center text-[8px] font-semibold border border-background">
             {(r.name || "?").split(" ").map((w) => w[0] || "").slice(0, 2).join("").toUpperCase() || "?"}
           </div>
         ))}
@@ -111,12 +111,12 @@ export function AnnouncementList({ tab, setTab, search, setSearch, items, pinned
         {items.length === 0 ? (
           tab === "pinned" ? (
             <div className="flex flex-col items-center justify-center h-40 gap-2">
-              <Pin size={20} className="text-slate-200" />
+              <Pin size={20} className="text-muted-foreground/30" />
               <span className="text-sm text-muted-foreground">No pinned messages</span>
             </div>
           ) : tab === "myDept" ? (
             <div className="flex flex-col items-center justify-center h-40 gap-2">
-              <Building2 size={20} className="text-slate-200" />
+              <Building2 size={20} className="text-muted-foreground/30" />
               <span className="text-sm text-muted-foreground">No department messages</span>
             </div>
           ) : (
@@ -163,14 +163,14 @@ export function AnnouncementList({ tab, setTab, search, setSearch, items, pinned
                     <div className="flex items-center justify-between gap-1">
                       <div className="flex items-center gap-1.5 min-w-0">
                         {item.unread && <div className="w-1.5 h-1.5 bg-blue-600 rounded-full shrink-0" />}
-                        <p className={"text-xs truncate " + (item.unread ? "font-semibold text-foreground" : "font-medium text-slate-600")}>
+                        <p className={"text-xs truncate " + (item.unread ? "font-semibold text-foreground" : "font-medium text-muted-foreground")}>
                           {item.sender}
                         </p>
                       </div>
                       <span className="text-[10px] text-muted-foreground shrink-0">{item.time}</span>
                     </div>
 
-                    <p className={"text-sm truncate mt-0.5 " + (item.unread ? "font-medium text-slate-800" : "text-slate-600")}>
+                    <p className={"text-sm truncate mt-0.5 " + (item.unread ? "font-medium text-foreground" : "text-muted-foreground")}>
                       {item.title}
                     </p>
 
