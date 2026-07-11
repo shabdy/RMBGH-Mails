@@ -23,10 +23,11 @@ import { MailSuccessModal } from "./MailSuccessModal";
 
 export const CreateMail = ({ open, setOpen, draft }) => {
   const { sendMail, saveDraft, deleteDraft, currentUser } = useAnnouncements();
-  const [sendStatus,    setSendStatus]    = useState("idle");
-  const [draftSaved,    setDraftSaved]    = useState(false);
-  const [errors,        setErrors]        = useState({});
-  const [recipientMode, setRecipientMode] = useState("specific");
+  const [sendStatus,      setSendStatus]      = useState("idle");
+  const [draftSaved,      setDraftSaved]      = useState(false);
+  const [errors,          setErrors]          = useState({});
+  const [recipientMode,   setRecipientMode]   = useState("specific");
+  const [requiresReceipt, setRequiresReceipt] = useState(false);
 
   const {
     enableEmailType, setEnableEmailType,
@@ -81,7 +82,8 @@ export const CreateMail = ({ open, setOpen, draft }) => {
     emailTypeLabel:     enableEmailType && emailType
       ? emailType.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase())
       : "",
-    attachment: attachments[0] || null,
+    attachment:      attachments[0] || null,
+    requiresReceipt: requiresReceipt,
   });
 
   const handleSend = async () => {
@@ -145,6 +147,7 @@ export const CreateMail = ({ open, setOpen, draft }) => {
                 enableReferenceNo={enableReferenceNo} setEnableReferenceNo={setEnableReferenceNo}
                 emailType={emailType} setEmailType={setEmailType}
                 referenceNumber={referenceNumber}
+                requiresReceipt={requiresReceipt} setRequiresReceipt={setRequiresReceipt}
               />
             </div>
 

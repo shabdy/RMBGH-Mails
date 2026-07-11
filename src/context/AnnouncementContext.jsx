@@ -253,6 +253,24 @@ export function AnnouncementProvider({ children }) {
 
   const markUnread = (id) => setInbox(prev => prev.map(m => m.id === id ? { ...m, unread: true } : m));
 
+  /* ─── ACKNOWLEDGE RECEIPT ─── */
+  const acknowledgeMail = async (id, signature) => {
+    const cu = buildCurrentUser();
+    if (!cu) return;
+    try {
+      const { data } = await api.post(`/mail/${id}/acknowledge`, {
+        userId:    cu.id,
+        name:      cu.name,
+        dept:      cu.department,
+        signature,
+      });
+      const enriched = enrich(data);
+      setInbox(prev => prev.map(m => m.id === id ? enriched : m));
+      setSent(prev  => prev.map(m => m.id === id ? enriched : m));
+      return enriched;
+    } catch (err) { console.error("Acknowledge failed:", err); }
+  };
+
   const markAllRead = useCallback(async () => {
     const cu = buildCurrentUser();
     if (!cu) return;
@@ -310,6 +328,7 @@ export function AnnouncementProvider({ children }) {
       deleteFromInbox, deleteFromSent, deleteFromForwarded,
       togglePin, toggleImportant,
       markRead, markUnread, markAllRead, markReadSent, markReadForwarded,
+      acknowledgeMail,
       allAttachments, currentUser,
       reload: loadAll,
     }}>

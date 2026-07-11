@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FileText, Download, Clock, MailOpen, Tag, Trash2, Eye, Users, Forward } from "lucide-react";
+import { FileText, Download, Clock, MailOpen, Tag, Trash2, Eye, Users, Forward, PenLine, CheckCircle2 } from "lucide-react";
 import { DeleteModal } from "../../inbox/components/DeleteModal";
 import { ReadReceiptsModal } from "../../inbox/components/ReadReceiptModal";
 import { RecipientsModal } from "../../inbox/components/RecipientsModal";
@@ -14,12 +14,12 @@ const STATUS_CONFIG = {
 function SeenByIndicator({ readBy, onClick }) {
   const count = readBy?.length || 0;
   return (
-    <button onClick={onClick} className="flex items-center gap-1.5 text-[11px] text-muted-FOREGROUND hover:text-slate-600 transition group">
+    <button onClick={onClick} className="flex items-center gap-1.5 text-[11px] text-muted-foreground hover:text-foreground transition group">
       {count > 0 ? (
         <>
           <div className="flex items-center -space-x-1.5">
             {(readBy || []).slice(0, 3).map((r, i) => (
-              <div key={i} className="w-5 h-5 rounded-full bg-blue-500 text-white flex items-center justify-center text-[9px] font-semibold border-2 border-white" title={r.name}>
+              <div key={i} className="w-5 h-5 rounded-full bg-blue-500 text-white flex items-center justify-center text-[9px] font-semibold border-2 border-background" title={r.name}>
                 {(r.name || "?").split(" ").map((w) => w[0] || "").slice(0, 2).join("").toUpperCase() || "?"}
               </div>
             ))}
@@ -28,11 +28,49 @@ function SeenByIndicator({ readBy, onClick }) {
         </>
       ) : (
         <>
-          <Eye size={12} className="text-slate-300" />
+          <Eye size={12} className="text-muted-foreground/40" />
           <span>Not yet seen</span>
         </>
       )}
     </button>
+  );
+}
+
+function AcknowledgmentCard({ ack }) {
+  return (
+    <div className="flex items-start gap-4 p-4 bg-background border border-border rounded-xl">
+      {/* Signature thumbnail */}
+      <div className="shrink-0 w-28 h-14 border border-border rounded-lg overflow-hidden bg-white flex items-center justify-center">
+        {ack.signature ? (
+          <img src={ack.signature} alt="signature" className="w-full h-full object-contain" />
+        ) : (
+          <PenLine size={16} className="text-muted-foreground/40" />
+        )}
+      </div>
+      {/* Info */}
+      <div className="flex-1 min-w-0 grid grid-cols-2 gap-x-6 gap-y-1">
+        <div>
+          <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-medium">Received by</p>
+          <p className="text-sm font-semibold text-foreground truncate">{ack.name}</p>
+        </div>
+        <div>
+          <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-medium">Department</p>
+          <p className="text-sm text-foreground truncate">{ack.dept}</p>
+        </div>
+        <div>
+          <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-medium">Date</p>
+          <p className="text-sm text-foreground">{ack.date}</p>
+        </div>
+        <div>
+          <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-medium">Time</p>
+          <p className="text-sm text-foreground">{ack.time}</p>
+        </div>
+      </div>
+      {/* Badge */}
+      <div className="shrink-0 flex items-center gap-1 text-[11px] text-green-600 font-medium">
+        <CheckCircle2 size={13} /> Acknowledged
+      </div>
+    </div>
   );
 }
 
@@ -223,11 +261,42 @@ export function SentDetail({ selected, onDelete, currentUser }) {
           />
           {selected.attachment && (
             <div className="mt-10">
-              <p className="text-[11px] uppercase tracking-widest text-muted-FOREGROUND mb-3">Attachment</p>
+              <p className="text-[11px] uppercase tracking-widest text-muted-foreground mb-3">Attachment</p>
               <AttachmentCard attachment={selected.attachment} />
             </div>
           )}
-          <div className="mt-16 pt-6 border-t border-border text-[11px] text-slate-300 text-center">End of message</div>
+
+          {/* ACKNOWLEDGMENTS */}
+          {selected.requiresReceipt && (
+            <div className="mt-10">
+              <div className="flex items-center gap-2 mb-3">
+                <p className="text-[11px] uppercase tracking-widest text-muted-foreground font-medium">
+                  Acknowledgment Receipts
+                </p>
+                <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
+                  (selected.acknowledgments || []).length > 0
+                    ? "bg-green-100 text-green-700 dark:bg-green-950/40 dark:text-green-400"
+                    : "bg-muted text-muted-foreground"
+                }`}>
+                  {(selected.acknowledgments || []).length} received
+                </span>
+              </div>
+              {(selected.acknowledgments || []).length === 0 ? (
+                <div className="flex items-center gap-3 p-4 bg-muted/50 border border-border rounded-xl text-sm text-muted-foreground">
+                  <PenLine size={15} className="text-muted-foreground/50 shrink-0" />
+                  No one has acknowledged this mail yet.
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {(selected.acknowledgments || []).map((ack, i) => (
+                    <AcknowledgmentCard key={i} ack={ack} />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          <div className="mt-16 pt-6 border-t border-border text-[11px] text-muted-foreground/40 text-center">End of message</div>
         </div>
       </div>
 

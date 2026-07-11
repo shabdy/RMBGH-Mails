@@ -335,6 +335,25 @@ app.post("/api/mail/:id/read", (req, res) => {
   res.json(normalizeMail(mails[idx]));
 });
 
+/* POST /api/mail/:id/acknowledge */
+app.post("/api/mail/:id/acknowledge", (req, res) => {
+  const { userId, name, dept, signature } = req.body;
+  const mails = readJSON("mails.json", DEFAULT_MAILS);
+  const idx   = mails.findIndex(m => m.id == req.params.id);
+  if (idx === -1) return res.status(404).json({ error: "Not found" });
+  const already = (mails[idx].acknowledgments || []).some(r => String(r.userId) === String(userId));
+  if (!already) {
+    const now = new Date().toISOString();
+    mails[idx].acknowledgments = [...(mails[idx].acknowledgments || []), {
+      userId, name, dept, signature,
+      time: fmtTime(now),
+      date: fmtDate(now),
+    }];
+  }
+  writeJSON("mails.json", mails);
+  res.json(normalizeMail(mails[idx]));
+});
+
 /* POST /api/mail/:id/pin */
 app.post("/api/mail/:id/pin", (req, res) => {
   const { userId } = req.body;

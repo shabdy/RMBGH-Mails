@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect } from "react";
-import { FileText, Download, Forward, Trash2, MoreHorizontal, Clock, Users, Pin, MailOpen, Eye, EyeOff, AlertCircle, CheckCheck } from "lucide-react";
+import { FileText, Download, Forward, Trash2, MoreHorizontal, Clock, Users, Pin, MailOpen, Eye, EyeOff, AlertCircle, CheckCheck, PenLine, CheckCircle2 } from "lucide-react";
 import { ForwardModal } from "../inbox/components/ForwardModal";
 import { DeleteModal } from "../inbox/components/DeleteModal";
 import { ReadReceiptsModal } from "../inbox/components/ReadReceiptModal";
 import { RecipientsModal } from "../inbox/components/RecipientsModal";
+import { AcknowledgeModal } from "../inbox/components/AcknowledgeModal";
 import { useAnnouncements } from "../../../context/AnnouncementContext";
 
 const PRIORITY_CONFIG = {
@@ -219,10 +220,14 @@ function RecipientDisplay({ recipients, recipientLabel, onShowAll }) {
 export function AnnouncementDetail({ selected, isPinned, onTogglePin, onDelete, currentUser }) {
   const { markRead, markUnread, toggleImportant, importantIds } = useAnnouncements();
   const isUrgentOverride = importantIds.includes(selected?.id);
-  const [showForward, setShowForward]       = useState(false);
-  const [showDelete, setShowDelete]         = useState(false);
-  const [showReceipts, setShowReceipts]     = useState(false);
-  const [showRecipients, setShowRecipients] = useState(false);
+  const [showForward,     setShowForward]     = useState(false);
+  const [showDelete,      setShowDelete]      = useState(false);
+  const [showReceipts,    setShowReceipts]    = useState(false);
+  const [showRecipients,  setShowRecipients]  = useState(false);
+  const [showAcknowledge, setShowAcknowledge] = useState(false);
+
+  const hasAcknowledged = selected?.requiresReceipt
+    && (selected?.acknowledgments || []).some(a => String(a.userId) === String(currentUser?.id));
 
   if (!selected) return (
     <div className="flex-1 flex flex-col items-center justify-center text-foreground gap-4">
@@ -278,6 +283,41 @@ export function AnnouncementDetail({ selected, isPinned, onTogglePin, onDelete, 
           />
         </div>
       </div>
+
+      {/* ACKNOWLEDGMENT BANNER */}
+      {selected.requiresReceipt && (
+        <div className={`shrink-0 px-6 py-2.5 border-b flex items-center justify-between gap-4 ${
+          hasAcknowledged
+            ? "bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-800"
+            : "bg-amber-50 dark:bg-amber-950/20 border-amber-200 dark:border-amber-800"
+        }`}>
+          <div className="flex items-center gap-2">
+            {hasAcknowledged ? (
+              <>
+                <CheckCircle2 size={15} className="text-green-600 shrink-0" />
+                <span className="text-sm text-green-800 dark:text-green-300 font-medium">
+                  You have acknowledged receipt of this mail
+                </span>
+              </>
+            ) : (
+              <>
+                <PenLine size={15} className="text-amber-600 shrink-0" />
+                <span className="text-sm text-amber-800 dark:text-amber-300 font-medium">
+                  This mail requires your acknowledgment receipt
+                </span>
+              </>
+            )}
+          </div>
+          {!hasAcknowledged && (
+            <button
+              onClick={() => setShowAcknowledge(true)}
+              className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-amber-600 text-white hover:bg-amber-700 transition"
+            >
+              <PenLine size={12} /> Acknowledge
+            </button>
+          )}
+        </div>
+      )}
 
       {/* CONTENT */}
       <div className="flex-1 min-h-0 overflow-y-auto">
@@ -352,6 +392,7 @@ export function AnnouncementDetail({ selected, isPinned, onTogglePin, onDelete, 
       <DeleteModal  open={showDelete}  onClose={() => setShowDelete(false)}  onConfirm={onDelete} title={selected.title} />
       <ReadReceiptsModal open={showReceipts} onClose={() => setShowReceipts(false)} readBy={selected.readBy} />
       <RecipientsModal open={showRecipients} onClose={() => setShowRecipients(false)} recipients={selected.recipients} />
+      <AcknowledgeModal open={showAcknowledge} onClose={() => setShowAcknowledge(false)} selected={selected} currentUser={currentUser} />
 
     </div>
   );
