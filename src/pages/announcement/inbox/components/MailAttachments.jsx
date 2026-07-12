@@ -1,4 +1,3 @@
-import { Label } from "../../../../components/ui/label";
 import { Button } from "../../../../components/ui/button";
 import { Paperclip } from "lucide-react";
 import { getFileIcon } from "./AttachmentModal";
@@ -12,79 +11,64 @@ export function MailAttachments({
   onShowMore,
 }) {
   return (
-    <div className="flex items-center gap-8">
-      <div className="flex items-start gap-6">
+    <div className="flex items-center gap-3 flex-1 min-w-0">
 
-        {/* ATTACH BUTTON */}
-        <div className="flex flex-col gap-2">
-          <Label className="font-medium">Attachment</Label>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => fileInputRef.current?.click()}
-            className="rounded-xl"
-          >
-            <Paperclip className="h-4 w-4 mr-2" />
-            Attach File
-          </Button>
-          <input
-            type="file"
-            multiple
-            ref={fileInputRef}
-            className="hidden"
-            accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
-            onChange={onFileChange}
-          />
-        </div>
+      {/* Attach button */}
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        onClick={() => fileInputRef.current?.click()}
+        className="shrink-0 h-8 gap-1.5 text-xs"
+      >
+        <Paperclip className="h-3.5 w-3.5" />
+        Attach
+      </Button>
+      <input
+        type="file"
+        multiple
+        ref={fileInputRef}
+        className="hidden"
+        accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
+        onChange={onFileChange}
+      />
 
-        {/* FILE LIST */}
-        <div className="flex-1">
-          <p className="text-xs text-slate-500 mb-3">
-            PDF, DOC, DOCX, PNG, JPG (Max 10MB)
-          </p>
-
-          {attachments.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-2 max-w-full">
-
-              {attachments.slice(0, 4).map((file, index) => (
-                <div
-                  key={index}
-                  onClick={() => onPreview(file)}
-                  className="flex items-center gap-2 h-10 max-w-[220px] px-3 rounded-xl border bg-white hover:bg-slate-50 hover:border-blue-300 cursor-pointer transition-all shadow-sm overflow-hidden"
-                >
-                  {getFileIcon(file)}
-                  <div className="flex flex-col min-w-0 flex-1">
-                    <span className="text-xs font-medium truncate">{file.name}</span>
-                    <span className="text-[10px] text-slate-400">
-                      {(file.size / 1024 / 1024).toFixed(1)} MB
-                    </span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={(e) => { e.stopPropagation(); onRemove(index); }}
-                    className="ml-1 text-slate-400 hover:text-red-500"
-                  >
-                    ×
-                  </button>
-                </div>
-              ))}
-
-              {attachments.length > 4 && (
-                <button
-                  type="button"
-                  onClick={onShowMore}
-                  className="h-10 px-4 flex items-center gap-1 rounded-xl border bg-slate-50 text-xs font-medium text-slate-600 hover:bg-slate-100 transition"
-                >
-                  See More
-                  <span className="text-slate-400">(+{attachments.length - 4})</span>
-                </button>
-              )}
-
+      {/* File chips / placeholder */}
+      {attachments.length === 0 ? (
+        <span className="text-xs text-muted-foreground truncate">
+          PDF, DOC, DOCX, PNG, JPG · Max 10 MB
+        </span>
+      ) : (
+        <div className="flex flex-wrap gap-1.5 flex-1 min-w-0">
+          {attachments.slice(0, 3).map((file, index) => (
+            <div
+              key={index}
+              onClick={() => onPreview(file)}
+              className="flex items-center gap-1.5 h-7 px-2.5 rounded-lg border bg-muted/50 hover:bg-muted cursor-pointer transition-colors text-xs max-w-[180px]"
+            >
+              {getFileIcon(file)}
+              <span className="truncate max-w-[110px]">{file.name}</span>
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); onRemove(index); }}
+                className="ml-0.5 text-muted-foreground hover:text-red-500 shrink-0 leading-none"
+              >
+                ×
+              </button>
             </div>
+          ))}
+          {attachments.length > 3 && (
+            <button
+              type="button"
+              onClick={onShowMore}
+              className="h-7 px-2.5 rounded-lg border bg-muted/50 text-xs text-muted-foreground hover:bg-muted transition-colors"
+            >
+              +{attachments.length - 3} more
+            </button>
           )}
         </div>
+      )}
 
-      </div>
     </div>
   );
 }

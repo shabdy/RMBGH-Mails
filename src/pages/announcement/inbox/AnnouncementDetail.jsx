@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { FileText, Download, Forward, Trash2, MoreHorizontal, Clock, Users, Pin, MailOpen, Eye, EyeOff, AlertCircle, CheckCheck, PenLine, CheckCircle2 } from "lucide-react";
+import { FileText, Download, Forward, Trash2, MoreHorizontal, Clock, Users, Pin, MailOpen, Eye, EyeOff, AlertCircle, CheckCheck, PenLine, CheckCircle2, Tag, Hash } from "lucide-react";
 import { ForwardModal } from "../inbox/components/ForwardModal";
 import { DeleteModal } from "../inbox/components/DeleteModal";
 import { ReadReceiptsModal } from "../inbox/components/ReadReceiptModal";
@@ -323,7 +323,7 @@ export function AnnouncementDetail({ selected, isPinned, onTogglePin, onDelete, 
       <div className="flex-1 min-h-0 overflow-y-auto">
         <div className="px-8 py-8">
 
-          <div className="flex items-start justify-between gap-4 mb-6">
+          <div className="flex items-start justify-between gap-4 mb-3">
             <div className="flex items-center gap-2">
               {isPinned && <Pin size={14} className="text-amber-400 fill-amber-400 shrink-0 mt-1" />}
               {isUrgentOverride && <AlertCircle size={14} className="text-red-500 shrink-0 mt-1" />}
@@ -333,6 +333,22 @@ export function AnnouncementDetail({ selected, isPinned, onTogglePin, onDelete, 
               {priority.label}
             </span>
           </div>
+
+          {/* Email type / reference number badges */}
+          {(selected.emailTypeLabel || selected.referenceNumber) && (
+            <div className="flex items-center gap-2 mb-5 flex-wrap">
+              {selected.emailTypeLabel && (
+                <span className="inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800">
+                  <Tag size={10} /> {selected.emailTypeLabel}
+                </span>
+              )}
+              {selected.referenceNumber && (
+                <span className="inline-flex items-center gap-1 text-[11px] font-mono px-2 py-0.5 rounded-full bg-muted text-muted-foreground border border-border">
+                  <Hash size={10} /> {selected.referenceNumber}
+                </span>
+              )}
+            </div>
+          )}
 
           <div className="flex items-start gap-3 pb-5 border-b border-border">
             <Avatar name={selected.sender} />

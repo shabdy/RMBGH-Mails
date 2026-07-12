@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FileText, Download, Clock, MailOpen, Tag, Trash2, Eye, Users, Forward, PenLine, CheckCircle2 } from "lucide-react";
+import { FileText, Download, Clock, MailOpen, Tag, Hash, Trash2, Eye, Users, Forward, PenLine, CheckCircle2 } from "lucide-react";
 import { DeleteModal } from "../../inbox/components/DeleteModal";
 import { ReadReceiptsModal } from "../../inbox/components/ReadReceiptModal";
 import { RecipientsModal } from "../../inbox/components/RecipientsModal";
@@ -36,39 +36,28 @@ function SeenByIndicator({ readBy, onClick }) {
   );
 }
 
-function AcknowledgmentCard({ ack }) {
+function AcknowledgmentRow({ ack }) {
   return (
-    <div className="flex items-start gap-4 p-4 bg-background border border-border rounded-xl">
-      {/* Signature thumbnail */}
-      <div className="shrink-0 w-28 h-14 border border-border rounded-lg overflow-hidden bg-white flex items-center justify-center">
-        {ack.signature ? (
-          <img src={ack.signature} alt="signature" className="w-full h-full object-contain" />
-        ) : (
-          <PenLine size={16} className="text-muted-foreground/40" />
-        )}
+    <div className="flex items-center gap-4 py-2.5 border-b border-border/60 last:border-0">
+      {/* Tiny signature preview */}
+      <div className="shrink-0 w-16 h-8 border border-border rounded bg-white overflow-hidden flex items-center justify-center">
+        {ack.signature
+          ? <img src={ack.signature} alt="signature" className="w-full h-full object-contain" />
+          : <PenLine size={11} className="text-muted-foreground/30" />}
       </div>
-      {/* Info */}
-      <div className="flex-1 min-w-0 grid grid-cols-2 gap-x-6 gap-y-1">
-        <div>
-          <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-medium">Received by</p>
-          <p className="text-sm font-semibold text-foreground truncate">{ack.name}</p>
-        </div>
-        <div>
-          <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-medium">Department</p>
-          <p className="text-sm text-foreground truncate">{ack.dept}</p>
-        </div>
-        <div>
-          <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-medium">Date</p>
-          <p className="text-sm text-foreground">{ack.date}</p>
-        </div>
-        <div>
-          <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-medium">Time</p>
-          <p className="text-sm text-foreground">{ack.time}</p>
-        </div>
+      {/* Name + dept */}
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-medium text-foreground truncate">{ack.name}</p>
+        <p className="text-xs text-muted-foreground truncate">{ack.dept}</p>
+      </div>
+      {/* Date / time */}
+      <div className="text-xs text-muted-foreground text-right shrink-0 leading-5">
+        <p>{ack.date}</p>
+        <p>{ack.time}</p>
       </div>
       {/* Badge */}
       <div className="shrink-0 flex items-center gap-1 text-[11px] text-green-600 font-medium">
-        <CheckCircle2 size={13} /> Acknowledged
+        <CheckCircle2 size={12} /> Acknowledged
       </div>
     </div>
   );
@@ -220,7 +209,24 @@ export function SentDetail({ selected, onDelete, currentUser }) {
       {/* CONTENT */}
       <div className="flex-1 min-h-0 overflow-y-auto">
         <div className="px-8 py-8">
-          <h2 className="text-2xl font-semibold text-foreground leading-tight mb-6">{selected.title}</h2>
+          <h2 className="text-2xl font-semibold text-foreground leading-tight mb-3">{selected.title}</h2>
+
+          {/* Email type / reference number badges */}
+          {(selected.emailTypeLabel || selected.referenceNumber) && (
+            <div className="flex items-center gap-2 mb-5 flex-wrap">
+              {selected.emailTypeLabel && (
+                <span className="inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800">
+                  <Tag size={10} /> {selected.emailTypeLabel}
+                </span>
+              )}
+              {selected.referenceNumber && (
+                <span className="inline-flex items-center gap-1 text-[11px] font-mono px-2 py-0.5 rounded-full bg-muted text-muted-foreground border border-border">
+                  <Hash size={10} /> {selected.referenceNumber}
+                </span>
+              )}
+            </div>
+          )}
+
           <div className="flex items-start gap-3 pb-5 border-b border-border">
             <Avatar name={selected.sender || "You"} />
             <div className="flex-1 min-w-0">
@@ -287,9 +293,9 @@ export function SentDetail({ selected, onDelete, currentUser }) {
                   No one has acknowledged this mail yet.
                 </div>
               ) : (
-                <div className="space-y-3">
+                <div className="divide-y divide-border/60 border border-border rounded-xl overflow-hidden bg-muted/20 px-4">
                   {(selected.acknowledgments || []).map((ack, i) => (
-                    <AcknowledgmentCard key={i} ack={ack} />
+                    <AcknowledgmentRow key={i} ack={ack} />
                   ))}
                 </div>
               )}
