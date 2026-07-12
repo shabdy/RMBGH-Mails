@@ -73,7 +73,7 @@ const THEME_OPTIONS = [
   { value: "system",label: "System",icon: Laptop },
 ];
 
-const ACCENT_OPTIONS = [
+const COLOR_OPTIONS = [
   { value: "default", label: "Slate",  light: "#64748b", dark: "#94a3b8" },
   { value: "blue",    label: "Blue",   light: "#3b82f6", dark: "#60a5fa" },
   { value: "violet",  label: "Violet", light: "#7c3aed", dark: "#a78bfa" },
@@ -167,14 +167,14 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        {/* ── Accent colour ── */}
+        {/* ── Appearance colour ── */}
         <div className="px-6 py-4 border-t border-border">
-          <p className="text-sm font-medium text-foreground mb-1">Accent colour</p>
+          <p className="text-sm font-medium text-foreground mb-1">Appearance colour</p>
           <p className="text-xs text-muted-foreground mb-4">
-            Changes buttons, highlights, and interactive elements throughout the app.
+            Applies a colour theme across the entire interface — sidebar, hover areas, borders, and interactive elements.
           </p>
           <div className="flex flex-wrap gap-3">
-            {ACCENT_OPTIONS.map(({ value, label, light, dark: darkSwatch }) => {
+            {COLOR_OPTIONS.map(({ value, label, light, dark: darkSwatch }) => {
               const isActive = accent === value;
               const swatchColor = theme === "dark" ? darkSwatch : light;
               return (
@@ -182,7 +182,7 @@ export default function SettingsPage() {
                   key={value}
                   onClick={() => {
                     setAccent(value);
-                    toast.success(`Accent set to ${label}`);
+                    toast.success(`Appearance colour set to ${label}`);
                   }}
                   title={label}
                   className={`group relative flex flex-col items-center gap-1.5 transition-all`}
