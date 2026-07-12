@@ -2,9 +2,7 @@ import { useState, useContext, useEffect } from "react";
 import {
   Bell,
   Monitor,
-  Globe,
   ShieldCheck,
-  ChevronRight,
   Sun,
   Moon,
   Laptop,
@@ -12,6 +10,7 @@ import {
 } from "lucide-react";
 import { AuthContext } from "@/context/authContext";
 import { useTheme } from "next-themes";
+import { useAccentColor } from "@/hooks/useAccentColor";
 import { toast } from "sonner";
 
 function Toggle({ checked, onChange }) {
@@ -70,13 +69,25 @@ function SettingRow({ label, description, control }) {
 
 const THEME_OPTIONS = [
   { value: "light", label: "Light", icon: Sun },
-  { value: "dark", label: "Dark", icon: Moon },
-  { value: "system", label: "System", icon: Laptop },
+  { value: "dark",  label: "Dark",  icon: Moon },
+  { value: "system",label: "System",icon: Laptop },
+];
+
+const ACCENT_OPTIONS = [
+  { value: "default", label: "Slate",  light: "#64748b", dark: "#94a3b8" },
+  { value: "blue",    label: "Blue",   light: "#3b82f6", dark: "#60a5fa" },
+  { value: "violet",  label: "Violet", light: "#7c3aed", dark: "#a78bfa" },
+  { value: "rose",    label: "Rose",   light: "#f43f5e", dark: "#fb7185" },
+  { value: "orange",  label: "Orange", light: "#f97316", dark: "#fb923c" },
+  { value: "green",   label: "Green",  light: "#16a34a", dark: "#4ade80" },
+  { value: "teal",    label: "Teal",   light: "#0d9488", dark: "#2dd4bf" },
+  { value: "amber",   label: "Amber",  light: "#d97706", dark: "#fbbf24" },
 ];
 
 export default function SettingsPage() {
   const { user } = useContext(AuthContext);
   const { theme: activeTheme, setTheme: applyTheme } = useTheme();
+  const { accent, setAccent } = useAccentColor();
 
   const load = (key, def) => {
     try {
@@ -133,8 +144,9 @@ export default function SettingsPage() {
         description="Customize how the app looks"
         icon={Monitor}
       >
+        {/* ── Mode: Light / Dark / System ── */}
         <div className="px-6 py-4">
-          <p className="text-sm font-medium text-slate-800 dark:text-slate-200 mb-3">Theme</p>
+          <p className="text-sm font-medium text-foreground mb-3">Mode</p>
           <div className="grid grid-cols-3 gap-3">
             {THEME_OPTIONS.map(({ value, label, icon: Icon }) => (
               <button
@@ -142,17 +154,69 @@ export default function SettingsPage() {
                 onClick={() => setTheme(value)}
                 className={`flex flex-col items-center gap-2 px-4 py-3 rounded-xl border-2 transition-all ${
                   theme === value
-                    ? "border-blue-500 bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300"
-                    : "border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-600"
+                    ? "border-primary bg-primary/8 text-primary"
+                    : "border-border text-muted-foreground hover:border-border/80 hover:text-foreground"
                 }`}
               >
                 <Icon size={18} />
                 <span className="text-xs font-medium">{label}</span>
-                {theme === value && (
-                  <Check size={11} className="text-blue-600" />
-                )}
+                {theme === value && <Check size={11} className="text-primary" />}
               </button>
             ))}
+          </div>
+        </div>
+
+        {/* ── Accent colour ── */}
+        <div className="px-6 py-4 border-t border-border">
+          <p className="text-sm font-medium text-foreground mb-1">Accent colour</p>
+          <p className="text-xs text-muted-foreground mb-4">
+            Changes buttons, highlights, and interactive elements throughout the app.
+          </p>
+          <div className="flex flex-wrap gap-3">
+            {ACCENT_OPTIONS.map(({ value, label, light, dark: darkSwatch }) => {
+              const isActive = accent === value;
+              const swatchColor = theme === "dark" ? darkSwatch : light;
+              return (
+                <button
+                  key={value}
+                  onClick={() => {
+                    setAccent(value);
+                    toast.success(`Accent set to ${label}`);
+                  }}
+                  title={label}
+                  className={`group relative flex flex-col items-center gap-1.5 transition-all`}
+                >
+                  {/* Swatch circle */}
+                  <span
+                    className={`flex items-center justify-center w-9 h-9 rounded-full border-2 transition-all shadow-sm ${
+                      isActive
+                        ? "border-foreground scale-110 shadow-md"
+                        : "border-transparent hover:border-muted-foreground/40 hover:scale-105"
+                    }`}
+                    style={{ backgroundColor: swatchColor }}
+                  >
+                    {isActive && (
+                      <Check
+                        size={14}
+                        strokeWidth={3}
+                        className="text-white drop-shadow"
+                        style={{
+                          filter: "drop-shadow(0 1px 1px rgba(0,0,0,.4))",
+                        }}
+                      />
+                    )}
+                  </span>
+                  {/* Label */}
+                  <span
+                    className={`text-[10px] font-medium transition-colors ${
+                      isActive ? "text-foreground" : "text-muted-foreground group-hover:text-foreground"
+                    }`}
+                  >
+                    {label}
+                  </span>
+                </button>
+              );
+            })}
           </div>
         </div>
 
