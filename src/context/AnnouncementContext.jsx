@@ -12,7 +12,7 @@ export function AnnouncementProvider({ children }) {
   const [sent,      setSent]      = useState([]);
   const [forwarded, setForwarded] = useState([]);
   const [drafts,    setDrafts]    = useState([]);
-  const [loading,   setLoading]   = useState(true);
+  const [loading,   setLoading]   = useState(false);
 
   /* ─── Build a plain currentUser object from AuthContext ─── */
   const buildCurrentUser = useCallback(() => {
@@ -43,9 +43,8 @@ export function AnnouncementProvider({ children }) {
   /* ─── Fetch all mail data from backend ─── */
   const loadAll = useCallback(async ({ silent = false } = {}) => {
     if (!user?.id) return;
-    // Only show the full loading skeleton on the very first load (no data yet).
-    // Subsequent refreshes run silently so the UI doesn't blank out.
-    if (!silent) setLoading(true);
+    // eslint-disable-next-line no-unused-vars
+    void silent; // loading UI removed — data loads silently always
     const deptId = user.departmentId || "";
     try {
       const [inboxRes, sentRes, fwdRes, draftsRes] = await Promise.all([
@@ -60,8 +59,6 @@ export function AnnouncementProvider({ children }) {
       setDrafts(draftsRes.data);
     } catch (err) {
       console.error("Failed to load mail data:", err);
-    } finally {
-      setLoading(false);
     }
   }, [user?.id, user?.departmentId, enrich]);
 

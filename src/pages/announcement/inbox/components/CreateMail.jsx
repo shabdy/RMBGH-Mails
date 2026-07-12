@@ -86,10 +86,9 @@ export const CreateMail = ({ open, setOpen, draft }) => {
 
   const handleSend = async () => {
     if (!validate()) return;
-    setSendStatus("sending");
-    await sendMail(buildPayload());
-    if (draft) deleteDraft(draft.id);
     setSendStatus("sent");
+    sendMail(buildPayload());
+    if (draft) deleteDraft(draft.id);
   };
 
   const handleSaveDraft = async () => {
@@ -180,7 +179,6 @@ export const CreateMail = ({ open, setOpen, draft }) => {
                 <Button
                   variant="outline"
                   onClick={handleSaveDraft}
-                  disabled={sendStatus === "sending"}
                   className="min-w-[120px]"
                 >
                   {draftSaved
@@ -189,12 +187,9 @@ export const CreateMail = ({ open, setOpen, draft }) => {
                 </Button>
                 <Button
                   onClick={handleSend}
-                  disabled={sendStatus === "sending"}
                   className="min-w-[110px]"
                 >
-                  {sendStatus === "sending"
-                    ? <span className="flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" /> Sending…</span>
-                    : <span className="flex items-center gap-2"><Send className="h-4 w-4" /> Send Mail</span>}
+                  <span className="flex items-center gap-2"><Send className="h-4 w-4" /> Send Mail</span>
                 </Button>
               </div>
             </div>

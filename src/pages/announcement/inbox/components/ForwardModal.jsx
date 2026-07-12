@@ -93,8 +93,6 @@ export function ForwardModal({ open, onClose, selected }) {
       return;
     }
     setRecipientError("");
-    setStatus("sending");
-    await new Promise((res) => setTimeout(res, 1500));
 
     const note = noteEditor?.getHTML() || "";
     const recipientLabel = recipients.length === 1
@@ -109,7 +107,7 @@ export function ForwardModal({ open, onClose, selected }) {
       attachment: attachments[0] || selected?.attachment || null,
     });
 
-    setStatus("sent");
+    setStatus("sent"); // jump straight to success screen
   };
 
   const handleClose = () => {
@@ -211,11 +209,9 @@ export function ForwardModal({ open, onClose, selected }) {
             </div>
 
             <div className="px-6 py-4 border-t flex items-center justify-end gap-3 bg-card">
-              <Button variant="outline" onClick={handleClose} disabled={status === "sending"}>Cancel</Button>
-              <Button onClick={handleForward} disabled={status === "sending"} className="min-w-[110px]">
-                {status === "sending"
-                  ? <span className="flex items-center gap-2"><Loader2 size={14} className="animate-spin" /> Forwarding...</span>
-                  : <span className="flex items-center gap-2"><Send size={14} /> Forward</span>}
+              <Button variant="outline" onClick={handleClose}>Cancel</Button>
+              <Button onClick={handleForward} className="min-w-[110px]">
+                <span className="flex items-center gap-2"><Send size={14} /> Forward</span>
               </Button>
             </div>
           </>

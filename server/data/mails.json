@@ -636,5 +636,41 @@
         "date": "Jul 12, 2026"
       }
     ]
+  },
+  {
+    "readBy": [
+      {
+        "id": 1,
+        "name": "IT Superadmin",
+        "dept": "Information Technology",
+        "time": "7:56 AM",
+        "date": "Jul 12, 2026"
+      }
+    ],
+    "pinnedBy": [],
+    "importantBy": [],
+    "deletedBy": [],
+    "status": "delivered",
+    "priority": "normal",
+    "title": "Subject",
+    "content": "<p>sdfsdfsdfsdfsdf</p>",
+    "recipients": [],
+    "recipientType": "all",
+    "targetDepartmentId": null,
+    "emailType": "advisory",
+    "emailTypeLabel": "Advisory",
+    "attachment": null,
+    "requiresReceipt": false,
+    "from": {
+      "id": 1783051261533,
+      "name": "Ransh Dy",
+      "email": "rdy@rmbgh.com",
+      "department": "Information Technology",
+      "departmentId": "IT"
+    },
+    "userId": 1783051261533,
+    "id": 1783842919583,
+    "type": "mail",
+    "date": "2026-07-12T07:55:19.583Z"
   }
 ]
