@@ -17,9 +17,9 @@ export function MailHeader({
   const clearError = (key) => setErrors?.((e) => ({ ...e, [key]: undefined }));
 
   const MODES = [
-    { key: "specific",   label: "Specific",       icon: Users },
-    { key: "department", label: "My Department",  icon: Building2 },
-    { key: "all",        label: "All Employees",  icon: Globe },
+    { key: "specific",   label: "Specific",      icon: Users },
+    { key: "department", label: "My Department", icon: Building2 },
+    { key: "all",        label: "All Employees", icon: Globe },
   ];
 
   const handleModeChange = (mode) => {
@@ -29,70 +29,64 @@ export function MailHeader({
   };
 
   return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-2 gap-6">
+    <div className="space-y-3">
+
+      {/* ── FROM + TO side by side ── */}
+      <div className="grid grid-cols-2 gap-5">
 
         {/* FROM */}
         <div>
-          <Label className="mb-2 block">From</Label>
-          <div className="h-[42px] flex items-center px-3 border rounded-md bg-muted/50">
-            <div className="flex flex-col">
-              <span className="text-sm font-medium">{currentUser?.name || "You"}</span>
-              <span className="text-xs text-muted-foreground">{currentUser?.department || ""}</span>
+          <Label className="mb-2 block text-xs font-semibold text-muted-foreground uppercase tracking-wide">From</Label>
+          <div className="h-11 flex items-center px-3.5 border rounded-xl bg-muted/40">
+            <div className="flex flex-col leading-tight">
+              <span className="text-sm font-medium text-foreground">{currentUser?.name || "You"}</span>
+              <span className="text-[11px] text-muted-foreground">{currentUser?.department || ""}</span>
             </div>
           </div>
         </div>
 
         {/* TO */}
         <div>
-          <div className="flex items-center justify-between mb-2">
-            <Label>To</Label>
+          <Label className="mb-2 block text-xs font-semibold text-muted-foreground uppercase tracking-wide">To</Label>
 
-            {/* 3-way mode toggle */}
-            <div className="flex items-center gap-0.5 rounded-lg border p-0.5 bg-muted/50 text-xs">
-              {MODES.map(({ key, label, icon: Icon }) => (
-                <button
-                  key={key}
-                  type="button"
-                  onClick={() => handleModeChange(key)}
-                  className={`flex items-center gap-1 px-2 py-1 rounded-md transition font-medium whitespace-nowrap ${
-                    recipientMode === key
-                      ? "bg-background shadow-sm text-foreground border border-border"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  <Icon size={11} />
-                  {label}
-                </button>
-              ))}
-            </div>
+          {/* ── Mode segmented control ── */}
+          <div className="flex gap-1 p-1 rounded-xl bg-muted/60 border mb-2">
+            {MODES.map(({ key, label, icon: Icon }) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => handleModeChange(key)}
+                className={`flex flex-1 items-center justify-center gap-1.5 px-2 py-1.5 rounded-lg text-xs font-medium transition-all duration-150 ${
+                  recipientMode === key
+                    ? "bg-background shadow-sm text-foreground border border-border/60"
+                    : "text-muted-foreground hover:text-foreground hover:bg-background/60"
+                }`}
+              >
+                <Icon size={12} className="shrink-0" />
+                <span className="whitespace-nowrap">{label}</span>
+              </button>
+            ))}
           </div>
 
-          {/* Department locked chip */}
+          {/* Recipient display */}
           {recipientMode === "department" && (
-            <div className="h-[42px] flex items-center gap-2 px-3 border rounded-md bg-blue-500/10 border-blue-500/30">
-              <Building2 size={14} className="text-blue-500 shrink-0" />
-              <div>
-                <span className="text-sm font-medium text-blue-700 dark:text-blue-400">
-                  All {currentUser?.department} Employees
-                </span>
-                <span className="text-[11px] text-blue-500 ml-1.5">· Department only</span>
-              </div>
+            <div className="h-10 flex items-center gap-2 px-3.5 border rounded-xl bg-blue-500/8 border-blue-400/30">
+              <Building2 size={13} className="text-blue-500 shrink-0" />
+              <span className="text-sm font-medium text-blue-700 dark:text-blue-400 truncate">
+                All {currentUser?.department} Employees
+              </span>
+              <span className="text-[11px] text-blue-400 ml-auto shrink-0">Department</span>
             </div>
           )}
 
-          {/* All employees locked chip */}
           {recipientMode === "all" && (
-            <div className="h-[42px] flex items-center gap-2 px-3 border rounded-md bg-green-500/10 border-green-500/30">
-              <Globe size={14} className="text-green-600 dark:text-green-400 shrink-0" />
-              <div>
-                <span className="text-sm font-medium text-green-700 dark:text-green-400">All Employees</span>
-                <span className="text-[11px] text-green-500 ml-1.5">· Entire organization</span>
-              </div>
+            <div className="h-10 flex items-center gap-2 px-3.5 border rounded-xl bg-green-500/8 border-green-400/30">
+              <Globe size={13} className="text-green-600 dark:text-green-400 shrink-0" />
+              <span className="text-sm font-medium text-green-700 dark:text-green-400">All Employees</span>
+              <span className="text-[11px] text-green-400 ml-auto shrink-0">Organization</span>
             </div>
           )}
 
-          {/* Specific recipient picker */}
           {recipientMode === "specific" && (
             <>
               <RecipientPicker
@@ -105,17 +99,18 @@ export function MailHeader({
         </div>
       </div>
 
-      {/* SUBJECT */}
+      {/* ── SUBJECT ── */}
       <div>
-        <Label className="mb-2 block">Subject</Label>
+        <Label className="mb-2 block text-xs font-semibold text-muted-foreground uppercase tracking-wide">Subject</Label>
         <Input
-          className={`h-11 ${errors.subject ? "border-red-400 focus-visible:ring-red-400" : ""}`}
+          className={`h-11 rounded-xl ${errors.subject ? "border-red-400 focus-visible:ring-red-400" : ""}`}
           placeholder="Enter subject"
           value={subject}
           onChange={(e) => { setSubject(e.target.value); clearError("subject"); }}
         />
         {errors.subject && <p className="text-xs text-red-500 mt-1">{errors.subject}</p>}
       </div>
+
     </div>
   );
 }

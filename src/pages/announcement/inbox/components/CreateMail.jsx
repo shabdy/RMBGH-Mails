@@ -161,7 +161,7 @@ export const CreateMail = ({ open, setOpen, draft }) => {
             </div>
 
             {/* ── MESSAGE — dominant, fills remaining space ── */}
-            <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
+            <div className="flex-1 min-h-0 flex flex-col px-6 pt-4 pb-3 overflow-hidden">
               <MailEditor editor={editor} error={errors.message} />
             </div>
 
