@@ -183,32 +183,18 @@ export default function SuperAdminDashboard() {
   const { unreadCount, drafts, sent, pinnedIds, inbox, forwarded } =
     useAnnouncements();
 
+  const [allUsers, setAllUsers] = useState([]);
   const [userCounts, setUserCounts] = useState({
     total: 0,
     active: 0,
     pending: 0,
     depts: 0,
   });
-  const [deptBreakdown, setDeptBreakdown] = useState([]);
 
   useEffect(() => {
     getAllUsers().then((users) => {
-      const depts = new Map();
-      users.forEach((u) => {
-        if (u.departmentId) {
-          const existing = depts.get(u.departmentId) || {
-            name: u.department,
-            count: 0,
-          };
-          existing.count++;
-          depts.set(u.departmentId, existing);
-        }
-      });
-      setDeptBreakdown(
-        Array.from(depts.values())
-          .sort((a, b) => b.count - a.count)
-          .slice(0, 5),
-      );
+      setAllUsers(users);
+      const depts = new Set(users.map((u) => u.departmentId).filter(Boolean));
       setUserCounts({
         total: users.length,
         active: users.filter((u) => u.status === "Active").length,
@@ -239,7 +225,7 @@ export default function SuperAdminDashboard() {
           </h1>
           <p className="text-sm text-slate-300 mt-0.5 flex items-center gap-1.5">
             <ShieldCheck size={13} className="text-emerald-400" />
-            System Administrator · Information Technology
+            {user?.position || "System Administrator"} · {user?.department || "Administration"}
           </p>
         </div>
         <div className="hidden md:flex gap-2 flex-wrap justify-end">
@@ -338,8 +324,8 @@ export default function SuperAdminDashboard() {
         {/* Left: charts — wrapper only; internal chart layout lives in
             DashboardCharts.jsx, share that file for a full pass on these */}
         <div className="lg:col-span-2 flex flex-col gap-5">
-          <UserRegistrationChart />
-          <UsersByDepartmentChart />
+          <UserRegistrationChart users={allUsers} />
+          <UsersByDepartmentChart users={allUsers} />
         </div>
 
         {/* Right: actions + recent */}
@@ -354,14 +340,6 @@ export default function SuperAdminDashboard() {
         sub="Approve, assign roles & depts"
         color="bg-blue-100 text-blue-600 dark:bg-blue-500/15 dark:text-blue-400"
         onClick={() => navigate("/admin/users")}
-      />
-
-      <ActionItem
-        icon={Megaphone}
-        label="Announcements Hub"
-        sub="View all broadcast mails"
-        color="bg-purple-100 text-purple-600 dark:bg-purple-500/15 dark:text-purple-400"
-        onClick={() => navigate("/admin/announcements")}
       />
 
       <ActionItem
@@ -430,7 +408,7 @@ export default function SuperAdminDashboard() {
             Announcement Activity
           </h3>
         </div>
-        <AnnouncementActivityChart />
+        <AnnouncementActivityChart mails={[...inbox, ...sent]} />
       </div>
     </div>
   );

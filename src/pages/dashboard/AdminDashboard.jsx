@@ -172,12 +172,8 @@ export default function AdminDashboard() {
   const weekday = new Date().toLocaleDateString("en-US", { weekday: "long" });
 
   // Department-targeted mail addressed TO this department
-  const deptMail = inbox
-    .filter(
-      (m) =>
-        m.recipientType === "department" && m.targetDepartmentId === myDeptId,
-    )
-    .slice(0, 5);
+  const deptMailAll = inbox.filter((m) => m.recipientType === "department");
+  const deptMail = deptMailAll.slice(0, 5);
   const recentInbox = inbox.slice(0, 5);
 
   return (

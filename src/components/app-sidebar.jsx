@@ -73,7 +73,6 @@ export function AppSidebar({ ...props }) {
           url: "/admin/users",
           badge: pendingCount || undefined,
         },
-        { title: "Announcements Hub", url: "/admin/announcements" },
         { title: "Departments", url: "/admin/departments" },
         { title: "Reports", url: "/admin/reports" },
         { title: "Audit Log", url: "/admin/audit" },
