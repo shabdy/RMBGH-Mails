@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from "react";
-import { PenLine, RotateCcw, CheckCircle2, Loader2 } from "lucide-react";
+import { PenLine, RotateCcw, CheckCircle2, Loader2, Upload, X } from "lucide-react";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
 } from "../../../../components/ui/dialog";
@@ -7,15 +7,29 @@ import { Button } from "../../../../components/ui/button";
 import { useAnnouncements } from "../../../../context/AnnouncementContext";
 import { toast } from "sonner";
 
+const TABS = [
+  { id: "draw",   label: "Draw" },
+  { id: "upload", label: "Upload PNG" },
+];
+
 export function AcknowledgeModal({ open, onClose, selected, currentUser }) {
   const { acknowledgeMail } = useAnnouncements();
 
+  /* ── tabs ── */
+  const [tab, setTab] = useState("draw");
+
+  /* ── draw state ── */
   const canvasRef  = useRef(null);
   const isDrawing  = useRef(false);
   const lastPos    = useRef(null);
+  const [hasDrawn, setHasDrawn] = useState(false);
 
-  const [hasSignature, setHasSignature] = useState(false);
-  const [submitting,   setSubmitting]   = useState(false);
+  /* ── upload state ── */
+  const fileInputRef        = useRef(null);
+  const [uploadedSig, setUploadedSig] = useState(null); // base64 data URL
+  const [dragOver,    setDragOver]    = useState(false);
+
+  const [submitting, setSubmitting] = useState(false);
 
   /* Snapshot date/time at the moment the modal opens */
   const [snapDate, setSnapDate] = useState("");
@@ -26,7 +40,9 @@ export function AcknowledgeModal({ open, onClose, selected, currentUser }) {
     const now = new Date();
     setSnapDate(now.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }));
     setSnapTime(now.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }));
-    setHasSignature(false);
+    setHasDrawn(false);
+    setUploadedSig(null);
+    setTab("draw");
 
     /* Fill canvas with white bg once it mounts */
     const timer = setTimeout(() => {
@@ -74,7 +90,7 @@ export function AcknowledgeModal({ open, onClose, selected, currentUser }) {
     ctx.stroke();
 
     lastPos.current = pos;
-    if (!hasSignature) setHasSignature(true);
+    if (!hasDrawn) setHasDrawn(true);
   };
 
   const stopDraw = () => {
@@ -87,14 +103,47 @@ export function AcknowledgeModal({ open, onClose, selected, currentUser }) {
     const ctx    = canvas.getContext("2d");
     ctx.fillStyle = "#ffffff";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    setHasSignature(false);
+    setHasDrawn(false);
   };
+
+  /* ── upload helpers ── */
+  const loadFile = (file) => {
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please upload an image file.");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => setUploadedSig(e.target.result);
+    reader.readAsDataURL(file);
+  };
+
+  const handleFileChange = (e) => {
+    loadFile(e.target.files[0]);
+    e.target.value = "";            // allow re-selecting same file
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setDragOver(false);
+    loadFile(e.dataTransfer.files[0]);
+  };
+
+  /* ── derived ── */
+  const hasSignature = tab === "draw" ? hasDrawn : !!uploadedSig;
 
   /* ── submit ── */
   const handleSubmit = async () => {
     if (!hasSignature || submitting) return;
     setSubmitting(true);
-    const signature = canvasRef.current?.toDataURL("image/png");
+
+    let signature;
+    if (tab === "draw") {
+      signature = canvasRef.current?.toDataURL("image/png");
+    } else {
+      signature = uploadedSig;
+    }
+
     await acknowledgeMail(selected.id, signature);
     setSubmitting(false);
     toast.success("Receipt acknowledged", {
@@ -162,49 +211,127 @@ export function AcknowledgeModal({ open, onClose, selected, currentUser }) {
               </div>
             </div>
 
-            {/* Signature pad */}
-            <div className="space-y-2">
+            {/* Signature section */}
+            <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <p className="text-[11px] uppercase tracking-widest text-muted-foreground font-medium">
                   Signature
                 </p>
-                {hasSignature && (
-                  <button
-                    onClick={clearCanvas}
-                    className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition"
+
+                {/* Tab switcher */}
+                <div className="flex items-center gap-1 bg-muted rounded-lg p-0.5">
+                  {TABS.map((t) => (
+                    <button
+                      key={t.id}
+                      onClick={() => setTab(t.id)}
+                      className={`px-3 py-1 text-xs rounded-md font-medium transition-colors ${
+                        tab === t.id
+                          ? "bg-background text-foreground shadow-sm"
+                          : "text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      {t.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* ── DRAW TAB ── */}
+              {tab === "draw" && (
+                <>
+                  <div
+                    className={`border-2 rounded-xl overflow-hidden transition-colors ${
+                      hasDrawn
+                        ? "border-blue-300 dark:border-blue-700"
+                        : "border-dashed border-border"
+                    }`}
+                    style={{ height: 140 }}
                   >
-                    <RotateCcw size={11} /> Clear
-                  </button>
-                )}
-              </div>
+                    <canvas
+                      ref={canvasRef}
+                      width={440}
+                      height={140}
+                      className="w-full h-full cursor-crosshair touch-none bg-white"
+                      onMouseDown={startDraw}
+                      onMouseMove={draw}
+                      onMouseUp={stopDraw}
+                      onMouseLeave={stopDraw}
+                      onTouchStart={startDraw}
+                      onTouchMove={draw}
+                      onTouchEnd={stopDraw}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between min-h-[18px]">
+                    {!hasDrawn ? (
+                      <p className="text-[11px] text-muted-foreground">
+                        Draw your signature in the box above
+                      </p>
+                    ) : (
+                      <span />
+                    )}
+                    {hasDrawn && (
+                      <button
+                        onClick={clearCanvas}
+                        className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition"
+                      >
+                        <RotateCcw size={11} /> Clear
+                      </button>
+                    )}
+                  </div>
+                </>
+              )}
 
-              <div
-                className={`border-2 rounded-xl overflow-hidden transition-colors ${
-                  hasSignature
-                    ? "border-blue-300 dark:border-blue-700"
-                    : "border-dashed border-border"
-                }`}
-                style={{ height: 140 }}
-              >
-                <canvas
-                  ref={canvasRef}
-                  width={440}
-                  height={140}
-                  className="w-full h-full cursor-crosshair touch-none bg-white"
-                  onMouseDown={startDraw}
-                  onMouseMove={draw}
-                  onMouseUp={stopDraw}
-                  onMouseLeave={stopDraw}
-                  onTouchStart={startDraw}
-                  onTouchMove={draw}
-                  onTouchEnd={stopDraw}
-                />
-              </div>
+              {/* ── UPLOAD TAB ── */}
+              {tab === "upload" && (
+                <>
+                  {!uploadedSig ? (
+                    <div
+                      onClick={() => fileInputRef.current?.click()}
+                      onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                      onDragLeave={() => setDragOver(false)}
+                      onDrop={handleDrop}
+                      className={`flex flex-col items-center justify-center gap-2 border-2 border-dashed rounded-xl cursor-pointer transition-colors select-none
+                        ${dragOver
+                          ? "border-blue-400 bg-blue-50 dark:bg-blue-950/20"
+                          : "border-border hover:border-blue-300 hover:bg-muted/40"
+                        }`}
+                      style={{ height: 140 }}
+                    >
+                      <Upload size={22} className="text-muted-foreground" />
+                      <p className="text-sm text-muted-foreground font-medium">
+                        Click or drag &amp; drop to upload
+                      </p>
+                      <p className="text-xs text-muted-foreground">PNG, JPG, or any image file</p>
+                    </div>
+                  ) : (
+                    <div className="relative border-2 border-blue-300 dark:border-blue-700 rounded-xl overflow-hidden bg-white" style={{ height: 140 }}>
+                      <img
+                        src={uploadedSig}
+                        alt="Uploaded signature"
+                        className="w-full h-full object-contain"
+                      />
+                      <button
+                        onClick={() => setUploadedSig(null)}
+                        className="absolute top-2 right-2 w-6 h-6 rounded-full bg-background/80 hover:bg-background border border-border flex items-center justify-center transition"
+                        title="Remove"
+                      >
+                        <X size={12} className="text-foreground" />
+                      </button>
+                    </div>
+                  )}
 
-              {!hasSignature && (
-                <p className="text-[11px] text-muted-foreground text-center">
-                  Draw your signature in the box above
-                </p>
+                  <p className="text-[11px] text-muted-foreground min-h-[18px]">
+                    {uploadedSig ? "Signature loaded — remove to replace." : "Upload a saved e-signature image."}
+                  </p>
+
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleFileChange}
+                  />
+                </>
               )}
             </div>
 

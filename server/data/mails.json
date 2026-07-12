@@ -546,5 +546,51 @@
     "id": 1783744912966,
     "type": "mail",
     "date": "2026-07-11T04:41:52.966Z"
+  },
+  {
+    "readBy": [
+      {
+        "id": 1783051261533,
+        "name": "Ransh Dy",
+        "dept": "Information Technology",
+        "time": "12:40 AM",
+        "date": "Jul 12, 2026"
+      }
+    ],
+    "pinnedBy": [],
+    "importantBy": [],
+    "deletedBy": [],
+    "status": "delivered",
+    "priority": "normal",
+    "title": "Sample",
+    "content": "<p>Message again</p>",
+    "recipients": [],
+    "recipientType": "department",
+    "targetDepartmentId": "IT",
+    "emailType": "",
+    "emailTypeLabel": "",
+    "attachment": null,
+    "requiresReceipt": true,
+    "from": {
+      "id": 1,
+      "name": "IT Superadmin",
+      "email": "superadmin@rmbgh.com",
+      "department": "Information Technology",
+      "departmentId": "IT"
+    },
+    "userId": 1,
+    "id": 1783816812621,
+    "type": "mail",
+    "date": "2026-07-12T00:40:12.621Z",
+    "acknowledgments": [
+      {
+        "userId": 1783051261533,
+        "name": "Ransh Dy",
+        "dept": "Information Technology",
+        "signature": "data:image/png;base64,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",
+        "time": "12:41 AM",
+        "date": "Jul 12, 2026"
+      }
+    ]
   }
 ]
