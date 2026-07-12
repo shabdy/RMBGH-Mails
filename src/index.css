@@ -297,3 +297,21 @@ body,
   --sidebar-primary-foreground: oklch(0.12 0 0);
   --sidebar-ring: oklch(0.8 0.17 80);
 }
+
+/* ── Pink ── */
+[data-accent="pink"] {
+  --primary: oklch(0.656 0.231 354);
+  --primary-foreground: oklch(0.985 0 0);
+  --ring: oklch(0.72 0.2 354);
+  --sidebar-primary: oklch(0.656 0.231 354);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-ring: oklch(0.72 0.2 354);
+}
+.dark[data-accent="pink"] {
+  --primary: oklch(0.78 0.19 354);
+  --primary-foreground: oklch(0.12 0 0);
+  --ring: oklch(0.78 0.19 354);
+  --sidebar-primary: oklch(0.78 0.19 354);
+  --sidebar-primary-foreground: oklch(0.12 0 0);
+  --sidebar-ring: oklch(0.78 0.19 354);
+}

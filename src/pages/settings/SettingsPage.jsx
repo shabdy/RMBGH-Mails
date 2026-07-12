@@ -21,7 +21,7 @@ function Toggle({ checked, onChange }) {
       aria-checked={checked}
       onClick={() => onChange(!checked)}
       className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none ${
-        checked ? "bg-blue-600" : "bg-slate-200"
+        checked ? "bg-primary" : "bg-slate-200"
       }`}
     >
       <span
@@ -77,6 +77,7 @@ const ACCENT_OPTIONS = [
   { value: "default", label: "Slate",  light: "#64748b", dark: "#94a3b8" },
   { value: "blue",    label: "Blue",   light: "#3b82f6", dark: "#60a5fa" },
   { value: "violet",  label: "Violet", light: "#7c3aed", dark: "#a78bfa" },
+  { value: "pink",    label: "Pink",   light: "#ec4899", dark: "#f472b6" },
   { value: "rose",    label: "Rose",   light: "#f43f5e", dark: "#fb7185" },
   { value: "orange",  label: "Orange", light: "#f97316", dark: "#fb923c" },
   { value: "green",   label: "Green",  light: "#16a34a", dark: "#4ade80" },
