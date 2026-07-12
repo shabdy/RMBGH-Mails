@@ -40,12 +40,11 @@ function PillBar({ label, value, max, color }) {
 }
 
 export default function ReportsPage() {
-  const [users,   setUsers]   = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [users, setUsers] = useState([]);
   const { inbox, sent, drafts, forwarded, pinnedIds } = useAnnouncements();
 
   useEffect(() => {
-    getAllUsers().then(u => { setUsers(u); setLoading(false); });
+    getAllUsers().then(u => setUsers(u));
   }, []);
 
   const totalUsers    = users.length;
@@ -152,7 +151,6 @@ export default function ReportsPage() {
           </div>
           <button
             onClick={handleExport}
-            disabled={loading}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold
                        bg-primary text-primary-foreground hover:opacity-90 transition-opacity
                        disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
@@ -204,18 +202,14 @@ export default function ReportsPage() {
             <BarChart3 size={14} className="text-muted-foreground" />
             <h3 className="text-sm font-semibold text-foreground">Staff by Department</h3>
           </div>
-          {loading ? (
-            <p className="text-xs text-muted-foreground py-4">Loading…</p>
-          ) : (
-            <div className="space-y-3">
-              {topDepts.map(([dept, count], i) => (
-                <PillBar key={dept} label={dept} value={count} max={maxDept} color={BAR_COLORS[i % BAR_COLORS.length]} />
-              ))}
-              {topDepts.length === 0 && (
-                <p className="text-xs text-muted-foreground text-center py-4">No department data</p>
-              )}
-            </div>
-          )}
+          <div className="space-y-3">
+            {topDepts.map(([dept, count], i) => (
+              <PillBar key={dept} label={dept} value={count} max={maxDept} color={BAR_COLORS[i % BAR_COLORS.length]} />
+            ))}
+            {topDepts.length === 0 && (
+              <p className="text-xs text-muted-foreground text-center py-4">No department data</p>
+            )}
+          </div>
         </div>
 
         {/* Mail type breakdown */}

@@ -1,17 +1,12 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState } from "react";
 import { authService } from "../services/authService";
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user,    setUser]    = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const savedUser = authService.getCurrentUser();
-    if (savedUser) setUser(savedUser);
-    setLoading(false);
-  }, []);
+  // authService.getCurrentUser() reads synchronously from localStorage, so
+  // there is no loading gap — initialize state directly, no loading flag needed.
+  const [user, setUser] = useState(() => authService.getCurrentUser() || null);
 
   const login = async (email, password) => {
     try {
@@ -43,7 +38,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, updateUser, loading, isAuthenticated: !!user }}>
+    <AuthContext.Provider value={{ user, login, register, logout, updateUser, isAuthenticated: !!user }}>
       {children}
     </AuthContext.Provider>
   );

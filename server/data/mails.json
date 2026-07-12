@@ -685,5 +685,41 @@
     "id": 1783842919583,
     "type": "mail",
     "date": "2026-07-12T07:55:19.583Z"
+  },
+  {
+    "readBy": [],
+    "pinnedBy": [],
+    "importantBy": [],
+    "deletedBy": [],
+    "status": "delivered",
+    "priority": "normal",
+    "title": "Shared Announcement: Test announcement from curl",
+    "content": "<p>📢 Shared Announcement — from John Doe</p><p>Test announcement from curl</p>",
+    "recipients": [
+      {
+        "id": 3,
+        "name": "Jane Smith",
+        "email": "staff@rmbgh.com",
+        "department": "Human Resources",
+        "departmentId": "HR"
+      }
+    ],
+    "recipientType": "specific",
+    "targetDepartmentId": null,
+    "emailType": "",
+    "emailTypeLabel": "",
+    "attachment": null,
+    "requiresReceipt": false,
+    "from": {
+      "id": 2,
+      "name": "John Doe",
+      "email": "user@rmbgh.com",
+      "department": "Information Technology",
+      "departmentId": "IT"
+    },
+    "userId": 2,
+    "id": 1783856405936,
+    "type": "mail",
+    "date": "2026-07-12T11:40:05.936Z"
   }
 ]

@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import {
-  Search, ClipboardList, Loader2, ChevronDown,
+  Search, ClipboardList, ChevronDown,
   Shield, UserCheck, UserX, Trash2, Edit2, EyeOff,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -33,7 +33,6 @@ function AvatarBadge({ name }) {
 
 export default function AuditLogPage() {
   const [logs,         setLogs]         = useState([]);
-  const [loading,      setLoading]      = useState(true);
   const [search,       setSearch]       = useState("");
   const [actionFilter, setActionFilter] = useState("All");
   const [page,         setPage]         = useState(1);
@@ -41,8 +40,7 @@ export default function AuditLogPage() {
   useEffect(() => {
     api.get("/audit")
       .then(r => setLogs(r.data))
-      .catch(() => setLogs([]))
-      .finally(() => setLoading(false));
+      .catch(() => setLogs([]));
   }, []);
 
   const allActions = useMemo(() => {
@@ -102,12 +100,7 @@ export default function AuditLogPage() {
 
       {/* ── Table ── */}
       <div className="bg-background border rounded-xl shadow-sm overflow-hidden">
-        {loading ? (
-          <div className="flex items-center justify-center py-20 gap-2 text-muted-foreground">
-            <Loader2 size={18} className="animate-spin" />
-            <span className="text-sm">Loading audit log…</span>
-          </div>
-        ) : filtered.length === 0 ? (
+        {filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-muted-foreground gap-2">
             <ClipboardList size={32} className="text-muted-foreground/30" />
             <p className="text-sm font-medium">No audit entries found</p>

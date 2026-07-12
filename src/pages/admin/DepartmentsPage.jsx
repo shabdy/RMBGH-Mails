@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Building2, Users, UserCheck, Clock, Loader2 } from "lucide-react";
+import { Building2, Users, UserCheck, Clock } from "lucide-react";
 import { getAllUsers } from "@/services/accountsService";
 
 const DEPT_LIST = [
@@ -32,11 +32,10 @@ function StatCard({ icon: Icon, label, value, color }) {
 }
 
 export default function DepartmentsPage() {
-  const [users,   setUsers]   = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    getAllUsers().then(u => { setUsers(u); setLoading(false); });
+    getAllUsers().then(u => setUsers(u));
   }, []);
 
   const total    = users.length;
@@ -78,13 +77,7 @@ export default function DepartmentsPage() {
       </div>
 
       {/* Dept cards grid */}
-      {loading ? (
-        <div className="flex items-center justify-center py-20 gap-2 text-muted-foreground">
-          <Loader2 size={18} className="animate-spin" />
-          <span className="text-sm">Loading departments…</span>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {depts.map(d => (
             <div key={d.id} className="bg-card border border-border rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
               <div className="flex items-start justify-between mb-4">
@@ -138,8 +131,7 @@ export default function DepartmentsPage() {
               )}
             </div>
           ))}
-        </div>
-      )}
+      </div>
 
       {/* Unassigned users */}
       {unassigned.length > 0 && (

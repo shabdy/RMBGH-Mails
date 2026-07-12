@@ -4,7 +4,6 @@ import {
   Globe,
   Building2,
   User,
-  Loader2,
   Megaphone,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -78,7 +77,6 @@ function formatTime(dateStr) {
 export default function AnnouncementsAdminPage() {
   const { user } = useContext(AuthContext);
   const [mails, setMails] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState(""); // "" = show all
   const [selected, setSelected] = useState(null);
@@ -88,11 +86,8 @@ export default function AnnouncementsAdminPage() {
     if (!user?.id) return;
     api
       .get(`/admin/mail?userId=${user.id}`)
-      .then((res) => {
-        setMails(res.data);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
+      .then((res) => setMails(res.data))
+      .catch(() => {});
   }, [user?.id]);
 
   const filtered = useMemo(() => {
@@ -209,12 +204,7 @@ export default function AnnouncementsAdminPage() {
 
       {/* Table */}
       <div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden">
-        {loading ? (
-          <div className="flex items-center justify-center py-20 gap-2 text-muted-foreground">
-            <Loader2 size={18} className="animate-spin" />
-            <span className="text-sm">Loading announcements…</span>
-          </div>
-        ) : filtered.length === 0 ? (
+        {filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-muted-foreground gap-2">
             <Megaphone size={32} className="text-muted-foreground/20" />
             <p className="text-sm font-medium">No announcements found</p>

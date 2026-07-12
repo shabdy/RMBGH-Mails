@@ -146,6 +146,7 @@ function initData() {
   if (!fs.existsSync(path.join(DATA_DIR, "mails.json")))     writeJSON("mails.json", DEFAULT_MAILS);
   if (!fs.existsSync(path.join(DATA_DIR, "forwarded.json"))) writeJSON("forwarded.json", []);
   if (!fs.existsSync(path.join(DATA_DIR, "drafts.json")))    writeJSON("drafts.json", []);
+  if (!fs.existsSync(path.join(DATA_DIR, "posts.json")))     writeJSON("posts.json", []);
 }
 initData();
 
@@ -171,6 +172,33 @@ function normalizeMail(m) {
 
 function normalizeForwarded(f) {
   return { ...f, date: fmtDate(f.date), time: fmtTime(f.date), sender: f.from?.name, senderDept: f.from?.department };
+}
+
+/* Facebook-style reaction set shared by the announcement feed */
+const REACTION_TYPES = ["like", "love", "haha", "wow", "sad"];
+
+function normalizePost(p, userId) {
+  const reactions = p.reactions || [];
+  const reactionCounts = reactions.reduce((acc, r) => {
+    acc[r.type] = (acc[r.type] || 0) + 1;
+    return acc;
+  }, {});
+  const myReaction = userId
+    ? reactions.find(r => String(r.userId) === String(userId))?.type || null
+    : null;
+  return {
+    ...p,
+    date: fmtDate(p.date),
+    time: fmtTime(p.date),
+    viewCount:      (p.viewedBy || []).length,
+    commentCount:   (p.comments || []).length,
+    reactionCount:  reactions.length,
+    reactionCounts,
+    myReaction,
+    viewed: userId ? (p.viewedBy || []).some(v => String(v.id) === String(userId)) : false,
+    comments: (p.comments || []).map(c => ({ ...c, date: fmtDate(c.date), time: fmtTime(c.date) })),
+    viewedBy: (p.viewedBy || []).map(v => ({ ...v })),
+  };
 }
 
 /* ═══════════════════ AUTH ═══════════════════ */
@@ -528,6 +556,99 @@ app.get("/api/admin/mail", authenticate, (req, res) => {
   if (!isAdmin(req.authUser)) return res.status(403).json({ error: "Forbidden" });
   const mails = readJSON("mails.json", DEFAULT_MAILS);
   res.json([...mails].sort((a, b) => new Date(b.date) - new Date(a.date)));
+});
+
+/* ═══════════════════ POSTS (Announcement Feed) ═══════════════════
+   A lightweight social feed distinct from the mail/announcement system:
+   any employee can post, everyone can see who viewed a post, comment,
+   and react with a Facebook-style emoji set. */
+app.get("/api/posts", (req, res) => {
+  const userId = req.query.userId ? parseInt(req.query.userId) : null;
+  const posts  = readJSON("posts.json", []);
+  res.json(
+    [...posts]
+      .sort((a, b) => new Date(b.date) - new Date(a.date))
+      .map(p => normalizePost(p, userId))
+  );
+});
+
+app.post("/api/posts", (req, res) => {
+  const { content, from, userId } = req.body;
+  if (!content || !content.trim()) return res.status(400).json({ error: "Post content is required" });
+  if (!from?.id && !userId) return res.status(400).json({ error: "Author is required" });
+  const posts = readJSON("posts.json", []);
+  const newPost = {
+    id: Date.now(),
+    content: content.trim(),
+    from: from || null,
+    date: new Date().toISOString(),
+    viewedBy: [],
+    comments: [],
+    reactions: [],
+  };
+  posts.push(newPost);
+  writeJSON("posts.json", posts);
+  res.json(normalizePost(newPost, userId || from?.id));
+});
+
+app.delete("/api/posts/:id", authenticate, (req, res) => {
+  const posts = readJSON("posts.json", []);
+  const idx   = posts.findIndex(p => p.id == req.params.id);
+  if (idx === -1) return res.status(404).json({ error: "Not found" });
+  const isAuthor = String(posts[idx].from?.id) === String(req.authUser.id);
+  if (!isAuthor && !isAdmin(req.authUser))
+    return res.status(403).json({ error: "You can only delete your own posts" });
+  posts.splice(idx, 1);
+  writeJSON("posts.json", posts);
+  res.json({ success: true });
+});
+
+app.post("/api/posts/:id/view", (req, res) => {
+  const { userId, name } = req.body;
+  if (!userId) return res.status(400).json({ error: "userId is required" });
+  const posts = readJSON("posts.json", []);
+  const idx   = posts.findIndex(p => p.id == req.params.id);
+  if (idx === -1) return res.status(404).json({ error: "Not found" });
+  const viewedBy = posts[idx].viewedBy || [];
+  if (!viewedBy.some(v => String(v.id) === String(userId))) {
+    const now = new Date().toISOString();
+    posts[idx].viewedBy = [...viewedBy, { id: userId, name, date: now, time: now }];
+    writeJSON("posts.json", posts);
+  }
+  res.json(normalizePost(posts[idx], userId));
+});
+
+app.post("/api/posts/:id/comments", (req, res) => {
+  const { userId, name, text } = req.body;
+  if (!text || !text.trim()) return res.status(400).json({ error: "Comment text is required" });
+  const posts = readJSON("posts.json", []);
+  const idx   = posts.findIndex(p => p.id == req.params.id);
+  if (idx === -1) return res.status(404).json({ error: "Not found" });
+  const comment = { id: Date.now(), userId, name, text: text.trim(), date: new Date().toISOString() };
+  posts[idx].comments = [...(posts[idx].comments || []), comment];
+  writeJSON("posts.json", posts);
+  res.json(normalizePost(posts[idx], userId));
+});
+
+app.post("/api/posts/:id/react", (req, res) => {
+  const { userId, name, type } = req.body;
+  if (!userId) return res.status(400).json({ error: "userId is required" });
+  if (!REACTION_TYPES.includes(type)) return res.status(400).json({ error: "Invalid reaction type" });
+  const posts = readJSON("posts.json", []);
+  const idx   = posts.findIndex(p => p.id == req.params.id);
+  if (idx === -1) return res.status(404).json({ error: "Not found" });
+  const reactions  = posts[idx].reactions || [];
+  const existingIdx = reactions.findIndex(r => String(r.userId) === String(userId));
+  if (existingIdx !== -1 && reactions[existingIdx].type === type) {
+    posts[idx].reactions = reactions.filter((_, i) => i !== existingIdx); // toggle off
+  } else if (existingIdx !== -1) {
+    reactions[existingIdx] = { userId, name, type };
+    posts[idx].reactions = reactions;
+  } else {
+    posts[idx].reactions = [...reactions, { userId, name, type }];
+  }
+  writeJSON("posts.json", posts);
+  res.json(normalizePost(posts[idx], userId));
 });
 
 /* ═══════════════════ AUDIT LOG ═══════════════════ */

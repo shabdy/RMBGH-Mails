@@ -22,6 +22,8 @@ import Attachments from "../pages/announcement/Attachments";
 import Drafts      from "../pages/announcement/drafts/Drafts";
 import AnnouncementLayout from "../pages/announcement/AnnouncementLayout";
 import { AnnouncementProvider } from "../context/AnnouncementContext";
+import { PostsProvider } from "../context/PostsContext";
+import AnnouncementFeed from "../pages/feed/AnnouncementFeed";
 
 function App() {
   return (
@@ -34,14 +36,17 @@ function App() {
           element={
             <ProtectedRoute>
               <AnnouncementProvider>
-                <AppLayout />
+                <PostsProvider>
+                  <AppLayout />
+                </PostsProvider>
               </AnnouncementProvider>
             </ProtectedRoute>
           }
         >
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/profile"   element={<ProfilePage />} />
-          <Route path="/settings"  element={<SettingsPage />} />
+          <Route path="/dashboard"      element={<Dashboard />} />
+          <Route path="/announcements"  element={<AnnouncementFeed />} />
+          <Route path="/profile"        element={<ProfilePage />} />
+          <Route path="/settings"       element={<SettingsPage />} />
 
           {/* Admin-only routes */}
           <Route path="/admin/users"          element={<AdminRoute><UsersPage /></AdminRoute>} />

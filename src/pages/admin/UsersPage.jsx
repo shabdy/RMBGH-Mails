@@ -227,7 +227,6 @@ export default function UsersPage() {
   const adminName = adminUser ? `${adminUser.firstName} ${adminUser.lastName}` : "Admin";
 
   const [users,        setUsers]        = useState([]);
-  const [loading,      setLoading]      = useState(true);
   const [search,       setSearch]       = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [deptFilter,   setDeptFilter]   = useState("All Departments");
@@ -238,10 +237,8 @@ export default function UsersPage() {
   const [page, setPage] = useState(1);
 
   const load = async () => {
-    setLoading(true);
     const data = await getAllUsers();
     setUsers(data);
-    setLoading(false);
   };
 
   useEffect(() => { load(); }, []);
@@ -398,12 +395,7 @@ export default function UsersPage() {
 
       {/* ── TABLE ── */}
       <div className="bg-background border rounded-xl shadow-sm overflow-hidden">
-        {loading ? (
-          <div className="flex items-center justify-center py-20 gap-2 text-muted-foreground">
-            <Loader2 size={18} className="animate-spin" />
-            <span className="text-sm">Loading users…</span>
-          </div>
-        ) : filtered.length === 0 ? (
+        {filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-muted-foreground gap-2">
             <Users size={32} className="text-muted-foreground/30" />
             <p className="text-sm font-medium">No users found</p>

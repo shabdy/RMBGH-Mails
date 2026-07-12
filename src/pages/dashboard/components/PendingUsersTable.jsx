@@ -21,15 +21,12 @@ function Avatar({ name }) {
 }
 
 export default function PendingUsersTable() {
-  const [users,   setUsers]   = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [busy,    setBusy]    = useState({});
+  const [users, setUsers] = useState([]);
+  const [busy,  setBusy]  = useState({});
 
   const load = async () => {
-    setLoading(true);
     const data = await getUsers();          /* already filtered to status=Pending */
     setUsers(data);
-    setLoading(false);
   };
 
   useEffect(() => { load(); }, []);
@@ -67,12 +64,7 @@ export default function PendingUsersTable() {
         </div>
       </div>
 
-      {loading ? (
-        <div className="flex items-center justify-center py-10 text-muted-foreground gap-2">
-          <Loader2 className="w-4 h-4 animate-spin" />
-          <span className="text-xs">Loading pending users…</span>
-        </div>
-      ) : users.length === 0 ? (
+      {users.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-10 text-muted-foreground gap-1">
           <CheckCircle className="w-8 h-8 text-green-400" />
           <p className="text-sm font-medium">All caught up!</p>

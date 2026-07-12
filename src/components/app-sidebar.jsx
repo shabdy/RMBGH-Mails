@@ -10,6 +10,7 @@ import {
   IconUsers,
   IconBuilding,
   IconChartBar,
+  IconPaperclip,
 } from "@tabler/icons-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -46,10 +47,13 @@ export function AppSidebar({ ...props }) {
 
   const navMain = [
     {
-      title: "Dashboard",
+      title: isAdmin ? "Dashboard" : "Announcement",
       icon: IconDashboard,
       url: "/dashboard",
     },
+    ...(isAdmin
+      ? [{ title: "Announcement", icon: IconSpeakerphone, url: "/announcements" }]
+      : []),
     {
       title: "Mail",
       icon: IconSpeakerphone,
@@ -58,8 +62,12 @@ export function AppSidebar({ ...props }) {
         { title: "Sent", url: "/sent" },
         { title: "Forwarded", url: "/forward" },
         { title: "Drafts", url: "/drafts", badge: drafts.length || undefined },
-        { title: "Attachments", url: "/attachments" },
       ],
+    },
+    {
+      title: "Attachments",
+      icon: IconPaperclip,
+      url: "/attachments",
     },
   ];
 
