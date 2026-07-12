@@ -41,9 +41,11 @@ export function AnnouncementProvider({ children }) {
   }, [buildCurrentUser]);
 
   /* ─── Fetch all mail data from backend ─── */
-  const loadAll = useCallback(async () => {
+  const loadAll = useCallback(async ({ silent = false } = {}) => {
     if (!user?.id) return;
-    setLoading(true);
+    // Only show the full loading skeleton on the very first load (no data yet).
+    // Subsequent refreshes run silently so the UI doesn't blank out.
+    if (!silent) setLoading(true);
     const deptId = user.departmentId || "";
     try {
       const [inboxRes, sentRes, fwdRes, draftsRes] = await Promise.all([
@@ -244,11 +246,17 @@ export function AnnouncementProvider({ children }) {
   const markRead = async (id) => {
     const cu = buildCurrentUser();
     if (!cu) return;
+    // Optimistic update — mark as read immediately so the UI responds
+    // without waiting for the network roundtrip.
+    setInbox(prev => prev.map(m =>
+      m.id === id
+        ? { ...m, unread: false, readBy: [...(m.readBy || []), { id: cu.id, name: cu.name }] }
+        : m
+    ));
     try {
       const { data } = await api.post(`/mail/${id}/read`, { userId: cu.id, name: cu.name, dept: cu.department });
-      const enriched = enrich(data);
-      setInbox(prev => prev.map(m => m.id === id ? enriched : m));
-      setSent(prev  => prev.map(m => m.id === id ? enriched : m));
+      // Reconcile with the server's authoritative version
+      setInbox(prev => prev.map(m => m.id === id ? enrich(data) : m));
     } catch (err) { console.error(err); }
   };
 

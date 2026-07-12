@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Loader2, Send, FileCheck2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "../../../../components/ui/button";
@@ -28,6 +28,9 @@ export const CreateMail = ({ open, setOpen, draft }) => {
   const [errors,          setErrors]          = useState({});
   const [recipientMode,   setRecipientMode]   = useState("specific");
   const [requiresReceipt, setRequiresReceipt] = useState(false);
+  // Guard: prevents onOpenChange from firing handleAccidentalClose when
+  // we're already closing the dialog programmatically via handleClose.
+  const closingRef = useRef(false);
 
   const {
     enableEmailType, setEnableEmailType,
@@ -102,15 +105,21 @@ export const CreateMail = ({ open, setOpen, draft }) => {
 
   /* Hard close — used after send or explicit draft save */
   const handleClose = () => {
+    closingRef.current = true;     // signal: this is a programmatic close
     setSendStatus("idle");
     setErrors({});
     setRecipientMode("specific");
     resetForm();
     setOpen(false);
+    // Reset the guard after the current event loop tick so any
+    // onOpenChange Radix fires synchronously is still blocked.
+    setTimeout(() => { closingRef.current = false; }, 0);
   };
 
   /* Accidental close (Escape / click-outside / X) — auto-save draft if content exists */
   const handleAccidentalClose = async () => {
+    // Skip if this close was already initiated by handleClose above.
+    if (closingRef.current) return;
     const hasContent = subject.trim() || (message && message !== "<p></p>");
     if (sendStatus !== "sent" && !draftSaved && hasContent) {
       await saveDraft({ id: draft?.id, subject, ...buildPayload() });
