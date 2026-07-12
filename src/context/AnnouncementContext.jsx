@@ -74,7 +74,7 @@ export function AnnouncementProvider({ children }) {
   ] : [];
 
   /* ─── SEND MAIL ─── */
-  const sendMail = async ({ title, content, recipients, emailType, emailTypeLabel, attachment, recipientType, targetDepartmentId }) => {
+  const sendMail = async ({ title, content, recipients, emailType, emailTypeLabel, attachment, recipientType, targetDepartmentId, requiresReceipt }) => {
     const cu = buildCurrentUser();
     if (!cu) return;
 
@@ -96,6 +96,7 @@ export function AnnouncementProvider({ children }) {
       emailType:          emailType      || "",
       emailTypeLabel:     emailTypeLabel || "",
       attachment:         attachment     || null,
+      requiresReceipt:    !!requiresReceipt,
       from:               cu,
       userId:             cu.id,
       priority:           "normal",

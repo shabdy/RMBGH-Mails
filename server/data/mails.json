@@ -478,5 +478,73 @@
     "id": 1783643656178,
     "type": "mail",
     "date": "2026-07-10T00:34:16.178Z"
+  },
+  {
+    "readBy": [
+      {
+        "id": 1783296783629,
+        "name": "JB Doquenia",
+        "dept": "Information Technology",
+        "time": "4:42 AM",
+        "date": "Jul 11, 2026"
+      }
+    ],
+    "pinnedBy": [],
+    "importantBy": [],
+    "deletedBy": [],
+    "status": "delivered",
+    "priority": "normal",
+    "title": "Sample",
+    "content": "<p>Sample Receiving Paper</p>",
+    "recipients": [
+      {
+        "id": 1783296783629,
+        "name": "JB Doquenia",
+        "email": "jbd@rmbgh.com",
+        "department": "Information Technology",
+        "departmentId": "IT",
+        "role": "user"
+      },
+      {
+        "id": 1783479861482,
+        "name": "Juana Dela Cruz",
+        "email": "jdc@rmbgh.com",
+        "department": "Pharmacy",
+        "departmentId": "PHARM",
+        "role": "user"
+      },
+      {
+        "id": 1783481076209,
+        "name": "Aiah Arceta",
+        "email": "aa@rmbgh.com",
+        "department": "Human Resources",
+        "departmentId": "HR",
+        "role": "user"
+      },
+      {
+        "id": 1783481105248,
+        "name": "Colet Vergara",
+        "email": "cv@rmbgh.com",
+        "department": "Surgery",
+        "departmentId": "SURG",
+        "role": "user"
+      }
+    ],
+    "recipientType": "specific",
+    "targetDepartmentId": null,
+    "emailType": "communication",
+    "emailTypeLabel": "Communication",
+    "attachment": null,
+    "from": {
+      "id": 1,
+      "name": "IT Superadmin",
+      "email": "superadmin@rmbgh.com",
+      "department": "Information Technology",
+      "departmentId": "IT"
+    },
+    "userId": 1,
+    "id": 1783744912966,
+    "type": "mail",
+    "date": "2026-07-11T04:41:52.966Z"
   }
 ]
