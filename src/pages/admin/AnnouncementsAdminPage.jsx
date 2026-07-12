@@ -10,9 +10,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { PaginationBar } from "@/components/ui/pagination-bar";
 import { AuthContext } from "@/context/authContext";
-import axios from "axios";
-
-const api = axios.create({ baseURL: "/api" });
+import api from "@/services/apiClient";
 
 const PAGE_SIZE = 10;
 

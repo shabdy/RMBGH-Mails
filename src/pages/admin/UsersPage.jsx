@@ -9,11 +9,9 @@ import { Button } from "@/components/ui/button";
 import { getAllUsers, activateUser, rejectUser } from "@/services/accountsService";
 import { AuthContext } from "@/context/authContext";
 import { toast } from "sonner";
-import axios from "axios";
+import api from "@/services/apiClient";
 import { PaginationBar } from "@/components/ui/pagination-bar";
 import { getRoleConfig } from "@/config/roleConfig";
-
-const api = axios.create({ baseURL: "/api" });
 
 async function logAudit(performedBy, action, targetUser, details) {
   try {

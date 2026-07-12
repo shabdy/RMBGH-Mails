@@ -1,9 +1,5 @@
 import { toast } from "sonner";
-import axios from "axios";
-
-const api = axios.create({
-  baseURL: "/api",
-});
+import api from "./apiClient";
 
 /* ============================
    GET USERS

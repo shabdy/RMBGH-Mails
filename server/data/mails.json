@@ -176,15 +176,7 @@
     "recipientType": "specific",
     "date": "2026-06-20T14:00:00.000Z",
     "attachment": null,
-    "readBy": [
-      {
-        "id": 2,
-        "name": "John Doe",
-        "dept": "Information Technology",
-        "time": "2:30 PM",
-        "date": "Jun 20, 2026"
-      }
-    ],
+    "readBy": [],
     "pinnedBy": [
       2
     ],

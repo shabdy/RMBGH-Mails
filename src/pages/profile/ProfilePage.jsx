@@ -7,10 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { AuthContext } from "@/context/authContext";
 import { toast } from "sonner";
-import axios from "axios";
+import api from "@/services/apiClient";
 import { getRoleConfig } from "@/config/roleConfig";
-
-const api = axios.create({ baseURL: "/api" });
 
 const STATUS_COLORS = {
   Active:   "bg-green-100 text-green-700",

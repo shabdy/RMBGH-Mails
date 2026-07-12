@@ -3,14 +3,41 @@ import cors from "cors";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import jwt from "jsonwebtoken";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = path.join(__dirname, "data");
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
 
+const JWT_SECRET = process.env.SESSION_SECRET;
+if (!JWT_SECRET) {
+  throw new Error("SESSION_SECRET environment variable is required to sign session tokens");
+}
+
 const app = express();
 app.use(cors());
 app.use(express.json({ limit: "10mb" }));
+
+/* ─── Auth middleware ───
+   Verifies the "Authorization: Bearer <token>" header and attaches the
+   decoded identity to req.authUser = { id, role }. This is the ONLY
+   source of truth for "who is making this request" on protected routes —
+   client-supplied userId/role values in the body/query are never trusted
+   for authorization decisions. */
+function authenticate(req, res, next) {
+  const header = req.headers.authorization || "";
+  const token  = header.startsWith("Bearer ") ? header.slice(7) : null;
+  if (!token) return res.status(401).json({ error: "Authentication required" });
+  try {
+    req.authUser = jwt.verify(token, JWT_SECRET);
+    next();
+  } catch {
+    return res.status(401).json({ error: "Invalid or expired session" });
+  }
+}
+function isAdmin(authUser) {
+  return authUser && ["admin", "superadmin"].includes(authUser.role);
+}
 
 function readJSON(file, fallback = []) {
   const p = path.join(DATA_DIR, file);
@@ -154,7 +181,8 @@ app.post("/api/auth/login", (req, res) => {
   if (!user)                    return res.status(401).json({ success: false, error: "Invalid email or password" });
   if (user.status !== "Active") return res.status(403).json({ success: false, error: "Account not yet activated. Please wait for admin approval." });
   const { password: _, ...safe } = user;
-  res.json({ success: true, user: safe });
+  const token = jwt.sign({ id: user.id, role: user.role }, JWT_SECRET, { expiresIn: "7d" });
+  res.json({ success: true, user: safe, token });
 });
 
 app.post("/api/auth/register", (req, res) => {
@@ -182,23 +210,38 @@ app.get("/api/users", (req, res) => {
   res.json(users);
 });
 
-app.patch("/api/users/:id", (req, res) => {
+app.patch("/api/users/:id", authenticate, (req, res) => {
+  const targetId = req.params.id;
+  const isSelf   = req.authUser.id == targetId;
+  if (!isSelf && !isAdmin(req.authUser))
+    return res.status(403).json({ error: "You do not have permission to edit this user" });
+
   const users = readJSON("users.json", DEFAULT_USERS);
-  const idx   = users.findIndex(u => u.id == req.params.id);
+  const idx   = users.findIndex(u => u.id == targetId);
   if (idx === -1) return res.status(404).json({ error: "User not found" });
-  users[idx] = { ...users[idx], ...req.body };
+
+  // Never let a PATCH change identity/security fields. Non-admins additionally
+  // cannot change role/status (privilege escalation guard).
+  const patch = { ...req.body };
+  delete patch.id; delete patch.createdAt; delete patch.email; delete patch.password;
+  if (!isAdmin(req.authUser)) { delete patch.role; delete patch.status; }
+
+  users[idx] = { ...users[idx], ...patch };
   writeJSON("users.json", users);
   const { password: _, ...safe } = users[idx];
   res.json(safe);
 });
 
-app.delete("/api/users/:id", (req, res) => {
+app.delete("/api/users/:id", authenticate, (req, res) => {
+  if (!isAdmin(req.authUser)) return res.status(403).json({ error: "Admin access required" });
   writeJSON("users.json", readJSON("users.json", DEFAULT_USERS).filter(u => u.id != req.params.id));
   res.json({ success: true });
 });
 
 /* Change password */
-app.patch("/api/users/:id/password", (req, res) => {
+app.patch("/api/users/:id/password", authenticate, (req, res) => {
+  if (req.authUser.id != req.params.id)
+    return res.status(403).json({ error: "You can only change your own password" });
   const { currentPassword, newPassword } = req.body;
   const users = readJSON("users.json", DEFAULT_USERS);
   const idx   = users.findIndex(u => u.id == req.params.id);
@@ -248,16 +291,18 @@ function isInboxVisible(m, userId, departmentId, userCreatedAt) {
   return m.recipients?.some(r => String(r.id) === String(userId));
 }
 
-/* GET /api/mail?box=inbox|sent&userId=X&departmentId=IT */
+/* GET /api/mail?box=inbox|sent&userId=X */
 app.get("/api/mail", (req, res) => {
   const userId       = parseInt(req.query.userId);
-  const departmentId = req.query.departmentId || "";
   const box          = req.query.box;
   const mails        = readJSON("mails.json", DEFAULT_MAILS);
 
-  // Look up user's creation date to hide pre-registration mails
+  // Look up the requesting user's own record. departmentId is ALWAYS derived
+  // from here, never trusted from the query string — otherwise any user
+  // could pass ?departmentId=HR to read another department's mail.
   const users   = readJSON("users.json", DEFAULT_USERS);
   const reqUser = users.find(u => u.id === userId);
+  const departmentId = reqUser?.departmentId || "";
   let userCreatedAt = reqUser?.createdAt || null;
   // Fallback: derive createdAt from timestamp-style ID for accounts without explicit createdAt
   if (!userCreatedAt && reqUser && reqUser.id > 1_000_000_000_000) {
@@ -335,6 +380,17 @@ app.post("/api/mail/:id/read", (req, res) => {
   res.json(normalizeMail(mails[idx]));
 });
 
+/* POST /api/mail/:id/unread — reverse of /read; persists so it survives a refresh */
+app.post("/api/mail/:id/unread", (req, res) => {
+  const { userId } = req.body;
+  const mails = readJSON("mails.json", DEFAULT_MAILS);
+  const idx   = mails.findIndex(m => m.id == req.params.id);
+  if (idx === -1) return res.status(404).json({ error: "Not found" });
+  mails[idx].readBy = (mails[idx].readBy || []).filter(r => r.id !== userId);
+  writeJSON("mails.json", mails);
+  res.json(normalizeMail(mails[idx]));
+});
+
 /* POST /api/mail/:id/acknowledge */
 app.post("/api/mail/:id/acknowledge", (req, res) => {
   const { userId, name, dept, signature } = req.body;
@@ -381,14 +437,13 @@ app.post("/api/mail/:id/important", (req, res) => {
 /* DELETE /api/mail/:id?userId=X */
 app.delete("/api/mail/:id", (req, res) => {
   const userId = parseInt(req.query.userId);
+  if (!userId) return res.status(400).json({ error: "userId is required" });
   const mails  = readJSON("mails.json", DEFAULT_MAILS);
   const idx    = mails.findIndex(m => m.id == req.params.id);
   if (idx === -1) return res.status(404).json({ error: "Not found" });
-  if (userId) {
-    const del = mails[idx].deletedBy || [];
-    if (!del.includes(userId)) mails[idx].deletedBy = [...del, userId];
-    writeJSON("mails.json", mails);
-  }
+  const del = mails[idx].deletedBy || [];
+  if (!del.includes(userId)) mails[idx].deletedBy = [...del, userId];
+  writeJSON("mails.json", mails);
   res.json({ success: true });
 });
 
@@ -446,12 +501,13 @@ app.delete("/api/drafts/:id", (req, res) => {
 /* ─── STATS ─── */
 app.get("/api/mail/stats", (req, res) => {
   const userId       = parseInt(req.query.userId);
-  const departmentId = req.query.departmentId || "";
   const mails        = readJSON("mails.json", DEFAULT_MAILS);
   const drafts       = readJSON("drafts.json", []);
   const fwds         = readJSON("forwarded.json", []);
   const users   = readJSON("users.json", DEFAULT_USERS);
   const reqUser = users.find(u => u.id === userId);
+  // departmentId is always derived from the user's own record, never trusted from the query string.
+  const departmentId = reqUser?.departmentId || "";
   let userCreatedAt = reqUser?.createdAt || null;
   if (!userCreatedAt && reqUser && reqUser.id > 1_000_000_000_000) {
     try { const t = new Date(reqUser.id); if (!isNaN(t)) userCreatedAt = t.toISOString(); } catch { /* skip */ }
@@ -468,13 +524,8 @@ app.get("/api/mail/stats", (req, res) => {
 });
 
 /* GET /api/admin/mail — all mails for admin overview (admin only) */
-app.get("/api/admin/mail", (req, res) => {
-  const userId  = parseInt(req.query.userId);
-  if (!userId) return res.status(401).json({ error: "Unauthorized" });
-  const users   = readJSON("users.json", DEFAULT_USERS);
-  const reqUser = users.find(u => u.id === userId);
-  if (!reqUser || !["admin","superadmin"].includes(reqUser.role))
-    return res.status(403).json({ error: "Forbidden" });
+app.get("/api/admin/mail", authenticate, (req, res) => {
+  if (!isAdmin(req.authUser)) return res.status(403).json({ error: "Forbidden" });
   const mails = readJSON("mails.json", DEFAULT_MAILS);
   res.json([...mails].sort((a, b) => new Date(b.date) - new Date(a.date)));
 });

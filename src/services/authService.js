@@ -1,7 +1,5 @@
 import { toast } from "sonner";
-import axios from "axios";
-
-const api = axios.create({ baseURL: "/api" });
+import api from "./apiClient";
 
 export const authService = {
   login: async (email, password) => {
@@ -9,6 +7,7 @@ export const authService = {
       const { data } = await api.post("/auth/login", { email, password });
       if (data.success) {
         localStorage.setItem("user", JSON.stringify(data.user));
+        localStorage.setItem("token", data.token);
         toast.success("Login successful!");
         return { success: true, user: data.user };
       }
@@ -39,6 +38,7 @@ export const authService = {
 
   logout: async () => {
     localStorage.removeItem("user");
+    localStorage.removeItem("token");
     toast.success("Logged out successfully!");
     return { success: true };
   },

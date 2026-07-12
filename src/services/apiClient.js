@@ -5,4 +5,11 @@ const apiClient = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
+// Attach the session token (if any) to every outgoing request.
+apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
+
 export default apiClient;

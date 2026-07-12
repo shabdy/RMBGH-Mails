@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { X, Search, ChevronDown, ChevronRight, Users } from "lucide-react";
-import axios from "axios";
+import api from "../../../../services/apiClient";
 import { useAnnouncements } from "../../../../context/AnnouncementContext";
 
 function Avatar({ name = "?" }) {
@@ -23,7 +23,7 @@ export function RecipientPicker({ recipients, setRecipients }) {
 
   /* Load active users from backend once */
   useEffect(() => {
-    axios.get("/api/users?status=Active").then(res => setAllUsers(res.data)).catch(() => {});
+    api.get("/users?status=Active").then(res => setAllUsers(res.data)).catch(() => {});
   }, []);
 
   /* Close on outside click */

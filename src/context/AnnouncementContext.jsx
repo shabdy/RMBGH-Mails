@@ -1,9 +1,8 @@
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
-import axios from "axios";
+import api from "../services/apiClient";
 import { AuthContext } from "./authContext";
 
 const AnnouncementContext = createContext(null);
-const api = axios.create({ baseURL: "/api" });
 
 export function AnnouncementProvider({ children }) {
   const { user } = useContext(AuthContext);
@@ -257,7 +256,16 @@ export function AnnouncementProvider({ children }) {
     } catch (err) { console.error(err); }
   };
 
-  const markUnread = (id) => setInbox(prev => prev.map(m => m.id === id ? { ...m, unread: true } : m));
+  const markUnread = async (id) => {
+    const cu = buildCurrentUser();
+    if (!cu) return;
+    // Optimistic update, reconciled with the server response below.
+    setInbox(prev => prev.map(m => m.id === id ? { ...m, unread: true } : m));
+    try {
+      const { data } = await api.post(`/mail/${id}/unread`, { userId: cu.id });
+      setInbox(prev => prev.map(m => m.id === id ? enrich(data) : m));
+    } catch (err) { console.error(err); }
+  };
 
   /* ─── ACKNOWLEDGE RECEIPT ─── */
   const acknowledgeMail = async (id, signature) => {

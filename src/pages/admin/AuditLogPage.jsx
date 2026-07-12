@@ -5,9 +5,7 @@ import {
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { PaginationBar } from "@/components/ui/pagination-bar";
-import axios from "axios";
-
-const api = axios.create({ baseURL: "/api" });
+import api from "@/services/apiClient";
 
 const ACTION_CONFIG = {
   approve:      { label: "Approved",      icon: UserCheck, class: "bg-green-50 text-green-700 border-green-200"    },
