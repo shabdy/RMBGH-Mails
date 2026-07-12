@@ -4,10 +4,15 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import jwt from "jsonwebtoken";
+import multer from "multer";
+import crypto from "crypto";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = path.join(__dirname, "data");
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+
+const UPLOAD_DIR = path.join(__dirname, "uploads");
+if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 
 const JWT_SECRET = process.env.SESSION_SECRET;
 if (!JWT_SECRET) {
@@ -17,6 +22,18 @@ if (!JWT_SECRET) {
 const app = express();
 app.use(cors());
 app.use(express.json({ limit: "10mb" }));
+app.use("/uploads", express.static(UPLOAD_DIR));
+
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: (req, file, cb) => cb(null, UPLOAD_DIR),
+    filename: (req, file, cb) => {
+      const safeExt = path.extname(file.originalname).slice(0, 10);
+      cb(null, `${Date.now()}-${crypto.randomBytes(6).toString("hex")}${safeExt}`);
+    },
+  }),
+  limits: { fileSize: 15 * 1024 * 1024, files: 6 },
+});
 
 /* ─── Auth middleware ───
    Verifies the "Authorization: Bearer <token>" header and attaches the
@@ -573,22 +590,38 @@ app.get("/api/posts", (req, res) => {
 });
 
 app.post("/api/posts", (req, res) => {
-  const { content, from, userId } = req.body;
-  if (!content || !content.trim()) return res.status(400).json({ error: "Post content is required" });
+  const { content, from, userId, attachments } = req.body;
+  const hasAttachments = Array.isArray(attachments) && attachments.length > 0;
+  if ((!content || !content.trim()) && !hasAttachments)
+    return res.status(400).json({ error: "Post content is required" });
   if (!from?.id && !userId) return res.status(400).json({ error: "Author is required" });
   const posts = readJSON("posts.json", []);
   const newPost = {
     id: Date.now(),
-    content: content.trim(),
+    content: (content || "").trim(),
     from: from || null,
     date: new Date().toISOString(),
     viewedBy: [],
     comments: [],
     reactions: [],
+    attachments: hasAttachments ? attachments : [],
   };
   posts.push(newPost);
   writeJSON("posts.json", posts);
   res.json(normalizePost(newPost, userId || from?.id));
+});
+
+/* Upload one or more files (images or documents) for use as post attachments.
+   Returns metadata only — the caller embeds it in the post's `attachments`
+   array when creating the post. Files are served back from /uploads/<filename>. */
+app.post("/api/posts/upload", authenticate, upload.array("files", 6), (req, res) => {
+  const files = (req.files || []).map(f => ({
+    url:  `/uploads/${f.filename}`,
+    name: f.originalname,
+    type: f.mimetype,
+    size: f.size,
+  }));
+  res.json({ files });
 });
 
 app.delete("/api/posts/:id", authenticate, (req, res) => {
@@ -598,8 +631,14 @@ app.delete("/api/posts/:id", authenticate, (req, res) => {
   const isAuthor = String(posts[idx].from?.id) === String(req.authUser.id);
   if (!isAuthor && !isAdmin(req.authUser))
     return res.status(403).json({ error: "You can only delete your own posts" });
-  posts.splice(idx, 1);
+  const [removed] = posts.splice(idx, 1);
   writeJSON("posts.json", posts);
+  // Best-effort cleanup of any uploaded files attached to the deleted post.
+  for (const att of removed.attachments || []) {
+    if (!att?.url?.startsWith("/uploads/")) continue;
+    const filePath = path.join(UPLOAD_DIR, path.basename(att.url));
+    fs.unlink(filePath, () => {});
+  }
   res.json({ success: true });
 });
 

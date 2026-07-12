@@ -1,1 +1,45 @@
-[]
+[
+  {
+    "id": 1783856992115,
+    "content": "Sample",
+    "from": {
+      "id": 1,
+      "name": "IT Superadmin",
+      "email": "superadmin@rmbgh.com",
+      "department": "Information Technology",
+      "departmentId": "IT"
+    },
+    "date": "2026-07-12T11:49:52.115Z",
+    "viewedBy": [
+      {
+        "id": 1,
+        "name": "IT Superadmin",
+        "date": "2026-07-12T11:49:52.362Z",
+        "time": "2026-07-12T11:49:52.362Z"
+      }
+    ],
+    "comments": [
+      {
+        "id": 1783857127233,
+        "userId": 1,
+        "name": "IT Superadmin",
+        "text": "Sample",
+        "date": "2026-07-12T11:52:07.233Z"
+      },
+      {
+        "id": 1783857287056,
+        "userId": 1,
+        "name": "IT Superadmin",
+        "text": "Sample again",
+        "date": "2026-07-12T11:54:47.056Z"
+      }
+    ],
+    "reactions": [
+      {
+        "userId": 1,
+        "name": "IT Superadmin",
+        "type": "love"
+      }
+    ]
+  }
+]

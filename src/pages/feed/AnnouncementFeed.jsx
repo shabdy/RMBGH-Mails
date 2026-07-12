@@ -8,11 +8,14 @@ export default function AnnouncementFeed() {
 
   return (
     <div className="p-5 max-w-2xl mx-auto space-y-4 overflow-y-auto h-full">
-      <div>
-        <h1 className="text-xl font-bold text-foreground flex items-center gap-2">
-          <Megaphone size={20} className="text-primary" /> Announcement
-        </h1>
-        <p className="text-sm text-muted-foreground">Post updates for everyone in the organization to see</p>
+      <div className="flex items-center gap-3 pb-1">
+        <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
+          <Megaphone size={19} />
+        </div>
+        <div>
+          <h1 className="text-xl font-bold text-foreground">Announcement</h1>
+          <p className="text-sm text-muted-foreground">Post updates for everyone in the organization to see</p>
+        </div>
       </div>
 
       <PostComposer />
@@ -24,7 +27,9 @@ export default function AnnouncementFeed() {
           <p className="text-xs">Be the first to post something.</p>
         </div>
       ) : (
-        posts.map((p) => <PostCard key={p.id} post={p} />)
+        <div className="space-y-4">
+          {posts.map((p) => <PostCard key={p.id} post={p} />)}
+        </div>
       )}
     </div>
   );
