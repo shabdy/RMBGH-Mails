@@ -1,18 +1,17 @@
-import { Loader2Icon } from "lucide-react"
+import rmbghLogo from "@/assets/rmbghlogo.png";
+import { cn } from "@/lib/utils";
 
-import { cn } from "@/lib/utils"
-
-function Spinner({
-  className,
-  ...props
-}) {
+function Spinner({ className, size = 20, ...props }) {
   return (
-    <Loader2Icon
+    <img
+      src={rmbghLogo}
       role="status"
       aria-label="Loading"
-      className={cn("size-4 animate-spin", className)}
-      {...props} />
+      style={{ width: size, height: size }}
+      className={cn("animate-spin object-contain", className)}
+      {...props}
+    />
   );
 }
 
-export { Spinner }
+export { Spinner };

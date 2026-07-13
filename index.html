@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/png" href="/rmbghlogo.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -11,9 +11,68 @@
     />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>RMBGH Mailing System</title>
+    <style>
+      #app-loading {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+        background: #ffffff;
+        z-index: 9999;
+        transition: opacity 0.3s ease;
+      }
+      #app-loading.hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+      #app-loading img {
+        width: 72px;
+        height: 72px;
+        object-fit: contain;
+        animation: rmbgh-spin 1.1s linear infinite;
+        filter: drop-shadow(0 4px 12px rgba(0,0,0,0.12));
+      }
+      #app-loading p {
+        font-family: 'Poppins', sans-serif;
+        font-size: 13px;
+        font-weight: 500;
+        color: #94a3b8;
+        letter-spacing: 0.04em;
+        margin: 0;
+      }
+      @keyframes rmbgh-spin {
+        from { transform: rotate(0deg);   }
+        to   { transform: rotate(360deg); }
+      }
+    </style>
   </head>
   <body>
+    <!-- Shown immediately while the JS bundle downloads & React boots -->
+    <div id="app-loading">
+      <img src="/rmbghlogo.png" alt="Loading…" />
+      <p>RMBGH Mailing System</p>
+    </div>
+
     <div id="root"></div>
+
     <script type="module" src="/src/main.jsx"></script>
+    <script>
+      // Remove the splash screen once React has rendered into #root
+      (function () {
+        const el = document.getElementById('app-loading');
+        if (!el) return;
+        const observer = new MutationObserver(function () {
+          if (document.getElementById('root').childElementCount > 0) {
+            el.classList.add('hidden');
+            setTimeout(function () { el.remove(); }, 350);
+            observer.disconnect();
+          }
+        });
+        observer.observe(document.getElementById('root'), { childList: true, subtree: true });
+      })();
+    </script>
   </body>
 </html>
