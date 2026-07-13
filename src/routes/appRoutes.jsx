@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import AppLayout from "../layout/layout";
 
@@ -6,25 +7,34 @@ import Register from "../pages/register/components/registerAccount";
 
 import ProtectedRoute, { AdminRoute } from "./protectedRoutes";
 
-import Dashboard    from "../pages/dashboard/Dashboard";
-import UsersPage    from "../pages/admin/UsersPage";
-import AuditLogPage from "../pages/admin/AuditLogPage";
-import DepartmentsPage       from "../pages/admin/DepartmentsPage";
-import ReportsPage           from "../pages/admin/ReportsPage";
-import AnnouncementsAdminPage from "../pages/admin/AnnouncementsAdminPage";
-import ProfilePage  from "../pages/profile/ProfilePage";
-import SettingsPage from "../pages/settings/SettingsPage";
-
-import Inbox       from "../pages/announcement/inbox/Inbox";
-import Forward     from "../pages/announcement/Forward/Forward";
-import Sent        from "../pages/announcement/sent/Sent";
-import Attachments from "../pages/announcement/Attachments";
-import Drafts      from "../pages/announcement/drafts/Drafts";
-import AnnouncementLayout from "../pages/announcement/AnnouncementLayout";
 import { AnnouncementProvider } from "../context/AnnouncementContext";
 import { PostsProvider } from "../context/PostsContext";
-import AnnouncementFeed from "../pages/feed/AnnouncementFeed";
-import CalendarPage from "../pages/calendar/CalendarPage";
+
+// Lazy-load every page so the initial bundle only ships the login screen.
+const Dashboard    = lazy(() => import("../pages/dashboard/Dashboard"));
+const UsersPage    = lazy(() => import("../pages/admin/UsersPage"));
+const AuditLogPage = lazy(() => import("../pages/admin/AuditLogPage"));
+const DepartmentsPage        = lazy(() => import("../pages/admin/DepartmentsPage"));
+const ReportsPage            = lazy(() => import("../pages/admin/ReportsPage"));
+const AnnouncementsAdminPage = lazy(() => import("../pages/admin/AnnouncementsAdminPage"));
+const ProfilePage  = lazy(() => import("../pages/profile/ProfilePage"));
+const SettingsPage = lazy(() => import("../pages/settings/SettingsPage"));
+
+const Inbox              = lazy(() => import("../pages/announcement/inbox/Inbox"));
+const Forward            = lazy(() => import("../pages/announcement/Forward/Forward"));
+const Sent               = lazy(() => import("../pages/announcement/sent/Sent"));
+const Attachments        = lazy(() => import("../pages/announcement/Attachments"));
+const Drafts             = lazy(() => import("../pages/announcement/drafts/Drafts"));
+const AnnouncementLayout = lazy(() => import("../pages/announcement/AnnouncementLayout"));
+
+const AnnouncementFeed = lazy(() => import("../pages/feed/AnnouncementFeed"));
+const CalendarPage     = lazy(() => import("../pages/calendar/CalendarPage"));
+
+// Wraps a lazy component in Suspense with a blank fallback.
+// Chunks are small (< 50 kB each) so the blank flash is imperceptible.
+function S({ children }) {
+  return <Suspense fallback={<div className="h-full" />}>{children}</Suspense>;
+}
 
 function App() {
   return (
@@ -44,25 +54,24 @@ function App() {
             </ProtectedRoute>
           }
         >
-          <Route path="/dashboard"      element={<Dashboard />} />
-          <Route path="/announcements"  element={<AnnouncementFeed />} />
-          <Route path="/calendar"       element={<CalendarPage />} />
-          <Route path="/profile"        element={<ProfilePage />} />
-          <Route path="/settings"       element={<SettingsPage />} />
+          <Route path="/dashboard"     element={<S><Dashboard /></S>} />
+          <Route path="/announcements" element={<S><AnnouncementFeed /></S>} />
+          <Route path="/calendar"      element={<S><CalendarPage /></S>} />
+          <Route path="/profile"       element={<S><ProfilePage /></S>} />
+          <Route path="/settings"      element={<S><SettingsPage /></S>} />
 
-          {/* Admin-only routes */}
-          <Route path="/admin/users"          element={<AdminRoute><UsersPage /></AdminRoute>} />
-          <Route path="/admin/audit"          element={<AdminRoute><AuditLogPage /></AdminRoute>} />
-          <Route path="/admin/departments"    element={<AdminRoute><DepartmentsPage /></AdminRoute>} />
-          <Route path="/admin/reports"        element={<AdminRoute><ReportsPage /></AdminRoute>} />
-          <Route path="/admin/announcements"  element={<AdminRoute><AnnouncementsAdminPage /></AdminRoute>} />
+          <Route path="/admin/users"         element={<AdminRoute><S><UsersPage /></S></AdminRoute>} />
+          <Route path="/admin/audit"         element={<AdminRoute><S><AuditLogPage /></S></AdminRoute>} />
+          <Route path="/admin/departments"   element={<AdminRoute><S><DepartmentsPage /></S></AdminRoute>} />
+          <Route path="/admin/reports"       element={<AdminRoute><S><ReportsPage /></S></AdminRoute>} />
+          <Route path="/admin/announcements" element={<AdminRoute><S><AnnouncementsAdminPage /></S></AdminRoute>} />
 
-          <Route element={<AnnouncementLayout />}>
-            <Route path="/inbox"       element={<Inbox />} />
-            <Route path="/sent"        element={<Sent />} />
-            <Route path="/forward"     element={<Forward />} />
-            <Route path="/attachments" element={<Attachments />} />
-            <Route path="/drafts"      element={<Drafts />} />
+          <Route element={<S><AnnouncementLayout /></S>}>
+            <Route path="/inbox"       element={<S><Inbox /></S>} />
+            <Route path="/sent"        element={<S><Sent /></S>} />
+            <Route path="/forward"     element={<S><Forward /></S>} />
+            <Route path="/attachments" element={<S><Attachments /></S>} />
+            <Route path="/drafts"      element={<S><Drafts /></S>} />
           </Route>
         </Route>
       </Routes>

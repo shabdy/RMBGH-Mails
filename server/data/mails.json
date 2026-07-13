@@ -757,5 +757,42 @@
     "id": 1783857647194,
     "type": "mail",
     "date": "2026-07-12T12:00:47.194Z"
+  },
+  {
+    "readBy": [],
+    "pinnedBy": [],
+    "importantBy": [],
+    "deletedBy": [],
+    "status": "delivered",
+    "priority": "normal",
+    "title": "Networking Basics ",
+    "content": "<p>Your E-certficate</p>",
+    "recipients": [
+      {
+        "id": 1783051261533,
+        "name": "Ransh Dy",
+        "email": "rdy@rmbgh.com",
+        "department": "Information Technology",
+        "departmentId": "IT",
+        "role": "admin"
+      }
+    ],
+    "recipientType": "specific",
+    "targetDepartmentId": null,
+    "emailType": "",
+    "emailTypeLabel": "",
+    "attachment": {},
+    "requiresReceipt": true,
+    "from": {
+      "id": 1,
+      "name": "IT Superadmin",
+      "email": "superadmin@rmbgh.com",
+      "department": "Information Technology",
+      "departmentId": "IT"
+    },
+    "userId": 1,
+    "id": 1783931662742,
+    "type": "mail",
+    "date": "2026-07-13T08:34:22.742Z"
   }
 ]
