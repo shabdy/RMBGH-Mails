@@ -54,9 +54,9 @@ export default function AnnouncementFeed() {
   };
 
   return (
-    <div className="p-5 h-full overflow-y-auto">
-      <div className="max-w-6xl mx-auto flex items-start gap-5">
-        <div className="flex-1 min-w-0 space-y-4">
+    <div className="px-4 py-5 h-full overflow-y-auto">
+      <div className="flex items-start gap-4 w-full">
+        <div className="flex-1 min-w-0 space-y-3.5">
           <div className="relative">
             <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
             <input
@@ -126,7 +126,7 @@ export default function AnnouncementFeed() {
           )}
         </div>
 
-        <aside className="hidden lg:flex lg:flex-col gap-5 w-72 flex-shrink-0 sticky top-5">
+        <aside className="hidden lg:flex lg:flex-col gap-4 w-80 flex-shrink-0 sticky top-5">
           <PinnedSidebar posts={posts} onSelect={scrollToPost} />
           <MediaFilesLinksSidebar posts={posts} />
           <MiniCalendar />

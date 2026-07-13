@@ -227,5 +227,36 @@
     "attachments": [],
     "category": "Events",
     "pinned": false
+  },
+  {
+    "id": 1783930577220,
+    "content": "Sample",
+    "from": {
+      "id": 1,
+      "name": "IT Superadmin",
+      "email": "superadmin@rmbgh.com",
+      "department": "Information Technology",
+      "departmentId": "IT"
+    },
+    "date": "2026-07-13T08:16:17.220Z",
+    "viewedBy": [
+      {
+        "id": 1,
+        "name": "IT Superadmin",
+        "date": "2026-07-13T08:16:17.606Z",
+        "time": "2026-07-13T08:16:17.606Z"
+      }
+    ],
+    "comments": [],
+    "reactions": [],
+    "attachments": [],
+    "category": "Events",
+    "pinned": false,
+    "event": {
+      "title": "Sample Event",
+      "date": "2026-07-14",
+      "time": "",
+      "location": "MPH 4th Floor"
+    }
   }
 ]

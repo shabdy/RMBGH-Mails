@@ -107,9 +107,9 @@ export default function CalendarPage() {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-5 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-4 items-start">
           {/* Month grid */}
-          <div className="bg-card border border-border rounded-2xl shadow-sm p-4">
+          <div className="bg-card border border-border rounded-2xl shadow-sm p-5">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-base font-semibold text-foreground">{MONTHS[m]} {y}</h2>
               <div className="flex items-center gap-1">
@@ -124,39 +124,42 @@ export default function CalendarPage() {
 
             <div className="grid grid-cols-7 mb-1">
               {WEEKDAYS.map((wd) => (
-                <div key={wd} className="text-center text-[11px] font-medium text-muted-foreground py-1.5">{wd}</div>
+                <div key={wd} className="text-center text-[11px] font-medium text-muted-foreground py-2">{wd}</div>
               ))}
             </div>
 
-            <div className="grid grid-cols-7 gap-1">
+            <div className="grid grid-cols-7">
               {cells.map((c, i) => {
                 const dayEvents = !c.outside ? (eventsByDate[c.key] || []) : [];
                 const isToday = c.key === tKey;
                 const isSelected = c.key === selectedKey;
                 return (
-                  <button
-                    key={i}
-                    disabled={c.outside}
-                    onClick={() => setSelectedKey(c.key)}
-                    className={`relative aspect-square rounded-xl flex flex-col items-center justify-center gap-0.5 text-xs font-medium transition ${
-                      c.outside
-                        ? "text-muted-foreground/30 cursor-default"
-                        : isSelected
-                        ? "bg-primary text-primary-foreground shadow-sm"
-                        : isToday
-                        ? "bg-primary/10 text-primary"
-                        : "text-foreground hover:bg-muted/60"
-                    }`}
-                  >
-                    <span>{c.day}</span>
-                    {dayEvents.length > 0 && (
-                      <span className={`flex gap-0.5 ${isSelected ? "text-primary-foreground" : ""}`}>
+                  <div key={i} className="flex flex-col items-center py-1">
+                    <button
+                      disabled={c.outside}
+                      onClick={() => !c.outside && setSelectedKey(c.key)}
+                      className={`relative w-9 h-9 rounded-full flex items-center justify-center text-sm font-medium transition ${
+                        c.outside
+                          ? "text-muted-foreground/25 cursor-default"
+                          : isSelected && isToday
+                          ? "bg-primary text-primary-foreground shadow-sm ring-2 ring-primary/30"
+                          : isSelected
+                          ? "bg-primary text-primary-foreground shadow-sm"
+                          : isToday
+                          ? "bg-primary/15 text-primary font-bold"
+                          : "text-foreground hover:bg-muted/60"
+                      }`}
+                    >
+                      {c.day}
+                    </button>
+                    {dayEvents.length > 0 && !c.outside && (
+                      <span className="flex gap-0.5 mt-0.5">
                         {dayEvents.slice(0, 3).map((_, di) => (
-                          <span key={di} className={`w-1 h-1 rounded-full ${isSelected ? "bg-primary-foreground" : "bg-violet-500"}`} />
+                          <span key={di} className={`w-1 h-1 rounded-full ${isSelected ? "bg-primary/60" : "bg-violet-500"}`} />
                         ))}
                       </span>
                     )}
-                  </button>
+                  </div>
                 );
               })}
             </div>
