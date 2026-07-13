@@ -1,7 +1,7 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useContext } from "react";
 import { X, Search, ChevronDown, ChevronRight, Users } from "lucide-react";
 import api from "../../../../services/apiClient";
-import { useAnnouncements } from "../../../../context/AnnouncementContext";
+import { AuthContext } from "../../../../context/authContext";
 
 function Avatar({ name = "?" }) {
   const initials = (name || "?").split(" ").map(w => w[0] || "").slice(0, 2).join("").toUpperCase() || "?";
@@ -13,7 +13,7 @@ function Avatar({ name = "?" }) {
 }
 
 export function RecipientPicker({ recipients, setRecipients }) {
-  const { currentUser } = useAnnouncements();
+  const { user: currentUser } = useContext(AuthContext);
   const [query, setQuery]           = useState("");
   const [open,  setOpen]            = useState(false);
   const [allUsers, setAllUsers]     = useState([]);
