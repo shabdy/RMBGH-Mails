@@ -24,6 +24,7 @@ import AnnouncementLayout from "../pages/announcement/AnnouncementLayout";
 import { AnnouncementProvider } from "../context/AnnouncementContext";
 import { PostsProvider } from "../context/PostsContext";
 import AnnouncementFeed from "../pages/feed/AnnouncementFeed";
+import CalendarPage from "../pages/calendar/CalendarPage";
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
         >
           <Route path="/dashboard"      element={<Dashboard />} />
           <Route path="/announcements"  element={<AnnouncementFeed />} />
+          <Route path="/calendar"       element={<CalendarPage />} />
           <Route path="/profile"        element={<ProfilePage />} />
           <Route path="/settings"       element={<SettingsPage />} />
 

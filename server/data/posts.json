@@ -183,7 +183,13 @@
         "date": "2026-07-13T07:49:57.933Z"
       }
     ],
-    "reactions": [],
+    "reactions": [
+      {
+        "userId": 1,
+        "name": "IT Superadmin",
+        "type": "love"
+      }
+    ],
     "attachments": [
       {
         "url": "/uploads/1783857885401-c1acd4963c58.jpg",
@@ -202,9 +208,22 @@
       "department": "IT"
     },
     "date": "2026-07-13T07:51:07.974Z",
-    "viewedBy": [],
+    "viewedBy": [
+      {
+        "id": 1,
+        "name": "IT Superadmin",
+        "date": "2026-07-13T07:52:58.239Z",
+        "time": "2026-07-13T07:52:58.239Z"
+      }
+    ],
     "comments": [],
-    "reactions": [],
+    "reactions": [
+      {
+        "userId": 1,
+        "name": "IT Superadmin",
+        "type": "like"
+      }
+    ],
     "attachments": [],
     "category": "Events",
     "pinned": false

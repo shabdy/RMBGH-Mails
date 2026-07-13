@@ -1,5 +1,5 @@
 import { useState, useContext, useRef } from "react";
-import { Send, Image as ImageIcon, Paperclip, X, FileText, Loader2 } from "lucide-react";
+import { Send, Image as ImageIcon, Paperclip, X, FileText, Loader2, CalendarPlus, MapPin, Clock } from "lucide-react";
 import { AuthContext } from "@/context/authContext";
 import { usePosts } from "@/context/PostsContext";
 import { Button } from "@/components/ui/button";
@@ -17,10 +17,24 @@ export function PostComposer() {
   const [files, setFiles] = useState([]); // { file, previewUrl, uploading? }
   const [focused, setFocused] = useState(false);
   const [posting, setPosting] = useState(false);
+  const [filingEvent, setFilingEvent] = useState(false);
+  const [eventTitle, setEventTitle] = useState("");
+  const [eventDate, setEventDate] = useState("");
+  const [eventTime, setEventTime] = useState("");
+  const [eventLocation, setEventLocation] = useState("");
   const imgInputRef = useRef(null);
   const fileInputRef = useRef(null);
 
-  const canPost = (text.trim().length > 0 || files.length > 0) && !posting;
+  const eventReady = filingEvent ? eventTitle.trim().length > 0 && eventDate.trim().length > 0 : true;
+  const canPost = (text.trim().length > 0 || files.length > 0 || filingEvent) && eventReady && !posting;
+
+  const resetEvent = () => {
+    setFilingEvent(false);
+    setEventTitle("");
+    setEventDate("");
+    setEventTime("");
+    setEventLocation("");
+  };
 
   const addFiles = (list) => {
     const incoming = Array.from(list || []).filter((f) => f.size <= MAX_SIZE);
@@ -48,12 +62,16 @@ export function PostComposer() {
       if (files.length > 0) {
         attachments = await uploadFiles(files.map((f) => f.file));
       }
-      await createPost(text, attachments, category);
+      const event = filingEvent
+        ? { title: eventTitle.trim(), date: eventDate, time: eventTime, location: eventLocation.trim() }
+        : null;
+      await createPost(text, attachments, category, event);
       files.forEach((f) => f.previewUrl && URL.revokeObjectURL(f.previewUrl));
       setText("");
       setFiles([]);
       setCategory("Updates");
       setFocused(false);
+      resetEvent();
     } catch (err) {
       console.error("Post failed:", err);
     } finally {
@@ -75,7 +93,7 @@ export function PostComposer() {
         />
       </div>
 
-      {(focused || text || files.length > 0) && (
+      {!filingEvent && (focused || text || files.length > 0) && (
         <div className="mt-3 ml-12 flex flex-wrap gap-1.5">
           {CATEGORIES.map((c) => (
             <button
@@ -91,6 +109,51 @@ export function PostComposer() {
               {c}
             </button>
           ))}
+        </div>
+      )}
+
+      {filingEvent && (
+        <div className="mt-3 ml-12 rounded-xl border border-violet-200 bg-violet-50/60 p-3 space-y-2 animate-in fade-in slide-in-from-top-1 duration-150">
+          <div className="flex items-center justify-between">
+            <span className="flex items-center gap-1.5 text-[11px] font-semibold text-violet-700">
+              <CalendarPlus size={13} /> Event details
+            </span>
+            <button type="button" onClick={resetEvent} className="text-violet-500 hover:text-violet-700 transition">
+              <X size={13} />
+            </button>
+          </div>
+          <input
+            value={eventTitle}
+            onChange={(e) => setEventTitle(e.target.value)}
+            placeholder="Event title (e.g. Fire Drill)"
+            className="w-full text-xs rounded-lg border border-violet-200 bg-card px-3 py-2 placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-violet-300"
+          />
+          <div className="flex flex-wrap gap-2">
+            <input
+              type="date"
+              value={eventDate}
+              onChange={(e) => setEventDate(e.target.value)}
+              className="flex-1 min-w-[130px] text-xs rounded-lg border border-violet-200 bg-card px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-300"
+            />
+            <div className="flex-1 min-w-[110px] relative">
+              <Clock size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+              <input
+                type="time"
+                value={eventTime}
+                onChange={(e) => setEventTime(e.target.value)}
+                className="w-full text-xs rounded-lg border border-violet-200 bg-card pl-7 pr-2 py-2 focus:outline-none focus:ring-2 focus:ring-violet-300"
+              />
+            </div>
+          </div>
+          <div className="relative">
+            <MapPin size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+            <input
+              value={eventLocation}
+              onChange={(e) => setEventLocation(e.target.value)}
+              placeholder="Location (optional)"
+              className="w-full text-xs rounded-lg border border-violet-200 bg-card pl-7 pr-3 py-2 placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-violet-300"
+            />
+          </div>
         </div>
       )}
 
@@ -137,6 +200,19 @@ export function PostComposer() {
           </button>
           <input ref={imgInputRef} type="file" accept="image/*" multiple hidden onChange={(e) => { addFiles(e.target.files); e.target.value = ""; }} />
           <input ref={fileInputRef} type="file" multiple hidden onChange={(e) => { addFiles(e.target.files); e.target.value = ""; }} />
+          <button
+            type="button"
+            onClick={() => {
+              if (filingEvent) resetEvent();
+              else { setFilingEvent(true); setFocused(true); }
+            }}
+            title="File an event"
+            className={`p-2 rounded-lg transition ${
+              filingEvent ? "text-violet-600 bg-violet-50" : "text-muted-foreground hover:text-violet-600 hover:bg-violet-50"
+            }`}
+          >
+            <CalendarPlus size={17} />
+          </button>
         </div>
         <Button onClick={handlePost} disabled={!canPost} size="sm" className="rounded-full px-4">
           <span className="flex items-center gap-1.5">

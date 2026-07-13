@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useContext } from "react";
-import { MessageCircle, Forward, Trash2, Eye, Pin, MoreVertical } from "lucide-react";
+import { MessageCircle, Forward, Trash2, Eye, Pin, MoreVertical, CalendarDays, MapPin, Clock } from "lucide-react";
 import { AuthContext } from "@/context/authContext";
 import { usePosts } from "@/context/PostsContext";
 import { Avatar } from "./Avatar";
@@ -29,6 +29,29 @@ const CATEGORY_STYLES = {
   Policies: "bg-green-50 text-green-600",
   Alerts:   "bg-amber-50 text-amber-700",
 };
+
+const MONTHS_SHORT = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const MONTHS_LONG  = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+// event.date is a plain "yyyy-mm-dd" string — parse the parts directly so
+// display never shifts a day due to local-timezone Date parsing.
+function parseEventDate(dateStr) {
+  const [y, m, d] = (dateStr || "").split("-").map(Number);
+  return { y, m: m - 1, d };
+}
+function eventMonthShort(dateStr) { const { m } = parseEventDate(dateStr); return MONTHS_SHORT[m] || ""; }
+function eventDay(dateStr) { const { d } = parseEventDate(dateStr); return d || ""; }
+function eventDateLabel(dateStr) {
+  const { y, m, d } = parseEventDate(dateStr);
+  return `${MONTHS_LONG[m] || ""} ${d}, ${y}`;
+}
+function eventTimeLabel(timeStr) {
+  const [h, min] = (timeStr || "").split(":").map(Number);
+  if (Number.isNaN(h)) return "";
+  const period = h >= 12 ? "PM" : "AM";
+  const h12 = h % 12 || 12;
+  return `${h12}:${String(min || 0).padStart(2, "0")} ${period}`;
+}
 
 export function PostCard({ post, cardRef }) {
   const { user } = useContext(AuthContext);
@@ -145,6 +168,25 @@ export function PostCard({ post, cardRef }) {
       {post.content && (
         <div className="px-4 pt-2 pb-2">
           <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">{post.content}</p>
+        </div>
+      )}
+
+      {post.event && (
+        <div className="px-4 pb-3">
+          <div className="rounded-xl border border-violet-200 bg-violet-50/60 p-3 flex items-start gap-3">
+            <div className="w-11 h-11 rounded-lg bg-violet-600 text-white flex flex-col items-center justify-center flex-shrink-0 leading-none">
+              <span className="text-[9px] font-medium uppercase">{eventMonthShort(post.event.date)}</span>
+              <span className="text-base font-bold">{eventDay(post.event.date)}</span>
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-violet-900">{post.event.title}</p>
+              <div className="flex items-center gap-3 mt-1 text-[11px] text-violet-700/80 flex-wrap">
+                <span className="flex items-center gap-1"><CalendarDays size={11} /> {eventDateLabel(post.event.date)}</span>
+                {post.event.time && <span className="flex items-center gap-1"><Clock size={11} /> {eventTimeLabel(post.event.time)}</span>}
+                {post.event.location && <span className="flex items-center gap-1"><MapPin size={11} /> {post.event.location}</span>}
+              </div>
+            </div>
+          </div>
         </div>
       )}
 

@@ -4,6 +4,8 @@ import { usePosts } from "@/context/PostsContext";
 import { PostComposer } from "./components/PostComposer";
 import { PostCard } from "./components/PostCard";
 import { PinnedSidebar } from "./components/PinnedSidebar";
+import { MediaFilesLinksSidebar } from "./components/MediaFilesLinksSidebar";
+import { MiniCalendar } from "./components/MiniCalendar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -54,8 +56,6 @@ export default function AnnouncementFeed() {
   return (
     <div className="p-5 h-full overflow-y-auto">
       <div className="max-w-6xl mx-auto flex items-start gap-5">
-        <PinnedSidebar posts={posts} onSelect={scrollToPost} />
-
         <div className="flex-1 min-w-0 space-y-4">
           <div className="relative">
             <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
@@ -125,6 +125,12 @@ export default function AnnouncementFeed() {
             </div>
           )}
         </div>
+
+        <aside className="hidden lg:flex lg:flex-col gap-5 w-72 flex-shrink-0 sticky top-5">
+          <PinnedSidebar posts={posts} onSelect={scrollToPost} />
+          <MediaFilesLinksSidebar posts={posts} />
+          <MiniCalendar />
+        </aside>
       </div>
     </div>
   );

@@ -591,10 +591,28 @@ app.get("/api/posts", (req, res) => {
 
 const POST_CATEGORIES = ["Updates", "Events", "Policies", "Alerts"];
 
+/* An event post carries a small structured `event` block alongside the
+   normal content/attachments — { title, date, time, location }. A post with
+   an event block is always filed under the "Events" category so it's
+   reliably surfaced on the Calendar page. */
+function sanitizeEvent(event) {
+  if (!event || typeof event !== "object") return null;
+  const title = String(event.title || "").trim();
+  const date  = String(event.date  || "").trim(); // yyyy-mm-dd
+  if (!title || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return null;
+  return {
+    title,
+    date,
+    time:     String(event.time || "").trim().slice(0, 5),
+    location: String(event.location || "").trim().slice(0, 200),
+  };
+}
+
 app.post("/api/posts", (req, res) => {
-  const { content, from, userId, attachments, category } = req.body;
+  const { content, from, userId, attachments, category, event } = req.body;
   const hasAttachments = Array.isArray(attachments) && attachments.length > 0;
-  if ((!content || !content.trim()) && !hasAttachments)
+  const eventBlock = sanitizeEvent(event);
+  if ((!content || !content.trim()) && !hasAttachments && !eventBlock)
     return res.status(400).json({ error: "Post content is required" });
   if (!from?.id && !userId) return res.status(400).json({ error: "Author is required" });
   const posts = readJSON("posts.json", []);
@@ -607,12 +625,23 @@ app.post("/api/posts", (req, res) => {
     comments: [],
     reactions: [],
     attachments: hasAttachments ? attachments : [],
-    category: POST_CATEGORIES.includes(category) ? category : "Updates",
+    category: eventBlock ? "Events" : (POST_CATEGORIES.includes(category) ? category : "Updates"),
     pinned: false,
+    event: eventBlock,
   };
   posts.push(newPost);
   writeJSON("posts.json", posts);
   res.json(normalizePost(newPost, userId || from?.id));
+});
+
+/* All filed events, flattened for the Calendar page — every post that
+   carries an `event` block, newest-filed first. */
+app.get("/api/events", (req, res) => {
+  const posts = readJSON("posts.json", []);
+  const events = posts
+    .filter(p => p.event)
+    .map(p => normalizePost(p, req.query.userId ? parseInt(req.query.userId) : null));
+  res.json(events);
 });
 
 /* Pin/unpin — an admin/superadmin moderation action that surfaces a post in

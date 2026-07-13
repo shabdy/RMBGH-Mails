@@ -46,9 +46,9 @@ export function PostsProvider({ children }) {
     return data.files;
   };
 
-  const createPost = async (content, attachments = [], category = "Updates") => {
+  const createPost = async (content, attachments = [], category = "Updates", event = null) => {
     const cu = buildCurrentUser();
-    if (!cu || (!content?.trim() && attachments.length === 0)) return;
+    if (!cu || (!content?.trim() && attachments.length === 0 && !event)) return;
 
     const tempId = `temp-${Date.now()}`;
     const optimistic = {
@@ -58,7 +58,8 @@ export function PostsProvider({ children }) {
       date: "Just now",
       time: "",
       attachments,
-      category,
+      category: event ? "Events" : category,
+      event,
       pinned: false,
       viewedBy: [], comments: [], reactions: [],
       viewCount: 0, commentCount: 0, reactionCount: 0, reactionCounts: {},
@@ -67,7 +68,7 @@ export function PostsProvider({ children }) {
     setPosts((prev) => [optimistic, ...prev]);
 
     try {
-      const { data } = await api.post("/posts", { content: content.trim(), from: cu, userId: cu.id, attachments, category });
+      const { data } = await api.post("/posts", { content: content.trim(), from: cu, userId: cu.id, attachments, category, event });
       setPosts((prev) => prev.map((p) => (p.id === tempId ? data : p)));
       return data;
     } catch (err) {

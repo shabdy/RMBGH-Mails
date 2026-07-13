@@ -11,6 +11,7 @@ import {
   IconBuilding,
   IconChartBar,
   IconPaperclip,
+  IconCalendar,
 } from "@tabler/icons-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -68,6 +69,11 @@ export function AppSidebar({ ...props }) {
       title: "Attachments",
       icon: IconPaperclip,
       url: "/attachments",
+    },
+    {
+      title: "Calendar",
+      icon: IconCalendar,
+      url: "/calendar",
     },
   ];
 
