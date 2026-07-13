@@ -251,7 +251,7 @@
     "reactions": [],
     "attachments": [],
     "category": "Events",
-    "pinned": false,
+    "pinned": true,
     "event": {
       "title": "Sample Event",
       "date": "2026-07-14",

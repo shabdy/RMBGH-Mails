@@ -76,13 +76,7 @@ export function AnnouncementProvider({ children }) {
     const cu = buildCurrentUser();
     if (!cu) return;
 
-    /*
-      recipientType values:
-        "specific"   — addressed to specific named people
-        "department" — addressed to everyone in sender's department
-        "all"        — broadcast to all
-    */
-    const type  = recipientType || "specific";
+    const type   = recipientType || "specific";
     const deptId = targetDepartmentId || (type === "department" ? cu.departmentId : null);
 
     const payload = {
@@ -99,11 +93,23 @@ export function AnnouncementProvider({ children }) {
       userId:             cu.id,
       priority:           "normal",
     };
+
+    // Optimistic: add to sent immediately so the sender sees it right away
+    const tempId = `temp-${Date.now()}`;
+    const now = new Date().toISOString();
+    const optimistic = enrich({
+      ...payload, id: tempId, type: "mail", date: now,
+      readBy: [], pinnedBy: [], importantBy: [], deletedBy: [],
+      status: "delivered", _pending: true,
+    });
+    setSent(prev => [optimistic, ...prev]);
+
     try {
       const { data } = await api.post("/mail", payload);
-      setSent(prev => [enrich(data), ...prev]);
+      setSent(prev => prev.map(m => m.id === tempId ? enrich(data) : m));
     } catch (err) {
       console.error("Send mail failed:", err);
+      setSent(prev => prev.filter(m => m.id !== tempId));
     }
   };
 
@@ -173,10 +179,21 @@ export function AnnouncementProvider({ children }) {
       senderDept:       cu.department,
     };
 
+    // Optimistic: add forwarded entry immediately so sender sees it right away
+    const tempId = `temp-${Date.now()}`;
+    const now = new Date();
+    const optimistic = {
+      ...fwdPayload, id: tempId, type: "forwarded",
+      date: now.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+      time: now.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }),
+      _pending: true,
+    };
+    setForwarded(prev => [optimistic, ...prev]);
+
     try {
       /* 1 – save sender's forwarded record */
       const { data } = await api.post("/forwarded", fwdPayload);
-      setForwarded(prev => [data, ...prev]);
+      setForwarded(prev => prev.map(f => f.id === tempId ? data : f));
 
       /* 2 – deliver to each recipient's inbox */
       const specificRecipients = Array.isArray(forwardedTo) ? forwardedTo : [];
@@ -198,7 +215,10 @@ export function AnnouncementProvider({ children }) {
         };
         await api.post("/mail", mailPayload);
       }
-    } catch (err) { console.error("Forward failed:", err); }
+    } catch (err) {
+      console.error("Forward failed:", err);
+      setForwarded(prev => prev.filter(f => f.id !== tempId));
+    }
   };
 
   /* ─── DELETE ─── */
@@ -220,8 +240,17 @@ export function AnnouncementProvider({ children }) {
   /* ─── PIN / IMPORTANT ─── */
   const togglePin = async (id) => {
     if (!user) return;
+    // Optimistic: flip pinnedBy immediately
+    const uid = user.id;
+    const flip = (prev) => prev.map(m => {
+      if (m.id !== id) return m;
+      const pinned = m.pinnedBy || [];
+      return enrich({ ...m, pinnedBy: pinned.includes(uid) ? pinned.filter(x => x !== uid) : [...pinned, uid] });
+    });
+    setInbox(flip);
+    setSent(flip);
     try {
-      const { data } = await api.post(`/mail/${id}/pin`, { userId: user.id });
+      const { data } = await api.post(`/mail/${id}/pin`, { userId: uid });
       const enriched = enrich(data);
       setInbox(prev => prev.map(m => m.id === id ? enriched : m));
       setSent(prev  => prev.map(m => m.id === id ? enriched : m));
@@ -230,8 +259,17 @@ export function AnnouncementProvider({ children }) {
 
   const toggleImportant = async (id) => {
     if (!user) return;
+    // Optimistic: flip importantBy immediately
+    const uid = user.id;
+    const flip = (prev) => prev.map(m => {
+      if (m.id !== id) return m;
+      const imp = m.importantBy || [];
+      return enrich({ ...m, importantBy: imp.includes(uid) ? imp.filter(x => x !== uid) : [...imp, uid] });
+    });
+    setInbox(flip);
+    setSent(flip);
     try {
-      const { data } = await api.post(`/mail/${id}/important`, { userId: user.id });
+      const { data } = await api.post(`/mail/${id}/important`, { userId: uid });
       const enriched = enrich(data);
       setInbox(prev => prev.map(m => m.id === id ? enriched : m));
       setSent(prev  => prev.map(m => m.id === id ? enriched : m));

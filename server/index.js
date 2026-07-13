@@ -56,13 +56,28 @@ function isAdmin(authUser) {
   return authUser && ["admin", "superadmin"].includes(authUser.role);
 }
 
+/* ─── In-memory store ──────────────────────────────────────────────────────
+   All JSON data is loaded into RAM at startup and served from there.
+   Responses are sent immediately from memory; disk writes happen async
+   in the background so they never block the event loop. */
+const store = {};
+
 function readJSON(file, fallback = []) {
+  if (file in store) return store[file];           // already in memory → instant
   const p = path.join(DATA_DIR, file);
-  if (!fs.existsSync(p)) return fallback;
-  try { return JSON.parse(fs.readFileSync(p, "utf8")); } catch { return fallback; }
+  try { store[file] = JSON.parse(fs.readFileSync(p, "utf8")); }
+  catch { store[file] = Array.isArray(fallback) ? [...fallback] : fallback; }
+  return store[file];
 }
+
 function writeJSON(file, data) {
-  fs.writeFileSync(path.join(DATA_DIR, file), JSON.stringify(data, null, 2));
+  store[file] = data;                              // update in-memory immediately
+  // Persist to disk async — response is already sent by the time this finishes
+  fs.writeFile(
+    path.join(DATA_DIR, file),
+    JSON.stringify(data, null, 2),
+    (err) => { if (err) console.error(`[persist] ${file}:`, err); }
+  );
 }
 function fmtDate(iso) {
   return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
@@ -159,11 +174,26 @@ const DEFAULT_MAILS = [
 ];
 
 function initData() {
-  if (!fs.existsSync(path.join(DATA_DIR, "users.json")))     writeJSON("users.json", DEFAULT_USERS);
-  if (!fs.existsSync(path.join(DATA_DIR, "mails.json")))     writeJSON("mails.json", DEFAULT_MAILS);
-  if (!fs.existsSync(path.join(DATA_DIR, "forwarded.json"))) writeJSON("forwarded.json", []);
-  if (!fs.existsSync(path.join(DATA_DIR, "drafts.json")))    writeJSON("drafts.json", []);
-  if (!fs.existsSync(path.join(DATA_DIR, "posts.json")))     writeJSON("posts.json", []);
+  // Seed files that don't exist yet (synchronous is fine — runs once at boot)
+  const seed = (file, data) => {
+    if (!fs.existsSync(path.join(DATA_DIR, file)))
+      fs.writeFileSync(path.join(DATA_DIR, file), JSON.stringify(data, null, 2));
+  };
+  seed("users.json",    DEFAULT_USERS);
+  seed("mails.json",    DEFAULT_MAILS);
+  seed("forwarded.json", []);
+  seed("drafts.json",   []);
+  seed("posts.json",    []);
+  seed("auditLog.json", []);
+
+  // Pre-load everything into the in-memory store so the very first request
+  // is already instant (no cold-read delay).
+  readJSON("users.json",    DEFAULT_USERS);
+  readJSON("mails.json",    DEFAULT_MAILS);
+  readJSON("forwarded.json", []);
+  readJSON("drafts.json",   []);
+  readJSON("posts.json",    []);
+  readJSON("auditLog.json", []);
 }
 initData();
 
