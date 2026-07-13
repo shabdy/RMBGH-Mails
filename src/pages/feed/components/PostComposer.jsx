@@ -7,11 +7,13 @@ import { Avatar } from "./Avatar";
 
 const MAX_FILES = 6;
 const MAX_SIZE = 15 * 1024 * 1024;
+const CATEGORIES = ["Updates", "Events", "Policies", "Alerts"];
 
 export function PostComposer() {
   const { user } = useContext(AuthContext);
   const { createPost, uploadFiles } = usePosts();
   const [text, setText] = useState("");
+  const [category, setCategory] = useState("Updates");
   const [files, setFiles] = useState([]); // { file, previewUrl, uploading? }
   const [focused, setFocused] = useState(false);
   const [posting, setPosting] = useState(false);
@@ -46,10 +48,11 @@ export function PostComposer() {
       if (files.length > 0) {
         attachments = await uploadFiles(files.map((f) => f.file));
       }
-      await createPost(text, attachments);
+      await createPost(text, attachments, category);
       files.forEach((f) => f.previewUrl && URL.revokeObjectURL(f.previewUrl));
       setText("");
       setFiles([]);
+      setCategory("Updates");
       setFocused(false);
     } catch (err) {
       console.error("Post failed:", err);
@@ -71,6 +74,25 @@ export function PostComposer() {
           className="flex-1 resize-none text-sm rounded-xl border border-border bg-muted/30 px-3.5 py-2.5 placeholder:text-muted-foreground/70 focus:outline-none focus:ring-2 focus:ring-primary/25 focus:bg-card transition-all"
         />
       </div>
+
+      {(focused || text || files.length > 0) && (
+        <div className="mt-3 ml-12 flex flex-wrap gap-1.5">
+          {CATEGORIES.map((c) => (
+            <button
+              key={c}
+              type="button"
+              onClick={() => setCategory(c)}
+              className={`text-[11px] font-medium px-2.5 py-1 rounded-full border transition ${
+                category === c
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-transparent text-muted-foreground border-border hover:border-primary/40 hover:text-foreground"
+              }`}
+            >
+              {c}
+            </button>
+          ))}
+        </div>
+      )}
 
       {files.length > 0 && (
         <div className="mt-3 ml-12 flex flex-wrap gap-2">

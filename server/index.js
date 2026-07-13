@@ -589,8 +589,10 @@ app.get("/api/posts", (req, res) => {
   );
 });
 
+const POST_CATEGORIES = ["Updates", "Events", "Policies", "Alerts"];
+
 app.post("/api/posts", (req, res) => {
-  const { content, from, userId, attachments } = req.body;
+  const { content, from, userId, attachments, category } = req.body;
   const hasAttachments = Array.isArray(attachments) && attachments.length > 0;
   if ((!content || !content.trim()) && !hasAttachments)
     return res.status(400).json({ error: "Post content is required" });
@@ -605,10 +607,24 @@ app.post("/api/posts", (req, res) => {
     comments: [],
     reactions: [],
     attachments: hasAttachments ? attachments : [],
+    category: POST_CATEGORIES.includes(category) ? category : "Updates",
+    pinned: false,
   };
   posts.push(newPost);
   writeJSON("posts.json", posts);
   res.json(normalizePost(newPost, userId || from?.id));
+});
+
+/* Pin/unpin — an admin/superadmin moderation action that surfaces a post in
+   the feed's pinned sidebar and keeps it sorted to the top. */
+app.patch("/api/posts/:id/pin", authenticate, (req, res) => {
+  if (!isAdmin(req.authUser)) return res.status(403).json({ error: "Only admins can pin announcements" });
+  const posts = readJSON("posts.json", []);
+  const idx   = posts.findIndex(p => p.id == req.params.id);
+  if (idx === -1) return res.status(404).json({ error: "Not found" });
+  posts[idx].pinned = !posts[idx].pinned;
+  writeJSON("posts.json", posts);
+  res.json(normalizePost(posts[idx], req.authUser.id));
 });
 
 /* Upload one or more files (images or documents) for use as post attachments.

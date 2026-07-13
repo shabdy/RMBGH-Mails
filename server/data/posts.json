@@ -16,6 +16,18 @@
         "name": "IT Superadmin",
         "date": "2026-07-12T11:49:52.362Z",
         "time": "2026-07-12T11:49:52.362Z"
+      },
+      {
+        "id": 1783051261533,
+        "name": "Ransh Dy",
+        "date": "2026-07-12T12:03:39.590Z",
+        "time": "2026-07-12T12:03:39.590Z"
+      },
+      {
+        "id": 1783255824240,
+        "name": "Colin Arias",
+        "date": "2026-07-12T22:58:46.338Z",
+        "time": "2026-07-12T22:58:46.338Z"
       }
     ],
     "comments": [
@@ -41,5 +53,160 @@
         "type": "love"
       }
     ]
+  },
+  {
+    "id": 1783857507824,
+    "content": "Report",
+    "from": {
+      "id": 1,
+      "name": "IT Superadmin",
+      "email": "superadmin@rmbgh.com",
+      "department": "Information Technology",
+      "departmentId": "IT"
+    },
+    "date": "2026-07-12T11:58:27.824Z",
+    "viewedBy": [
+      {
+        "id": 1,
+        "name": "IT Superadmin",
+        "date": "2026-07-12T11:58:28.025Z",
+        "time": "2026-07-12T11:58:28.025Z"
+      },
+      {
+        "id": 1783051261533,
+        "name": "Ransh Dy",
+        "date": "2026-07-12T12:03:39.311Z",
+        "time": "2026-07-12T12:03:39.311Z"
+      },
+      {
+        "id": 1783255824240,
+        "name": "Colin Arias",
+        "date": "2026-07-12T22:58:46.310Z",
+        "time": "2026-07-12T22:58:46.310Z"
+      }
+    ],
+    "comments": [],
+    "reactions": [
+      {
+        "userId": 1,
+        "name": "IT Superadmin",
+        "type": "like"
+      }
+    ],
+    "attachments": [
+      {
+        "url": "/uploads/1783857507667-3afcb7d0e89b.xlsx",
+        "name": "RMBGH_Reports_2026-07-12.xlsx",
+        "type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "size": 24936
+      }
+    ]
+  },
+  {
+    "id": 1783857759885,
+    "content": "Dear Valued Team Members, Partners, and Clients,\n\nWe are thrilled to share a major milestone in our company’s journey. Due to your continued trust and remarkable support, we are officially expanding our business operations. This growth allows us to better serve our community and brings exciting new changes to our daily work.Starting on August 1, 2026, we will open our brand-new regional headquarters located at 120 Corporate Avenue, Makati City, Philippines. This new space gives us the room we need to grow our team. It also features a state-of-the-art client experience center where you can view our latest offerings in person.Alongside this physical expansion, we are proud to announce the official launch of our new \"Eco-Smart\" product line. Our team has worked hard for two years to design these items. They are built to save energy, reduce waste, and last longer than ever before. We believe this new line sets a new standard for our industry.To celebrate these dual achievements, we are hosting a Grand Opening and Product Showcase Event.Date: Friday, August 14, 2026Time: 9:00 AM to 4:00 PM (Manila Time)Location: The Makati Headquarters (Main Lobby)The day will feature guided tours of the new facility, live product demonstrations, and a catered networking lunch. It is a great chance to see our new home and test the new products yourself.We would not have reached this exciting chapter without you. Your hard work and loyalty made this growth possible. We remain fully committed to providing you with the same high-quality service you expect from us, now with enhanced capabilities.Please RSVP for the Grand Opening event by visiting our Events Registration Page.If you have any questions regarding the new product line or the upcoming facility move, please contact our support team at support@company.com or call our hotline at (02) 8555-0199.Thank you for your continued partnership and support. We look forward to celebrating this exciting new era together.\n\nBest regards,",
+    "from": {
+      "id": 1,
+      "name": "IT Superadmin",
+      "email": "superadmin@rmbgh.com",
+      "department": "Information Technology",
+      "departmentId": "IT"
+    },
+    "date": "2026-07-12T12:02:39.885Z",
+    "viewedBy": [
+      {
+        "id": 1,
+        "name": "IT Superadmin",
+        "date": "2026-07-12T12:02:40.088Z",
+        "time": "2026-07-12T12:02:40.088Z"
+      },
+      {
+        "id": 1783051261533,
+        "name": "Ransh Dy",
+        "date": "2026-07-12T12:03:28.642Z",
+        "time": "2026-07-12T12:03:28.642Z"
+      },
+      {
+        "id": 1783255824240,
+        "name": "Colin Arias",
+        "date": "2026-07-12T22:58:46.263Z",
+        "time": "2026-07-12T22:58:46.263Z"
+      }
+    ],
+    "comments": [],
+    "reactions": [
+      {
+        "userId": 1783051261533,
+        "name": "Ransh Dy",
+        "type": "love"
+      }
+    ],
+    "attachments": []
+  },
+  {
+    "id": 1783857885526,
+    "content": "Logo ng Maclang",
+    "from": {
+      "id": 1783051261533,
+      "name": "Ransh Dy",
+      "email": "rdy@rmbgh.com",
+      "department": "Information Technology",
+      "departmentId": "IT"
+    },
+    "date": "2026-07-12T12:04:45.526Z",
+    "viewedBy": [
+      {
+        "id": 1783051261533,
+        "name": "Ransh Dy",
+        "date": "2026-07-12T12:04:45.748Z",
+        "time": "2026-07-12T12:04:45.748Z"
+      },
+      {
+        "id": 1,
+        "name": "IT Superadmin",
+        "date": "2026-07-12T12:04:57.587Z",
+        "time": "2026-07-12T12:04:57.587Z"
+      },
+      {
+        "id": 1783255824240,
+        "name": "Colin Arias",
+        "date": "2026-07-12T22:58:46.025Z",
+        "time": "2026-07-12T22:58:46.025Z"
+      }
+    ],
+    "comments": [
+      {
+        "id": 1783928997933,
+        "userId": 1,
+        "name": "IT Superadmin",
+        "text": "Hello",
+        "date": "2026-07-13T07:49:57.933Z"
+      }
+    ],
+    "reactions": [],
+    "attachments": [
+      {
+        "url": "/uploads/1783857885401-c1acd4963c58.jpg",
+        "name": "maclang.jpg",
+        "type": "image/jpeg",
+        "size": 21182
+      }
+    ]
+  },
+  {
+    "id": 1783929067974,
+    "content": "Fire drill schedule",
+    "from": {
+      "id": 1,
+      "name": "IT Superadmin",
+      "department": "IT"
+    },
+    "date": "2026-07-13T07:51:07.974Z",
+    "viewedBy": [],
+    "comments": [],
+    "reactions": [],
+    "attachments": [],
+    "category": "Events",
+    "pinned": false
   }
 ]

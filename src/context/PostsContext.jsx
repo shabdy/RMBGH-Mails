@@ -46,7 +46,7 @@ export function PostsProvider({ children }) {
     return data.files;
   };
 
-  const createPost = async (content, attachments = []) => {
+  const createPost = async (content, attachments = [], category = "Updates") => {
     const cu = buildCurrentUser();
     if (!cu || (!content?.trim() && attachments.length === 0)) return;
 
@@ -58,6 +58,8 @@ export function PostsProvider({ children }) {
       date: "Just now",
       time: "",
       attachments,
+      category,
+      pinned: false,
       viewedBy: [], comments: [], reactions: [],
       viewCount: 0, commentCount: 0, reactionCount: 0, reactionCounts: {},
       myReaction: null, viewed: true, _pending: true,
@@ -65,7 +67,7 @@ export function PostsProvider({ children }) {
     setPosts((prev) => [optimistic, ...prev]);
 
     try {
-      const { data } = await api.post("/posts", { content: content.trim(), from: cu, userId: cu.id, attachments });
+      const { data } = await api.post("/posts", { content: content.trim(), from: cu, userId: cu.id, attachments, category });
       setPosts((prev) => prev.map((p) => (p.id === tempId ? data : p)));
       return data;
     } catch (err) {
@@ -151,9 +153,25 @@ export function PostsProvider({ children }) {
     }
   };
 
+  const togglePin = async (id) => {
+    let prevSnapshot;
+    setPosts((prev) => prev.map((p) => {
+      if (p.id !== id) return p;
+      prevSnapshot = p;
+      return { ...p, pinned: !p.pinned };
+    }));
+    try {
+      const { data } = await api.patch(`/posts/${id}/pin`);
+      setPosts((prev) => prev.map((p) => (p.id === id ? data : p)));
+    } catch (err) {
+      console.error("Toggle pin failed:", err);
+      if (prevSnapshot) setPosts((prev) => prev.map((p) => (p.id === id ? prevSnapshot : p)));
+    }
+  };
+
   return (
     <PostsContext.Provider
-      value={{ posts, currentUser: buildCurrentUser(), createPost, deletePost, markViewed, addComment, react, uploadFiles, reload: loadPosts }}
+      value={{ posts, currentUser: buildCurrentUser(), createPost, deletePost, markViewed, addComment, react, uploadFiles, togglePin, reload: loadPosts }}
     >
       {children}
     </PostsContext.Provider>
