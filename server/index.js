@@ -226,8 +226,10 @@ function normalizeForwarded(f) {
 /* Facebook-style reaction set shared by the announcement feed */
 const REACTION_TYPES = ["like", "love", "haha", "wow", "sad"];
 
-function normalizePost(p, userId) {
-  const reactions = p.reactions || [];
+// Shared by posts, comments, and replies — all three carry a `reactions`
+// array and need the same counts/myReaction derivation for the client.
+function withReactionMeta(entity, userId) {
+  const reactions = entity.reactions || [];
   const reactionCounts = reactions.reduce((acc, r) => {
     acc[r.type] = (acc[r.type] || 0) + 1;
     return acc;
@@ -235,17 +237,40 @@ function normalizePost(p, userId) {
   const myReaction = userId
     ? reactions.find(r => String(r.userId) === String(userId))?.type || null
     : null;
+  return { reactionCounts, myReaction, reactionCount: reactions.length };
+}
+
+function normalizeReply(r, userId) {
+  return {
+    ...r,
+    date: fmtDate(r.date),
+    time: fmtTime(r.date),
+    ...withReactionMeta(r, userId),
+  };
+}
+
+function normalizeComment(c, userId) {
+  return {
+    ...c,
+    date: fmtDate(c.date),
+    time: fmtTime(c.date),
+    ...withReactionMeta(c, userId),
+    replies: (c.replies || []).map(r => normalizeReply(r, userId)),
+  };
+}
+
+function normalizePost(p, userId) {
+  const reactions = p.reactions || [];
+  const meta = withReactionMeta(p, userId);
   return {
     ...p,
     date: fmtDate(p.date),
     time: fmtTime(p.date),
     viewCount:      (p.viewedBy || []).length,
     commentCount:   (p.comments || []).length,
-    reactionCount:  reactions.length,
-    reactionCounts,
-    myReaction,
+    ...meta,
     viewed: userId ? (p.viewedBy || []).some(v => String(v.id) === String(userId)) : false,
-    comments: (p.comments || []).map(c => ({ ...c, date: fmtDate(c.date), time: fmtTime(c.date) })),
+    comments: (p.comments || []).map(c => normalizeComment(c, userId)),
     viewedBy: (p.viewedBy || []).map(v => ({ ...v })),
   };
 }
@@ -740,8 +765,74 @@ app.post("/api/posts/:id/comments", (req, res) => {
   const posts = readJSON("posts.json", []);
   const idx   = posts.findIndex(p => p.id == req.params.id);
   if (idx === -1) return res.status(404).json({ error: "Not found" });
-  const comment = { id: Date.now(), userId, name, text: text.trim(), date: new Date().toISOString() };
+  const comment = { id: Date.now(), userId, name, text: text.trim(), date: new Date().toISOString(), reactions: [], replies: [] };
   posts[idx].comments = [...(posts[idx].comments || []), comment];
+  writeJSON("posts.json", posts);
+  res.json(normalizePost(posts[idx], userId));
+});
+
+/* Reply to a specific comment — nested one level deep under `comment.replies`. */
+app.post("/api/posts/:id/comments/:commentId/replies", (req, res) => {
+  const { userId, name, text } = req.body;
+  if (!text || !text.trim()) return res.status(400).json({ error: "Reply text is required" });
+  const posts = readJSON("posts.json", []);
+  const idx   = posts.findIndex(p => p.id == req.params.id);
+  if (idx === -1) return res.status(404).json({ error: "Not found" });
+  const comments  = posts[idx].comments || [];
+  const commentIdx = comments.findIndex(c => c.id == req.params.commentId);
+  if (commentIdx === -1) return res.status(404).json({ error: "Comment not found" });
+  const reply = { id: Date.now(), userId, name, text: text.trim(), date: new Date().toISOString(), reactions: [] };
+  comments[commentIdx] = { ...comments[commentIdx], replies: [...(comments[commentIdx].replies || []), reply] };
+  posts[idx].comments = comments;
+  writeJSON("posts.json", posts);
+  res.json(normalizePost(posts[idx], userId));
+});
+
+// Shared by the comment- and reply-react routes: toggles `userId`'s
+// reaction within `entity.reactions`, matching the client's optimistic logic.
+function toggleReactionOn(entity, userId, name, type) {
+  const reactions   = entity.reactions || [];
+  const existingIdx = reactions.findIndex(r => String(r.userId) === String(userId));
+  if (existingIdx !== -1 && reactions[existingIdx].type === type) {
+    return reactions.filter((_, i) => i !== existingIdx); // toggle off
+  } else if (existingIdx !== -1) {
+    return reactions.map((r, i) => (i === existingIdx ? { userId, name, type } : r));
+  }
+  return [...reactions, { userId, name, type }];
+}
+
+app.post("/api/posts/:id/comments/:commentId/react", (req, res) => {
+  const { userId, name, type } = req.body;
+  if (!userId) return res.status(400).json({ error: "userId is required" });
+  if (!REACTION_TYPES.includes(type)) return res.status(400).json({ error: "Invalid reaction type" });
+  const posts = readJSON("posts.json", []);
+  const idx   = posts.findIndex(p => p.id == req.params.id);
+  if (idx === -1) return res.status(404).json({ error: "Not found" });
+  const comments   = posts[idx].comments || [];
+  const commentIdx = comments.findIndex(c => c.id == req.params.commentId);
+  if (commentIdx === -1) return res.status(404).json({ error: "Comment not found" });
+  comments[commentIdx] = { ...comments[commentIdx], reactions: toggleReactionOn(comments[commentIdx], userId, name, type) };
+  posts[idx].comments = comments;
+  writeJSON("posts.json", posts);
+  res.json(normalizePost(posts[idx], userId));
+});
+
+app.post("/api/posts/:id/comments/:commentId/replies/:replyId/react", (req, res) => {
+  const { userId, name, type } = req.body;
+  if (!userId) return res.status(400).json({ error: "userId is required" });
+  if (!REACTION_TYPES.includes(type)) return res.status(400).json({ error: "Invalid reaction type" });
+  const posts = readJSON("posts.json", []);
+  const idx   = posts.findIndex(p => p.id == req.params.id);
+  if (idx === -1) return res.status(404).json({ error: "Not found" });
+  const comments   = posts[idx].comments || [];
+  const commentIdx = comments.findIndex(c => c.id == req.params.commentId);
+  if (commentIdx === -1) return res.status(404).json({ error: "Comment not found" });
+  const replies  = comments[commentIdx].replies || [];
+  const replyIdx = replies.findIndex(r => r.id == req.params.replyId);
+  if (replyIdx === -1) return res.status(404).json({ error: "Reply not found" });
+  replies[replyIdx] = { ...replies[replyIdx], reactions: toggleReactionOn(replies[replyIdx], userId, name, type) };
+  comments[commentIdx] = { ...comments[commentIdx], replies };
+  posts[idx].comments = comments;
   writeJSON("posts.json", posts);
   res.json(normalizePost(posts[idx], userId));
 });
