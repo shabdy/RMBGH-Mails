@@ -200,7 +200,7 @@ function CommentReactionControl({ myReaction, reactionCounts, onReact, disabled 
  * A single comment, with its own reaction control, a Reply toggle,
  * and a list of replies (each of which also gets reactions).
  */
-function CommentItem({ post, comment, onReactComment, onReactReply, onAddReply, disabled }) {
+function CommentItem({ comment, onReactComment, onReactReply, onAddReply, disabled }) {
   const [showReplyBox, setShowReplyBox] = useState(false);
   const [replyText, setReplyText] = useState("");
 
@@ -311,7 +311,7 @@ export function PostCard({ post, cardRef }) {
   const [expandedContent, setExpandedContent] = useState(false);
   const [contentOverflowing, setContentOverflowing] = useState(false);
   const contentRef = useRef(null);
-  const CONTENT_CLAMP_PX = 168; // ~7 lines at text-sm/leading-relaxed before "See more" kicks in
+  const CONTENT_CLAMP_PX = 112; // ~4-5 lines at text-sm/leading-relaxed before "See more" kicks in — kept tight so long posts don't eat feed space
 
   const isAdmin = ["admin", "superadmin"].includes(user?.role);
   const canDelete = isAdmin || String(post.from?.id) === String(user?.id);
@@ -456,7 +456,7 @@ export function PostCard({ post, cardRef }) {
           {contentOverflowing && (
             <button
               onClick={() => setExpandedContent((v) => !v)}
-              className="mt-1 text-xs font-semibold text-primary hover:text-primary/80 transition"
+              className="mt-0.5 text-[11px] font-semibold text-primary hover:text-primary/80 transition leading-none"
             >
               {expandedContent ? "See less" : "See more"}
             </button>
@@ -575,7 +575,6 @@ export function PostCard({ post, cardRef }) {
           {(post.comments || []).map((c) => (
             <CommentItem
               key={c.id}
-              post={post}
               comment={c}
               onReactComment={handleReactComment}
               onReactReply={handleReactReply}

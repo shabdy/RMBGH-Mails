@@ -10,6 +10,7 @@ import {
 import { usePosts } from "@/context/PostsContext";
 import { Avatar } from "@/pages/feed/components/Avatar";
 import rmbghBanner from "@/assets/rmbghbanner.png";
+import { PH_HOLIDAYS_BY_DATE, PH_HOLIDAYS_2026, HOLIDAY_TYPE_LABEL } from "@/data/phHolidays";
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const MONTHS   = ["January","February","March","April","May","June","July","August","September","October","November","December"];
@@ -49,6 +50,11 @@ const PILL_COLORS = [
   "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
 ];
 
+// Holidays get their own consistent red/rose accent so they read as a
+// distinct category from department-filed events at a glance.
+const HOLIDAY_PILL = "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300";
+const HOLIDAY_DOT  = "bg-red-500";
+
 export default function CalendarPage() {
   const { posts } = usePosts();
   const [cursor, setCursor] = useState(() => {
@@ -82,6 +88,13 @@ export default function CalendarPage() {
     }),
   [events, cursor]);
 
+  const thisMonthHolidays = useMemo(() =>
+    PH_HOLIDAYS_2026.filter((h) => {
+      const [hy, hm] = h.date.split("-").map(Number);
+      return hy === cursor.y && hm - 1 === cursor.m;
+    }),
+  [cursor]);
+
   const upcoming = useMemo(() => {
     const key = todayKey();
     return [...events]
@@ -91,6 +104,11 @@ export default function CalendarPage() {
       )
       .slice(0, 8);
   }, [events]);
+
+  const upcomingHolidays = useMemo(() => {
+    const key = todayKey();
+    return PH_HOLIDAYS_2026.filter((h) => h.date >= key).slice(0, 5);
+  }, []);
 
   const { y, m } = cursor;
   const firstDay       = new Date(y, m, 1);
@@ -122,6 +140,7 @@ export default function CalendarPage() {
   };
 
   const selectedEvents = eventsByDate[selectedKey] || [];
+  const selectedHoliday = PH_HOLIDAYS_BY_DATE[selectedKey] || null;
   const tKey = todayKey();
   const monthKey = `${y}-${m}`;
 
@@ -201,11 +220,21 @@ export default function CalendarPage() {
               {MONTHS[m]}
             </h1>
             <p className="text-white/60 text-sm mt-1.5 font-medium">{y}</p>
-            {thisMonthEvents.length > 0 && (
-              <p className="mt-2 text-xs text-white/80 inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-sm rounded-full px-2.5 py-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                {thisMonthEvents.length} event{thisMonthEvents.length !== 1 ? "s" : ""} this month
-              </p>
+            {(thisMonthEvents.length > 0 || thisMonthHolidays.length > 0) && (
+              <div className="mt-2 flex items-center gap-2 flex-wrap">
+                {thisMonthEvents.length > 0 && (
+                  <p className="text-xs text-white/80 inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-sm rounded-full px-2.5 py-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    {thisMonthEvents.length} event{thisMonthEvents.length !== 1 ? "s" : ""} this month
+                  </p>
+                )}
+                {thisMonthHolidays.length > 0 && (
+                  <p className="text-xs text-white/80 inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-sm rounded-full px-2.5 py-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
+                    {thisMonthHolidays.length} holiday{thisMonthHolidays.length !== 1 ? "s" : ""} this month
+                  </p>
+                )}
+              </div>
             )}
           </div>
 
@@ -254,6 +283,7 @@ export default function CalendarPage() {
             <div key={monthKey} className="grid grid-cols-7 divide-x divide-y divide-border/40 rmbgh-month-anim">
               {cells.map((c, i) => {
                 const dayEvents  = !c.outside ? (eventsByDate[c.key] || []) : [];
+                const holiday    = !c.outside ? PH_HOLIDAYS_BY_DATE[c.key] : null;
                 const isToday    = c.key === tKey;
                 const isSelected = c.key === selectedKey;
 
@@ -287,10 +317,17 @@ export default function CalendarPage() {
                       {c.day}
                     </span>
 
+                    {/* Holiday pill — always shown first so it reads as the day's headline */}
+                    {holiday && (
+                      <div className={`mt-1 text-[10.5px] font-semibold truncate rounded px-1.5 py-1 leading-tight ${HOLIDAY_PILL}`}>
+                        🎉 {holiday.name}
+                      </div>
+                    )}
+
                     {/* Event pills */}
                     {dayEvents.length > 0 && !c.outside && (
                       <div className="mt-1 space-y-0.5">
-                        {dayEvents.slice(0, 2).map((ev, di) => (
+                        {dayEvents.slice(0, holiday ? 1 : 2).map((ev, di) => (
                           <div
                             key={di}
                             className={`text-[10.5px] font-medium truncate rounded px-1.5 py-1 leading-tight ${PILL_COLORS[di % PILL_COLORS.length]}`}
@@ -298,17 +335,18 @@ export default function CalendarPage() {
                             {ev.event.title}
                           </div>
                         ))}
-                        {dayEvents.length > 2 && (
+                        {dayEvents.length > (holiday ? 1 : 2) && (
                           <p className="text-[10px] text-muted-foreground px-1">
-                            +{dayEvents.length - 2} more
+                            +{dayEvents.length - (holiday ? 1 : 2)} more
                           </p>
                         )}
                       </div>
                     )}
 
                     {/* Bottom dot indicator */}
-                    {dayEvents.length > 0 && !c.outside && (
+                    {(dayEvents.length > 0 || holiday) && !c.outside && (
                       <div className="absolute bottom-1.5 left-0 right-0 flex justify-center gap-0.5">
+                        {holiday && <span className={`w-1 h-1 rounded-full ${HOLIDAY_DOT}`} />}
                         {dayEvents.slice(0, 3).map((_, di) => (
                           <span
                             key={di}
@@ -334,10 +372,20 @@ export default function CalendarPage() {
                 </h3>
               </div>
 
+              {selectedHoliday && (
+                <div className="px-4 py-3 bg-gradient-to-r from-red-50 to-rose-50 dark:from-red-900/20 dark:to-rose-900/10 border-b border-border flex items-center gap-2.5 rmbgh-fade-up">
+                  <span className="text-xl leading-none">🎉</span>
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-red-700 dark:text-red-300 truncate">{selectedHoliday.name}</p>
+                    <p className="text-[10px] text-red-600/70 dark:text-red-300/60">{HOLIDAY_TYPE_LABEL[selectedHoliday.type]}</p>
+                  </div>
+                </div>
+              )}
+
               {selectedEvents.length === 0 ? (
                 <div className="flex flex-col items-center py-10 text-muted-foreground gap-2">
                   <CalendarDays size={32} className="text-muted-foreground/15" />
-                  <p className="text-xs">No events on this day</p>
+                  <p className="text-xs">{selectedHoliday ? "No filed events on this day" : "No events on this day"}</p>
                 </div>
               ) : (
                 <div key={selectedKey} className="divide-y divide-border">
@@ -430,6 +478,61 @@ export default function CalendarPage() {
                   })}
                 </div>
               )}
+            </div>
+
+            {/* Upcoming Philippine holidays */}
+            <div className="bg-card border border-border rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden">
+              <div className="px-4 py-3 border-b border-border bg-muted/30">
+                <h3 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+                  🎉 Upcoming Holidays
+                </h3>
+              </div>
+
+              {upcomingHolidays.length === 0 ? (
+                <div className="flex flex-col items-center py-8 text-muted-foreground gap-2">
+                  <p className="text-xs">No more holidays this year</p>
+                </div>
+              ) : (
+                <div className="divide-y divide-border">
+                  {upcomingHolidays.map((h) => {
+                    const [, hm, hd] = h.date.split("-").map(Number);
+                    return (
+                      <button
+                        key={h.date}
+                        onClick={() => {
+                          const [hy, hmo] = h.date.split("-").map(Number);
+                          setDirection(new Date(hy, hmo - 1, 1) >= new Date(y, m, 1) ? 1 : -1);
+                          setCursor({ y: hy, m: hmo - 1 });
+                          setSelectedKey(h.date);
+                        }}
+                        className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-muted/40 transition-all duration-200 group hover:pl-5"
+                      >
+                        <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-red-500 to-rose-600 text-white flex flex-col items-center justify-center leading-none shadow-sm group-hover:shadow-md group-hover:scale-105 transition-all duration-200">
+                          <span className="text-[8px] font-semibold uppercase tracking-wide">
+                            {MONTHS[hm - 1].slice(0, 3)}
+                          </span>
+                          <span className="text-sm font-bold">{hd}</span>
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-xs font-semibold text-foreground truncate group-hover:text-red-600 transition-colors">
+                            {h.name}
+                          </p>
+                          <p className="text-[10px] text-muted-foreground truncate mt-0.5">
+                            {HOLIDAY_TYPE_LABEL[h.type]}
+                          </p>
+                        </div>
+                        <span className={`w-2 h-2 rounded-full flex-shrink-0 ${HOLIDAY_DOT} group-hover:scale-150 transition-transform duration-200`} />
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* Legend */}
+            <div className="bg-card border border-border rounded-2xl shadow-sm px-4 py-3 flex items-center gap-4 text-[11px] text-muted-foreground">
+              <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-violet-500" /> Announcement event</span>
+              <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-red-500" /> Philippine holiday</span>
             </div>
           </div>
         </div>

@@ -36,5 +36,59 @@
     "category": "Policies",
     "pinned": false,
     "event": null
+  },
+  {
+    "id": 1784000522837,
+    "content": "test post",
+    "from": {
+      "id": 1,
+      "name": "Test"
+    },
+    "date": "2026-07-14T03:42:02.837Z",
+    "viewedBy": [
+      {
+        "id": 1,
+        "name": "IT Superadmin",
+        "date": "2026-07-14T03:42:48.224Z",
+        "time": "2026-07-14T03:42:48.224Z"
+      }
+    ],
+    "comments": [
+      {
+        "id": 1784000522891,
+        "userId": 1,
+        "name": "Test",
+        "text": "nice",
+        "date": "2026-07-14T03:42:02.891Z",
+        "reactions": [
+          {
+            "userId": 1,
+            "name": "Test",
+            "type": "love"
+          }
+        ],
+        "replies": [
+          {
+            "id": 1784000531849,
+            "userId": 1,
+            "name": "Test",
+            "text": "reply text",
+            "date": "2026-07-14T03:42:11.849Z",
+            "reactions": [
+              {
+                "userId": 1,
+                "name": "Test",
+                "type": "haha"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "reactions": [],
+    "attachments": [],
+    "category": "Updates",
+    "pinned": false,
+    "event": null
   }
 ]
