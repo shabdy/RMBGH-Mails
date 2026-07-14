@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ChevronLeft,
   ChevronRight,
@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { usePosts } from "@/context/PostsContext";
 import { Avatar } from "@/pages/feed/components/Avatar";
+import rmbghBanner from "@/assets/rmbghbanner.png";
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const MONTHS   = ["January","February","March","April","May","June","July","August","September","October","November","December"];
@@ -40,6 +41,13 @@ const DOT_COLORS = [
   "bg-violet-500", "bg-sky-500", "bg-rose-500",
   "bg-amber-500",  "bg-emerald-500",
 ];
+const PILL_COLORS = [
+  "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300",
+  "bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300",
+  "bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300",
+  "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
+  "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
+];
 
 export default function CalendarPage() {
   const { posts } = usePosts();
@@ -48,6 +56,12 @@ export default function CalendarPage() {
     return { y: t.getFullYear(), m: t.getMonth() };
   });
   const [selectedKey, setSelectedKey] = useState(todayKey);
+  const [direction, setDirection] = useState(1); // 1 = forward, -1 = backward, used for slide animation
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const events = useMemo(() => posts.filter((p) => p.event), [posts]);
 
@@ -92,40 +106,104 @@ export default function CalendarPage() {
   while (cells.length % 7 !== 0)
     cells.push({ day: cells.length - (startWeekday + daysInMonth) + 1, outside: true });
 
-  const changeMonth = (delta) =>
+  const changeMonth = (delta) => {
+    setDirection(delta);
     setCursor((prev) => {
       const d = new Date(prev.y, prev.m + delta, 1);
       return { y: d.getFullYear(), m: d.getMonth() };
     });
+  };
 
   const goToday = () => {
     const t = new Date();
+    setDirection(t.getFullYear() === y && t.getMonth() === m ? 1 : (t > new Date(y, m, 1) ? 1 : -1));
     setCursor({ y: t.getFullYear(), m: t.getMonth() });
     setSelectedKey(todayKey());
   };
 
   const selectedEvents = eventsByDate[selectedKey] || [];
   const tKey = todayKey();
+  const monthKey = `${y}-${m}`;
 
   return (
     <div className="h-full overflow-y-auto">
-      {/* ── Hero header ── */}
-      <div className="bg-gradient-to-br from-primary via-primary/85 to-violet-600 text-white px-6 py-7 relative overflow-hidden">
-        {/* Decorative circles */}
-        <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full bg-white/5 pointer-events-none" />
-        <div className="absolute -bottom-6 -left-6 w-32 h-32 rounded-full bg-white/5 pointer-events-none" />
+      <style>{`
+        @keyframes rmbgh-float {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          50% { transform: translate(8px, -10px) scale(1.05); }
+        }
+        @keyframes rmbgh-slide-in-right {
+          from { opacity: 0; transform: translateX(18px); }
+          to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes rmbgh-slide-in-left {
+          from { opacity: 0; transform: translateX(-18px); }
+          to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes rmbgh-pop-in {
+          from { opacity: 0; transform: scale(0.85) translateY(4px); }
+          to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        @keyframes rmbgh-pulse-ring {
+          0% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.45); }
+          70% { box-shadow: 0 0 0 8px rgba(139, 92, 246, 0); }
+          100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0); }
+        }
+        @keyframes rmbgh-fade-up {
+          from { opacity: 0; transform: translateY(6px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .rmbgh-month-anim {
+          animation: ${direction >= 0 ? "rmbgh-slide-in-right" : "rmbgh-slide-in-left"} 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+        .rmbgh-cell {
+          animation: rmbgh-pop-in 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+        .rmbgh-today-ring {
+          animation: rmbgh-pulse-ring 2.2s ease-out infinite;
+        }
+        .rmbgh-fade-up {
+          animation: rmbgh-fade-up 0.4s ease both;
+        }
+        .rmbgh-float-slow {
+          animation: rmbgh-float 7s ease-in-out infinite;
+        }
+        .rmbgh-float-slower {
+          animation: rmbgh-float 9s ease-in-out infinite;
+          animation-delay: 1.5s;
+        }
+      `}</style>
 
-        <div className="max-w-6xl mx-auto flex items-end justify-between relative">
-          <div>
-            <p className="text-xs font-semibold tracking-widest uppercase text-white/60 flex items-center gap-1.5 mb-1">
-              <Sparkles size={11} /> Events Calendar
+      {/* ── Hero header with banner image ── */}
+      <div className="relative overflow-hidden text-white px-6 py-9">
+        {/* Banner image */}
+        <img
+          src={rmbghBanner}
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        {/* Gradient overlay for legibility + brand tint */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/90 via-primary/80 to-violet-700/85" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+
+        {/* Decorative floating circles */}
+        <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full bg-white/10 pointer-events-none rmbgh-float-slow" />
+        <div className="absolute -bottom-6 -left-6 w-32 h-32 rounded-full bg-white/10 pointer-events-none rmbgh-float-slower" />
+        <div className="absolute top-1/2 left-1/3 w-3 h-3 rounded-full bg-white/40 pointer-events-none rmbgh-float-slow" />
+        <div className="absolute top-6 right-1/3 w-2 h-2 rounded-full bg-white/40 pointer-events-none rmbgh-float-slower" />
+
+        <div className="max-w-[1800px] mx-auto flex items-end justify-between relative">
+          <div key={monthKey} className="rmbgh-fade-up">
+            <p className="text-xs font-semibold tracking-widest uppercase text-white/70 flex items-center gap-1.5 mb-1">
+              <Sparkles size={11} className="animate-pulse" /> Events Calendar
             </p>
-            <h1 className="text-4xl font-bold tracking-tight leading-none">
+            <h1 className="text-4xl font-bold tracking-tight leading-none drop-shadow-sm">
               {MONTHS[m]}
             </h1>
-            <p className="text-white/50 text-sm mt-1.5 font-medium">{y}</p>
+            <p className="text-white/60 text-sm mt-1.5 font-medium">{y}</p>
             {thisMonthEvents.length > 0 && (
-              <p className="mt-2 text-xs text-white/70">
+              <p className="mt-2 text-xs text-white/80 inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-sm rounded-full px-2.5 py-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                 {thisMonthEvents.length} event{thisMonthEvents.length !== 1 ? "s" : ""} this month
               </p>
             )}
@@ -134,19 +212,19 @@ export default function CalendarPage() {
           <div className="flex items-center gap-2 mb-1">
             <button
               onClick={goToday}
-              className="text-xs font-semibold bg-white text-primary rounded-xl px-4 py-2 shadow-sm hover:bg-white/90 transition"
+              className="text-xs font-semibold bg-white text-primary rounded-xl px-4 py-2 shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
             >
               Today
             </button>
             <button
               onClick={() => changeMonth(-1)}
-              className="p-2 rounded-xl bg-white/15 hover:bg-white/25 transition"
+              className="p-2 rounded-xl bg-white/15 hover:bg-white/25 hover:-translate-y-0.5 active:translate-y-0 backdrop-blur-sm transition-all duration-200"
             >
               <ChevronLeft size={17} />
             </button>
             <button
               onClick={() => changeMonth(1)}
-              className="p-2 rounded-xl bg-white/15 hover:bg-white/25 transition"
+              className="p-2 rounded-xl bg-white/15 hover:bg-white/25 hover:-translate-y-0.5 active:translate-y-0 backdrop-blur-sm transition-all duration-200"
             >
               <ChevronRight size={17} />
             </button>
@@ -155,17 +233,17 @@ export default function CalendarPage() {
       </div>
 
       {/* ── Body ── */}
-      <div className="max-w-6xl mx-auto px-5 py-5">
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_310px] gap-5 items-start">
+      <div className="max-w-[1800px] mx-auto px-6 py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6 items-start">
 
           {/* ── Month grid ── */}
-          <div className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden">
+          <div className="bg-card border border-border rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden">
             {/* Weekday header row */}
             <div className="grid grid-cols-7 border-b border-border bg-muted/30">
               {WEEKDAYS.map((wd) => (
                 <div
                   key={wd}
-                  className="text-center text-[11px] font-semibold text-muted-foreground tracking-wide py-3"
+                  className="text-center text-xs font-semibold text-muted-foreground tracking-wide py-3.5"
                 >
                   {wd}
                 </div>
@@ -173,7 +251,7 @@ export default function CalendarPage() {
             </div>
 
             {/* Day cells */}
-            <div className="grid grid-cols-7 divide-x divide-y divide-border/40">
+            <div key={monthKey} className="grid grid-cols-7 divide-x divide-y divide-border/40 rmbgh-month-anim">
               {cells.map((c, i) => {
                 const dayEvents  = !c.outside ? (eventsByDate[c.key] || []) : [];
                 const isToday    = c.key === tKey;
@@ -183,25 +261,26 @@ export default function CalendarPage() {
                   <div
                     key={i}
                     onClick={() => !c.outside && setSelectedKey(c.key)}
-                    className={`relative min-h-[72px] p-1.5 transition select-none ${
+                    className={`rmbgh-cell relative min-h-[115px] p-2.5 transition-all duration-200 select-none ${
                       c.outside
                         ? "bg-muted/20 cursor-default"
                         : isSelected
-                        ? "bg-primary/8 cursor-pointer"
-                        : "hover:bg-muted/40 cursor-pointer"
+                        ? "bg-primary/10 cursor-pointer"
+                        : "hover:bg-muted/40 hover:scale-[1.02] cursor-pointer"
                     }`}
+                    style={{ animationDelay: mounted ? `${Math.min(i * 8, 220)}ms` : "0ms" }}
                   >
                     {/* Day number */}
                     <span
-                      className={`w-7 h-7 flex items-center justify-center text-sm font-semibold rounded-full ml-auto transition ${
+                      className={`w-8 h-8 flex items-center justify-center text-base font-semibold rounded-full ml-auto transition-all duration-200 ${
                         c.outside
                           ? "text-muted-foreground/25"
                           : isSelected && isToday
-                          ? "bg-primary text-primary-foreground shadow-md ring-2 ring-primary/30"
+                          ? "bg-primary text-primary-foreground shadow-md ring-2 ring-primary/30 rmbgh-today-ring"
                           : isSelected
                           ? "bg-primary text-primary-foreground shadow-sm"
                           : isToday
-                          ? "bg-primary/15 text-primary"
+                          ? "bg-primary/15 text-primary rmbgh-today-ring"
                           : "text-foreground"
                       }`}
                     >
@@ -214,13 +293,13 @@ export default function CalendarPage() {
                         {dayEvents.slice(0, 2).map((ev, di) => (
                           <div
                             key={di}
-                            className="text-[9px] font-medium truncate rounded px-1 py-0.5 bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300 leading-tight"
+                            className={`text-[10.5px] font-medium truncate rounded px-1.5 py-1 leading-tight ${PILL_COLORS[di % PILL_COLORS.length]}`}
                           >
                             {ev.event.title}
                           </div>
                         ))}
                         {dayEvents.length > 2 && (
-                          <p className="text-[9px] text-muted-foreground px-1">
+                          <p className="text-[10px] text-muted-foreground px-1">
                             +{dayEvents.length - 2} more
                           </p>
                         )}
@@ -247,7 +326,7 @@ export default function CalendarPage() {
           {/* ── Right panel ── */}
           <div className="space-y-4">
             {/* Selected day detail */}
-            <div className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden">
+            <div className="bg-card border border-border rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden">
               <div className="px-4 py-3 border-b border-border bg-muted/30 flex items-center gap-2">
                 <CalendarDays size={14} className="text-primary flex-shrink-0" />
                 <h3 className="text-sm font-semibold text-foreground truncate">
@@ -261,9 +340,13 @@ export default function CalendarPage() {
                   <p className="text-xs">No events on this day</p>
                 </div>
               ) : (
-                <div className="divide-y divide-border">
+                <div key={selectedKey} className="divide-y divide-border">
                   {selectedEvents.map((p, idx) => (
-                    <div key={p.id} className="p-4">
+                    <div
+                      key={p.id}
+                      className="p-4 rmbgh-fade-up"
+                      style={{ animationDelay: `${idx * 60}ms` }}
+                    >
                       <div className="flex items-start gap-3">
                         {/* Colored left bar */}
                         <div
@@ -298,7 +381,7 @@ export default function CalendarPage() {
             </div>
 
             {/* Upcoming events */}
-            <div className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden">
+            <div className="bg-card border border-border rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden">
               <div className="px-4 py-3 border-b border-border bg-muted/30">
                 <h3 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
                   <Sparkles size={13} className="text-primary" /> Upcoming
@@ -318,20 +401,21 @@ export default function CalendarPage() {
                         key={p.id}
                         onClick={() => {
                           const [ey, emo] = p.event.date.split("-").map(Number);
+                          setDirection(new Date(ey, emo - 1, 1) >= new Date(y, m, 1) ? 1 : -1);
                           setCursor({ y: ey, m: emo - 1 });
                           setSelectedKey(p.event.date);
                         }}
-                        className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-muted/40 transition group"
+                        className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-muted/40 transition-all duration-200 group hover:pl-5"
                       >
                         {/* Date badge */}
-                        <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-violet-700 text-white flex flex-col items-center justify-center leading-none shadow-sm">
+                        <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-violet-700 text-white flex flex-col items-center justify-center leading-none shadow-sm group-hover:shadow-md group-hover:scale-105 transition-all duration-200">
                           <span className="text-[8px] font-semibold uppercase tracking-wide">
                             {MONTHS[em - 1].slice(0, 3)}
                           </span>
                           <span className="text-sm font-bold">{ed}</span>
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="text-xs font-semibold text-foreground truncate group-hover:text-primary transition">
+                          <p className="text-xs font-semibold text-foreground truncate group-hover:text-primary transition-colors">
                             {p.event.title}
                           </p>
                           <p className="text-[10px] text-muted-foreground truncate mt-0.5">
@@ -340,7 +424,7 @@ export default function CalendarPage() {
                           </p>
                         </div>
                         {/* Color accent dot */}
-                        <span className={`w-2 h-2 rounded-full flex-shrink-0 ${DOT_COLORS[idx % DOT_COLORS.length]}`} />
+                        <span className={`w-2 h-2 rounded-full flex-shrink-0 ${DOT_COLORS[idx % DOT_COLORS.length]} group-hover:scale-150 transition-transform duration-200`} />
                       </button>
                     );
                   })}

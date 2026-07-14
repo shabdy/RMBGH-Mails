@@ -57,15 +57,27 @@ export function MiniCalendar() {
     return posts
       .filter((p) => p.event?.date && p.event.date >= tKey)
       .sort((a, b) => a.event.date.localeCompare(b.event.date))
-      .slice(0, 3);
+      .slice(0, 2);
   }, [posts, tKey]);
 
   return (
-    <div className="bg-card border border-border rounded-2xl shadow-sm p-4">
+    <div className="bg-card border border-border rounded-2xl shadow-sm p-3">
+      <style>{`
+        @keyframes mc-pulse-ring {
+          0% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.45); }
+          70% { box-shadow: 0 0 0 6px rgba(139, 92, 246, 0); }
+          100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0); }
+        }
+        .mc-today-ring { animation: mc-pulse-ring 2.2s ease-out infinite; }
+      `}</style>
+
       {/* Header */}
-      <div className="flex items-center justify-between mb-3">
+      <div className="flex items-center justify-between mb-2">
         <h2 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
-          <CalendarClock size={14} className="text-primary" /> Events
+          <div className="w-5 h-5 rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center">
+            <CalendarClock size={11} className="text-white" />
+          </div>
+          Events
         </h2>
         <button
           onClick={() => navigate("/calendar")}
@@ -76,20 +88,20 @@ export function MiniCalendar() {
       </div>
 
       {/* Month nav */}
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex items-center justify-between mb-1.5">
         <span className="text-[11px] font-semibold text-foreground">
           {MONTHS[m].slice(0, 3)} {y}
         </span>
         <div className="flex items-center gap-0.5">
           <button
             onClick={() => changeMonth(-1)}
-            className="p-1 rounded-md hover:bg-muted transition text-muted-foreground"
+            className="p-1 rounded-md hover:bg-violet-50 hover:text-violet-600 transition-colors text-muted-foreground"
           >
             <ChevronLeft size={13} />
           </button>
           <button
             onClick={() => changeMonth(1)}
-            className="p-1 rounded-md hover:bg-muted transition text-muted-foreground"
+            className="p-1 rounded-md hover:bg-violet-50 hover:text-violet-600 transition-colors text-muted-foreground"
           >
             <ChevronRight size={13} />
           </button>
@@ -115,14 +127,14 @@ export function MiniCalendar() {
               key={i}
               disabled={c.outside}
               onClick={() => !c.outside && hasEvent && navigate("/calendar")}
-              className={`relative aspect-square rounded-lg flex flex-col items-center justify-center text-[10px] font-medium transition ${
+              className={`relative aspect-square rounded-lg flex flex-col items-center justify-center text-[10px] font-medium transition-all duration-150 ${
                 c.outside
                   ? "text-muted-foreground/25 cursor-default"
                   : isToday
-                  ? "bg-primary text-primary-foreground shadow-sm"
+                  ? "bg-primary text-primary-foreground shadow-sm mc-today-ring"
                   : hasEvent
-                  ? "text-violet-700 hover:bg-violet-50 cursor-pointer"
-                  : "text-foreground hover:bg-muted/50"
+                  ? "text-violet-700 hover:bg-violet-50 hover:scale-110 cursor-pointer"
+                  : "text-foreground hover:bg-muted/50 hover:scale-110"
               }`}
             >
               {c.day}
@@ -136,23 +148,23 @@ export function MiniCalendar() {
 
       {/* Upcoming events list */}
       {upcomingEvents.length > 0 && (
-        <div className="mt-3 pt-3 border-t border-border space-y-2">
+        <div className="mt-2 pt-2 border-t border-border space-y-1">
           {upcomingEvents.map((p) => {
             const [, em, ed] = p.event.date.split("-");
             return (
               <button
                 key={p.id}
                 onClick={() => navigate("/calendar")}
-                className="w-full flex items-center gap-2.5 text-left rounded-lg px-1 py-1 hover:bg-muted/50 transition group"
+                className="w-full flex items-center gap-2.5 text-left rounded-lg px-1 py-1 hover:bg-violet-50 hover:translate-x-0.5 transition-all duration-150 group"
               >
-                <div className="w-8 h-8 rounded-lg bg-violet-600 text-white flex flex-col items-center justify-center flex-shrink-0 leading-none">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-violet-700 text-white flex flex-col items-center justify-center flex-shrink-0 leading-none shadow-sm group-hover:scale-105 transition-transform">
                   <span className="text-[8px] font-medium uppercase">
                     {MONTHS[Number(em) - 1].slice(0, 3)}
                   </span>
                   <span className="text-[11px] font-bold">{Number(ed)}</span>
                 </div>
                 <div className="min-w-0">
-                  <p className="text-[11px] font-medium text-foreground truncate group-hover:text-primary transition">
+                  <p className="text-[11px] font-medium text-foreground truncate group-hover:text-primary transition-colors">
                     {p.event.title}
                   </p>
                   <p className="text-[10px] text-muted-foreground truncate">

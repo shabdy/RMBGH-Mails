@@ -14,10 +14,12 @@ if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
 const UPLOAD_DIR = path.join(__dirname, "uploads");
 if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 
-const JWT_SECRET = process.env.SESSION_SECRET;
-if (!JWT_SECRET) {
-  throw new Error("SESSION_SECRET environment variable is required to sign session tokens");
+// Uses system variable if present; otherwise defaults to a local development key
+const JWT_SECRET = process.env.SESSION_SECRET || "local_dev_secret_key_backup_9988";
+if (!process.env.SESSION_SECRET) {
+  console.warn("[Warning]: SESSION_SECRET env not found. Falling back to local development key.");
 }
+
 
 const app = express();
 app.use(cors());

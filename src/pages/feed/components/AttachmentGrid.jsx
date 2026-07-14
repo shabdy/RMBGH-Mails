@@ -2,10 +2,11 @@ import { FileText, FileSpreadsheet, File as FileIcon, Download } from "lucide-re
 
 const isImage = (a) => (a.type || "").startsWith("image/");
 
-function fileIcon(type) {
-  if (type?.includes("pdf") || type?.includes("word")) return FileText;
-  if (type?.includes("sheet") || type?.includes("excel")) return FileSpreadsheet;
-  return FileIcon;
+function fileMeta(type) {
+  if (type?.includes("pdf")) return { Icon: FileText, color: "bg-rose-50 text-rose-600" };
+  if (type?.includes("word")) return { Icon: FileText, color: "bg-blue-50 text-blue-600" };
+  if (type?.includes("sheet") || type?.includes("excel")) return { Icon: FileSpreadsheet, color: "bg-emerald-50 text-emerald-600" };
+  return { Icon: FileIcon, color: "bg-violet-50 text-violet-600" };
 }
 
 function fmtSize(bytes) {
@@ -47,7 +48,7 @@ export function AttachmentGrid({ attachments = [] }) {
                 <img
                   src={img.url}
                   alt={img.name || "attachment"}
-                  className="w-full h-full object-cover aspect-square group-hover:brightness-95 transition"
+                  className="w-full h-full object-cover aspect-square group-hover:scale-105 group-hover:brightness-95 transition-transform duration-300"
                   loading="lazy"
                 />
                 {extra > 0 && (
@@ -64,7 +65,7 @@ export function AttachmentGrid({ attachments = [] }) {
       {files.length > 0 && (
         <div className="space-y-1.5">
           {files.map((f) => {
-            const Icon = fileIcon(f.type);
+            const { Icon, color } = fileMeta(f.type);
             return (
               <a
                 key={f.url}
@@ -72,16 +73,16 @@ export function AttachmentGrid({ attachments = [] }) {
                 target="_blank"
                 rel="noreferrer"
                 download={f.name}
-                className="flex items-center gap-2.5 rounded-lg border border-border bg-muted/30 px-3 py-2 hover:bg-muted/60 transition group"
+                className="flex items-center gap-2.5 rounded-lg border border-border bg-muted/30 px-3 py-2 hover:bg-muted/60 hover:border-primary/30 transition-colors group"
               >
-                <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform ${color}`}>
                   <Icon size={15} />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-medium text-foreground truncate">{f.name}</p>
                   <p className="text-[10px] text-muted-foreground">{fmtSize(f.size)}</p>
                 </div>
-                <Download size={13} className="text-muted-foreground/50 group-hover:text-foreground transition flex-shrink-0" />
+                <Download size={13} className="text-muted-foreground/50 group-hover:text-primary transition-colors flex-shrink-0" />
               </a>
             );
           })}

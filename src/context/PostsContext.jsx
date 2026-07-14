@@ -4,6 +4,24 @@ import { AuthContext } from "./authContext";
 
 const PostsContext = createContext(null);
 
+// Shared by react(), reactToComment(), and reactToReply(): toggles the
+// current user's reaction within a reactions array and derives the
+// counts/myReaction fields the UI reads off of.
+function toggleReaction(reactions = [], cu, type) {
+  const existingIdx = reactions.findIndex((r) => String(r.userId) === String(cu.id));
+  let nextReactions;
+  if (existingIdx !== -1 && reactions[existingIdx].type === type) {
+    nextReactions = reactions.filter((_, i) => i !== existingIdx);
+  } else if (existingIdx !== -1) {
+    nextReactions = reactions.map((r, i) => (i === existingIdx ? { ...r, type } : r));
+  } else {
+    nextReactions = [...reactions, { userId: cu.id, name: cu.name, type }];
+  }
+  const reactionCounts = nextReactions.reduce((acc, r) => ({ ...acc, [r.type]: (acc[r.type] || 0) + 1 }), {});
+  const myReaction = nextReactions.find((r) => String(r.userId) === String(cu.id))?.type || null;
+  return { reactions: nextReactions, reactionCounts, myReaction };
+}
+
 export function PostsProvider({ children }) {
   const { user } = useContext(AuthContext);
   const [posts, setPosts] = useState([]);
@@ -106,7 +124,7 @@ export function PostsProvider({ children }) {
     const tempCommentId = `temp-${Date.now()}`;
     setPosts((prev) => prev.map((p) => {
       if (p.id !== id) return p;
-      const comment = { id: tempCommentId, userId: cu.id, name: cu.name, text: text.trim(), date: "Just now", time: "" };
+      const comment = { id: tempCommentId, userId: cu.id, name: cu.name, text: text.trim(), date: "Just now", time: "", reactions: [], replies: [] };
       return { ...p, comments: [...(p.comments || []), comment], commentCount: (p.commentCount || 0) + 1 };
     }));
 
@@ -122,6 +140,39 @@ export function PostsProvider({ children }) {
     }
   };
 
+  // Adds a reply to a specific comment. Optimistically appends it under
+  // comment.replies, then reconciles with whatever the server returns.
+  const addReply = async (postId, commentId, text) => {
+    const cu = buildCurrentUser();
+    if (!cu || !text?.trim()) return;
+
+    const tempReplyId = `temp-${Date.now()}`;
+    setPosts((prev) => prev.map((p) => {
+      if (p.id !== postId) return p;
+      const comments = (p.comments || []).map((c) => {
+        if (c.id !== commentId) return c;
+        const reply = { id: tempReplyId, userId: cu.id, name: cu.name, text: text.trim(), date: "Just now", time: "", reactions: [] };
+        return { ...c, replies: [...(c.replies || []), reply] };
+      });
+      return { ...p, comments };
+    }));
+
+    try {
+      const { data } = await api.post(`/posts/${postId}/comments/${commentId}/replies`, { userId: cu.id, name: cu.name, text: text.trim() });
+      setPosts((prev) => prev.map((p) => (p.id === postId ? data : p)));
+    } catch (err) {
+      console.error("Add reply failed:", err);
+      setPosts((prev) => prev.map((p) => {
+        if (p.id !== postId) return p;
+        const comments = (p.comments || []).map((c) => {
+          if (c.id !== commentId) return c;
+          return { ...c, replies: (c.replies || []).filter((r) => r.id !== tempReplyId) };
+        });
+        return { ...p, comments };
+      }));
+    }
+  };
+
   const react = async (id, type) => {
     const cu = buildCurrentUser();
     if (!cu) return;
@@ -130,19 +181,8 @@ export function PostsProvider({ children }) {
     setPosts((prev) => prev.map((p) => {
       if (p.id !== id) return p;
       prevSnapshot = p;
-      const reactions = p.reactions || [];
-      const existingIdx = reactions.findIndex((r) => String(r.userId) === String(cu.id));
-      let nextReactions;
-      if (existingIdx !== -1 && reactions[existingIdx].type === type) {
-        nextReactions = reactions.filter((_, i) => i !== existingIdx);
-      } else if (existingIdx !== -1) {
-        nextReactions = reactions.map((r, i) => (i === existingIdx ? { ...r, type } : r));
-      } else {
-        nextReactions = [...reactions, { userId: cu.id, name: cu.name, type }];
-      }
-      const reactionCounts = nextReactions.reduce((acc, r) => ({ ...acc, [r.type]: (acc[r.type] || 0) + 1 }), {});
-      const myReaction = nextReactions.find((r) => String(r.userId) === String(cu.id))?.type || null;
-      return { ...p, reactions: nextReactions, reactionCount: nextReactions.length, reactionCounts, myReaction };
+      const { reactions, reactionCounts, myReaction } = toggleReaction(p.reactions, cu, type);
+      return { ...p, reactions, reactionCount: reactions.length, reactionCounts, myReaction };
     }));
 
     try {
@@ -151,6 +191,62 @@ export function PostsProvider({ children }) {
     } catch (err) {
       console.error("React failed:", err);
       if (prevSnapshot) setPosts((prev) => prev.map((p) => (p.id === id ? prevSnapshot : p)));
+    }
+  };
+
+  // Same toggle logic as react(), scoped to one comment inside a post.
+  const reactToComment = async (postId, commentId, type) => {
+    const cu = buildCurrentUser();
+    if (!cu) return;
+
+    let prevSnapshot;
+    setPosts((prev) => prev.map((p) => {
+      if (p.id !== postId) return p;
+      prevSnapshot = p;
+      const comments = (p.comments || []).map((c) => {
+        if (c.id !== commentId) return c;
+        const { reactions, reactionCounts, myReaction } = toggleReaction(c.reactions, cu, type);
+        return { ...c, reactions, reactionCounts, myReaction };
+      });
+      return { ...p, comments };
+    }));
+
+    try {
+      const { data } = await api.post(`/posts/${postId}/comments/${commentId}/react`, { userId: cu.id, name: cu.name, type });
+      setPosts((prev) => prev.map((p) => (p.id === postId ? data : p)));
+    } catch (err) {
+      console.error("React to comment failed:", err);
+      if (prevSnapshot) setPosts((prev) => prev.map((p) => (p.id === postId ? prevSnapshot : p)));
+    }
+  };
+
+  // Same toggle logic again, scoped to one reply nested under one comment.
+  const reactToReply = async (postId, commentId, replyId, type) => {
+    const cu = buildCurrentUser();
+    if (!cu) return;
+
+    let prevSnapshot;
+    setPosts((prev) => prev.map((p) => {
+      if (p.id !== postId) return p;
+      prevSnapshot = p;
+      const comments = (p.comments || []).map((c) => {
+        if (c.id !== commentId) return c;
+        const replies = (c.replies || []).map((r) => {
+          if (r.id !== replyId) return r;
+          const { reactions, reactionCounts, myReaction } = toggleReaction(r.reactions, cu, type);
+          return { ...r, reactions, reactionCounts, myReaction };
+        });
+        return { ...c, replies };
+      });
+      return { ...p, comments };
+    }));
+
+    try {
+      const { data } = await api.post(`/posts/${postId}/comments/${commentId}/replies/${replyId}/react`, { userId: cu.id, name: cu.name, type });
+      setPosts((prev) => prev.map((p) => (p.id === postId ? data : p)));
+    } catch (err) {
+      console.error("React to reply failed:", err);
+      if (prevSnapshot) setPosts((prev) => prev.map((p) => (p.id === postId ? prevSnapshot : p)));
     }
   };
 
@@ -172,7 +268,11 @@ export function PostsProvider({ children }) {
 
   return (
     <PostsContext.Provider
-      value={{ posts, currentUser: buildCurrentUser(), createPost, deletePost, markViewed, addComment, react, uploadFiles, togglePin, reload: loadPosts }}
+      value={{
+        posts, currentUser: buildCurrentUser(), createPost, deletePost, markViewed,
+        addComment, addReply, react, reactToComment, reactToReply,
+        uploadFiles, togglePin, reload: loadPosts,
+      }}
     >
       {children}
     </PostsContext.Provider>

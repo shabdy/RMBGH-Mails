@@ -57,11 +57,11 @@ function MediaRow({ item }) {
       href={item.url}
       target="_blank"
       rel="noreferrer"
-      className="flex items-center gap-2.5 rounded-lg px-1.5 py-1.5 hover:bg-muted/50 transition group"
+      className="flex items-center gap-2.5 rounded-lg px-1.5 py-1.5 hover:bg-sky-50 transition-colors group"
     >
-      <img src={item.url} alt={item.name} className="w-11 h-11 rounded-lg object-cover border border-border flex-shrink-0" loading="lazy" />
+      <img src={item.url} alt={item.name} className="w-11 h-11 rounded-lg object-cover border border-border flex-shrink-0 group-hover:scale-105 transition-transform" loading="lazy" />
       <div className="min-w-0">
-        <p className="text-xs font-medium text-foreground truncate group-hover:text-primary transition">{item.name || "Photo"}</p>
+        <p className="text-xs font-medium text-foreground truncate group-hover:text-sky-600 transition-colors">{item.name || "Photo"}</p>
         <p className="text-[10px] text-muted-foreground">{item.date} · {ext(item.name)}</p>
       </div>
     </a>
@@ -75,16 +75,16 @@ function FileRow({ item }) {
       target="_blank"
       rel="noreferrer"
       download={item.name}
-      className="flex items-center gap-2.5 rounded-lg px-1.5 py-1.5 hover:bg-muted/50 transition group"
+      className="flex items-center gap-2.5 rounded-lg px-1.5 py-1.5 hover:bg-blue-50 transition-colors group"
     >
-      <div className="w-9 h-9 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0">
+      <div className="w-9 h-9 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
         <FileText size={15} />
       </div>
       <div className="min-w-0 flex-1">
-        <p className="text-xs font-medium text-foreground truncate group-hover:text-primary transition">{item.name}</p>
+        <p className="text-xs font-medium text-foreground truncate group-hover:text-blue-600 transition-colors">{item.name}</p>
         <p className="text-[10px] text-muted-foreground">{item.date} · {fmtSize(item.size)}</p>
       </div>
-      <Download size={12} className="text-muted-foreground/50 group-hover:text-foreground transition flex-shrink-0" />
+      <Download size={12} className="text-muted-foreground/50 group-hover:text-blue-600 transition-colors flex-shrink-0" />
     </a>
   );
 }
@@ -95,16 +95,16 @@ function LinkRow({ item }) {
       href={item.url}
       target="_blank"
       rel="noreferrer"
-      className="flex items-center gap-2.5 rounded-lg px-1.5 py-1.5 hover:bg-muted/50 transition group"
+      className="flex items-center gap-2.5 rounded-lg px-1.5 py-1.5 hover:bg-amber-50 transition-colors group"
     >
-      <div className="w-9 h-9 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center flex-shrink-0">
+      <div className="w-9 h-9 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
         <Link2 size={15} />
       </div>
       <div className="min-w-0 flex-1">
-        <p className="text-xs font-medium text-foreground truncate group-hover:text-primary transition">{item.host}</p>
+        <p className="text-xs font-medium text-foreground truncate group-hover:text-amber-700 transition-colors">{item.host}</p>
         <p className="text-[10px] text-muted-foreground truncate">{item.author} · {item.date}</p>
       </div>
-      <ExternalLink size={12} className="text-muted-foreground/50 group-hover:text-foreground transition flex-shrink-0" />
+      <ExternalLink size={12} className="text-muted-foreground/50 group-hover:text-amber-700 transition-colors flex-shrink-0" />
     </a>
   );
 }
@@ -116,6 +116,12 @@ const EMPTY = {
 };
 
 const ROW_COMPONENTS = { media: MediaRow, files: FileRow, links: LinkRow };
+const TAB_ICONS = { media: ImageIcon, files: FileText, links: Link2 };
+const TAB_ACTIVE = {
+  media: "data-[state=active]:text-sky-600 data-[state=active]:bg-sky-50",
+  files: "data-[state=active]:text-blue-600 data-[state=active]:bg-blue-50",
+  links: "data-[state=active]:text-amber-700 data-[state=active]:bg-amber-50",
+};
 
 export function MediaFilesLinksSidebar({ posts }) {
   const { media, files, links } = useFeedAssets(posts);
@@ -128,15 +134,23 @@ export function MediaFilesLinksSidebar({ posts }) {
       <div className="bg-card border border-border rounded-2xl shadow-sm p-4">
         <div className="flex items-center justify-between mb-2">
           <h2 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
-            <ImageIcon size={14} className="text-primary" /> Media, Files &amp; Links
+            <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-sky-400 to-blue-500 flex items-center justify-center">
+              <ImageIcon size={12} className="text-white" />
+            </div>
+            Media, Files &amp; Links
           </h2>
         </div>
 
         <Tabs defaultValue="media">
           <TabsList className="w-full">
-            <TabsTrigger value="media" className="text-xs">Media</TabsTrigger>
-            <TabsTrigger value="files" className="text-xs">Files</TabsTrigger>
-            <TabsTrigger value="links" className="text-xs">Links</TabsTrigger>
+            {["media", "files", "links"].map((key) => {
+              const Icon = TAB_ICONS[key];
+              return (
+                <TabsTrigger key={key} value={key} className={`text-xs gap-1 transition-colors ${TAB_ACTIVE[key]}`}>
+                  <Icon size={11} /> {key[0].toUpperCase() + key.slice(1)}
+                </TabsTrigger>
+              );
+            })}
           </TabsList>
 
           {["media", "files", "links"].map((key) => {
@@ -157,7 +171,7 @@ export function MediaFilesLinksSidebar({ posts }) {
                         onClick={() => setViewAll(key)}
                         className="w-full text-center text-[11px] font-medium text-primary hover:underline mt-1.5 py-1"
                       >
-                        View all {data[key].length}
+                        View all · {data[key].length}
                       </button>
                     )}
                   </>
