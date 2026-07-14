@@ -263,7 +263,53 @@ export default function CalendarPage() {
 
       {/* ── Body ── */}
       <div className="max-w-[1800px] mx-auto px-6 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6 items-start">
+        <div className="grid grid-cols-1 xl:grid-cols-[260px_1fr_360px] gap-6 items-start">
+
+          {/* ── Left panel: full-year holiday list ── */}
+          <div className="hidden xl:block bg-card border border-border rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden sticky top-6">
+            <div className="px-4 py-3 border-b border-border bg-muted/30">
+              <h3 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+                🇵🇭 {y} Holidays
+              </h3>
+              <p className="text-[10px] text-muted-foreground mt-0.5">Official Philippine holidays</p>
+            </div>
+            <div className="max-h-[calc(100vh-220px)] overflow-y-auto divide-y divide-border">
+              {PH_HOLIDAYS_2026.length === 0 ? (
+                <div className="flex flex-col items-center py-8 text-muted-foreground gap-2">
+                  <p className="text-xs">No holidays listed</p>
+                </div>
+              ) : (
+                PH_HOLIDAYS_2026.map((h) => {
+                  const [, hm, hd] = h.date.split("-").map(Number);
+                  const isPast = h.date < tKey;
+                  const isCurrentMonth = hm - 1 === m;
+                  return (
+                    <button
+                      key={h.date}
+                      onClick={() => {
+                        const [hy, hmo] = h.date.split("-").map(Number);
+                        setDirection(new Date(hy, hmo - 1, 1) >= new Date(y, m, 1) ? 1 : -1);
+                        setCursor({ y: hy, m: hmo - 1 });
+                        setSelectedKey(h.date);
+                      }}
+                      className={`w-full flex items-center gap-2.5 px-4 py-2.5 text-left transition-all duration-200 group hover:pl-5 ${
+                        isCurrentMonth ? "bg-red-50/60 dark:bg-red-900/10" : ""
+                      } ${isPast ? "opacity-50" : ""}`}
+                    >
+                      <div className="flex-shrink-0 w-9 h-9 rounded-lg bg-gradient-to-br from-red-500 to-rose-600 text-white flex flex-col items-center justify-center leading-none shadow-sm group-hover:scale-105 transition-transform duration-200">
+                        <span className="text-[7px] font-semibold uppercase tracking-wide">{MONTHS[hm - 1].slice(0, 3)}</span>
+                        <span className="text-xs font-bold">{hd}</span>
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[11.5px] font-semibold text-foreground truncate group-hover:text-red-600 transition-colors">{h.name}</p>
+                        <p className="text-[10px] text-muted-foreground truncate">{HOLIDAY_TYPE_LABEL[h.type]}</p>
+                      </div>
+                    </button>
+                  );
+                })
+              )}
+            </div>
+          </div>
 
           {/* ── Month grid ── */}
           <div className="bg-card border border-border rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden">

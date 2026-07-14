@@ -44,6 +44,7 @@ export function PostComposer() {
   const [eventDate, setEventDate] = useState("");
   const [eventTime, setEventTime] = useState("");
   const [eventLocation, setEventLocation] = useState("");
+  const [linkPopover, setLinkPopover] = useState(null); // { start, end, selectedText, url }
   const imgInputRef = useRef(null);
   const fileInputRef = useRef(null);
   const textareaRef = useRef(null);
@@ -126,17 +127,28 @@ export function PostComposer() {
     });
   };
 
-  const applyLink = () => {
+  // Native window.prompt() is blocked/silently swallowed inside Replit's
+  // sandboxed preview iframe, which made the Link toolbar button appear
+  // completely broken. An inline popover works everywhere instead.
+  const openLinkPopover = () => {
     const ta = textareaRef.current;
     if (!ta) return;
     const start = ta.selectionStart;
     const end = ta.selectionEnd;
-    const selected = text.slice(start, end) || "link text";
-    const url = window.prompt("Link URL", "https://");
-    if (!url) return;
-    const insert = `[${selected}](${url})`;
+    const selectedText = text.slice(start, end) || "link text";
+    setLinkPopover({ start, end, selectedText, url: "https://" });
+  };
+
+  const confirmLink = () => {
+    const ta = textareaRef.current;
+    if (!ta || !linkPopover) return;
+    const url = linkPopover.url.trim();
+    if (!url) { setLinkPopover(null); return; }
+    const { start, end, selectedText } = linkPopover;
+    const insert = `[${selectedText}](${url})`;
     const newValue = text.slice(0, start) + insert + text.slice(end);
     setText(newValue);
+    setLinkPopover(null);
     requestAnimationFrame(() => {
       ta.focus();
       ta.setSelectionRange(start + insert.length, start + insert.length);
@@ -151,7 +163,7 @@ export function PostComposer() {
     { icon: Strikethrough, title: "Strikethrough",      action: () => wrapSelection("~~", "~~", "struck text") },
     { icon: List,          title: "Bullet list",        action: () => applyListFormat(false) },
     { icon: ListOrdered,   title: "Numbered list",      action: () => applyListFormat(true) },
-    { icon: Link2,         title: "Link",               action: applyLink },
+    { icon: Link2,         title: "Link",               action: openLinkPopover },
   ];
 
   const handleTextareaKeyDown = (e) => {
@@ -231,6 +243,29 @@ export function PostComposer() {
                 ))}
                 <div className="w-px h-4 bg-border mx-1" />
                 <span className="text-[10px] text-muted-foreground/50">Markdown supported</span>
+              </div>
+            )}
+
+            {linkPopover && (
+              <div className="flex items-center gap-1.5 border border-b-0 border-border bg-muted/60 px-2 py-1.5 animate-in fade-in slide-in-from-top-1 duration-150">
+                <Link2 size={13} className="text-muted-foreground flex-shrink-0" />
+                <input
+                  autoFocus
+                  value={linkPopover.url}
+                  onChange={(e) => setLinkPopover((p) => ({ ...p, url: e.target.value }))}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") { e.preventDefault(); confirmLink(); }
+                    else if (e.key === "Escape") setLinkPopover(null);
+                  }}
+                  placeholder="https://example.com"
+                  className="flex-1 min-w-0 text-xs rounded-md border border-border bg-card px-2 py-1 focus:outline-none focus:ring-2 focus:ring-primary/25"
+                />
+                <button type="button" onClick={confirmLink} className="text-xs font-semibold text-primary px-1.5 hover:underline">
+                  Insert
+                </button>
+                <button type="button" onClick={() => setLinkPopover(null)} className="p-0.5 text-muted-foreground hover:text-foreground">
+                  <X size={13} />
+                </button>
               </div>
             )}
             <textarea

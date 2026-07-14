@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useContext } from "react";
-import { MessageCircle, Forward, Trash2, Eye, Pin, MoreVertical, CalendarDays, MapPin, Clock, CornerDownRight } from "lucide-react";
+import { MessageCircle, Forward, Trash2, Eye, Pin, MoreVertical, CalendarDays, MapPin, Clock, CornerDownRight, Pencil, Check, X } from "lucide-react";
 import { AuthContext } from "@/context/authContext";
 import { usePosts } from "@/context/PostsContext";
 import { Avatar } from "./Avatar";
@@ -299,6 +299,7 @@ export function PostCard({ post, cardRef }) {
     reactToComment,
     addReply,
     reactToReply,
+    editPost,
   } = usePosts();
   const viewRef = useRef(null);
   const [showViewers, setShowViewers] = useState(false);
@@ -311,11 +312,40 @@ export function PostCard({ post, cardRef }) {
   const [expandedContent, setExpandedContent] = useState(false);
   const [contentOverflowing, setContentOverflowing] = useState(false);
   const contentRef = useRef(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editText, setEditText] = useState(post.content || "");
+  const [savingEdit, setSavingEdit] = useState(false);
   const CONTENT_CLAMP_PX = 112; // ~4-5 lines at text-sm/leading-relaxed before "See more" kicks in — kept tight so long posts don't eat feed space
 
   const isAdmin = ["admin", "superadmin"].includes(user?.role);
-  const canDelete = isAdmin || String(post.from?.id) === String(user?.id);
+  const isOwnPost = String(post.from?.id) === String(user?.id);
+  const canDelete = isAdmin || isOwnPost;
+  const canEdit = isOwnPost; // editing is author-only, even for admins
+  // Pin permission mirrors the backend's canPinPost rule:
+  //  - superadmin: any post · admin: own post or same department · user: own post only
+  const canPin =
+    user?.role === "superadmin" ||
+    isOwnPost ||
+    (user?.role === "admin" && user?.departmentId && user.departmentId === post.from?.departmentId);
   const categoryBar = CATEGORY_BAR[post.category] || "bg-muted-foreground/20";
+
+  const startEdit = () => {
+    setEditText(post.content || "");
+    setIsEditing(true);
+  };
+
+  const saveEdit = async () => {
+    if (!editText.trim() && !(post.attachments || []).length && !post.event) return;
+    setSavingEdit(true);
+    try {
+      await editPost(post.id, { content: editText.trim() });
+      setIsEditing(false);
+    } catch {
+      // editPost already logs; keep the editor open so the user can retry
+    } finally {
+      setSavingEdit(false);
+    }
+  };
 
   useEffect(() => {
     if (post.viewed) return;
@@ -410,9 +440,9 @@ export function PostCard({ post, cardRef }) {
           </p>
         </div>
 
-        {!post._pending && (
+        {!post._pending && !isEditing && (
           <div className="flex items-center gap-0.5 flex-shrink-0">
-            {isAdmin && (
+            {canPin && (
               <button
                 onClick={() => togglePin(post.id)}
                 title={post.pinned ? "Unpin" : "Pin to sidebar"}
@@ -423,7 +453,7 @@ export function PostCard({ post, cardRef }) {
                 <Pin size={14} className={post.pinned ? "fill-primary" : ""} />
               </button>
             )}
-            {canDelete && (
+            {(canDelete || canEdit) && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button className="p-1.5 rounded-lg text-muted-foreground/40 hover:text-foreground hover:bg-muted/60 transition">
@@ -431,9 +461,16 @@ export function PostCard({ post, cardRef }) {
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem variant="destructive" onClick={() => setConfirmDelete(true)}>
-                    <Trash2 size={13} /> Delete
-                  </DropdownMenuItem>
+                  {canEdit && (
+                    <DropdownMenuItem onClick={startEdit}>
+                      <Pencil size={13} /> Edit
+                    </DropdownMenuItem>
+                  )}
+                  {canDelete && (
+                    <DropdownMenuItem variant="destructive" onClick={() => setConfirmDelete(true)}>
+                      <Trash2 size={13} /> Delete
+                    </DropdownMenuItem>
+                  )}
                 </DropdownMenuContent>
               </DropdownMenu>
             )}
@@ -441,7 +478,33 @@ export function PostCard({ post, cardRef }) {
         )}
       </div>
 
-      {post.content && (
+      {isEditing ? (
+        <div className="px-4 pt-2 pb-3">
+          <textarea
+            autoFocus
+            value={editText}
+            onChange={(e) => setEditText(e.target.value)}
+            rows={4}
+            className="w-full text-sm rounded-xl border border-border bg-muted/30 px-3.5 py-2.5 leading-relaxed focus:outline-none focus:ring-2 focus:ring-primary/25 focus:bg-card transition-all resize-none"
+          />
+          <div className="flex items-center justify-end gap-2 mt-2">
+            <button
+              onClick={() => setIsEditing(false)}
+              disabled={savingEdit}
+              className="flex items-center gap-1 text-xs font-medium px-3 py-1.5 rounded-lg text-muted-foreground hover:bg-muted transition disabled:opacity-50"
+            >
+              <X size={12} /> Cancel
+            </button>
+            <button
+              onClick={saveEdit}
+              disabled={savingEdit || !editText.trim()}
+              className="flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition disabled:opacity-50"
+            >
+              <Check size={12} /> {savingEdit ? "Saving…" : "Save"}
+            </button>
+          </div>
+        </div>
+      ) : post.content && (
         <div className="px-4 pt-2 pb-2">
           <div
             ref={contentRef}
@@ -460,6 +523,9 @@ export function PostCard({ post, cardRef }) {
             >
               {expandedContent ? "See less" : "See more"}
             </button>
+          )}
+          {post.edited && (
+            <span className="text-[10px] text-muted-foreground/60 italic">(edited)</span>
           )}
         </div>
       )}

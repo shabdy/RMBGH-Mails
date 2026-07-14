@@ -1,4 +1,5 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   Search,
   SlidersHorizontal,
@@ -42,6 +43,8 @@ const TAB_ACCENT = {
 
 export default function AnnouncementFeed() {
   const { posts } = usePosts();
+  const location = useLocation();
+  const navigate = useNavigate();
   const [tab, setTab] = useState("All");
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState("newest");
@@ -72,6 +75,16 @@ export default function AnnouncementFeed() {
       cardRefs.current[id]?.scrollIntoView({ behavior: "smooth", block: "center" });
     });
   };
+
+  // Arriving from a notification click (Bell → "View" → here) carries the
+  // target post id via router state — jump to it once posts are loaded.
+  useEffect(() => {
+    const targetId = location.state?.postId;
+    if (!targetId || posts.length === 0) return;
+    scrollToPost(targetId);
+    navigate(location.pathname, { replace: true, state: {} });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.state?.postId, posts.length]);
 
   return (
     /* Outer wrapper scrolls the whole page — this is what puts the
