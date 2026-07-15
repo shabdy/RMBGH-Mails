@@ -197,5 +197,18 @@
     "createdAt": "2026-07-08T03:25:05.248Z",
     "role": "user",
     "status": "Active"
+  },
+  {
+    "firstName": "Maloi",
+    "lastName": "Ricalde",
+    "email": "mr@rmbgh.com",
+    "password": "Ricalde@123",
+    "department": "Nursing",
+    "departmentId": "NUR",
+    "avatar": "",
+    "id": 1784078437984,
+    "createdAt": "2026-07-15T01:20:37.984Z",
+    "role": "user",
+    "status": "Active"
   }
 ]

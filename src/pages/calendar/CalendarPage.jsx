@@ -263,17 +263,16 @@ export default function CalendarPage() {
 
       {/* ── Body ── */}
       <div className="max-w-[1800px] mx-auto px-6 py-6">
-        <div className="grid grid-cols-1 xl:grid-cols-[260px_1fr_360px] gap-6 items-start">
-
-          {/* ── Left panel: full-year holiday list ── */}
-          <div className="hidden xl:block bg-card border border-border rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden sticky top-6">
-            <div className="px-4 py-3 border-b border-border bg-muted/30">
-              <h3 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+        
+        <div className="grid grid-cols-1 xl:grid-cols-[280px_1fr_320px] gap-6">
+                    {/* ── Left panel: full-year holiday list ── */}
+          <div className="hidden xl:flex xl:flex-col bg-card border border-border rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden">
+            <div className="px-3.5 py-2.5 border-b border-border bg-muted/30 flex-shrink-0">
+              <h3 className="text-xs font-semibold text-foreground flex items-center gap-1.5">
                 🇵🇭 {y} Holidays
               </h3>
-              <p className="text-[10px] text-muted-foreground mt-0.5">Official Philippine holidays</p>
             </div>
-            <div className="max-h-[calc(100vh-220px)] overflow-y-auto divide-y divide-border">
+            <div className="flex-1 min-h-0 overflow-hidden divide-y divide-border/60">
               {PH_HOLIDAYS_2026.length === 0 ? (
                 <div className="flex flex-col items-center py-8 text-muted-foreground gap-2">
                   <p className="text-xs">No holidays listed</p>
@@ -292,18 +291,14 @@ export default function CalendarPage() {
                         setCursor({ y: hy, m: hmo - 1 });
                         setSelectedKey(h.date);
                       }}
-                      className={`w-full flex items-center gap-2.5 px-4 py-2.5 text-left transition-all duration-200 group hover:pl-5 ${
+                      className={`w-full flex items-center gap-2 px-3.5 py-1 text-left transition-colors duration-150 group ${
                         isCurrentMonth ? "bg-red-50/60 dark:bg-red-900/10" : ""
-                      } ${isPast ? "opacity-50" : ""}`}
+                      } ${isPast ? "opacity-45" : ""}`}
                     >
-                      <div className="flex-shrink-0 w-9 h-9 rounded-lg bg-gradient-to-br from-red-500 to-rose-600 text-white flex flex-col items-center justify-center leading-none shadow-sm group-hover:scale-105 transition-transform duration-200">
-                        <span className="text-[7px] font-semibold uppercase tracking-wide">{MONTHS[hm - 1].slice(0, 3)}</span>
-                        <span className="text-xs font-bold">{hd}</span>
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="text-[11.5px] font-semibold text-foreground truncate group-hover:text-red-600 transition-colors">{h.name}</p>
-                        <p className="text-[10px] text-muted-foreground truncate">{HOLIDAY_TYPE_LABEL[h.type]}</p>
-                      </div>
+                      <span className="flex-shrink-0 text-[8.5px] font-semibold text-white bg-gradient-to-br from-red-500 to-rose-600 rounded px-1 py-0.5 leading-none">
+                        {MONTHS[hm - 1].slice(0, 3)} {hd}
+                      </span>
+                      <p className="text-[11px] font-medium text-foreground truncate group-hover:text-red-600 transition-colors leading-tight">{h.name}</p>
                     </button>
                   );
                 })
@@ -407,88 +402,58 @@ export default function CalendarPage() {
             </div>
           </div>
 
-          {/* ── Right panel ── */}
-          <div className="space-y-4">
-            {/* Selected day detail */}
-            <div className="bg-card border border-border rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden">
-              <div className="px-4 py-3 border-b border-border bg-muted/30 flex items-center gap-2">
-                <CalendarDays size={14} className="text-primary flex-shrink-0" />
-                <h3 className="text-sm font-semibold text-foreground truncate">
+          {/* ── Right panel: compact list, stretches to match calendar height ── */}
+          <div className="flex flex-col overflow-hidden">
+            <div className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden flex flex-col flex-1 min-h-0">
+
+              {/* Selected day — compact strip, not a full card */}
+              <div className="px-3.5 py-2.5 border-b border-border bg-muted/30 flex items-center gap-1.5 flex-shrink-0">
+                <CalendarDays size={12} className="text-primary flex-shrink-0" />
+                <h3 className="text-xs font-semibold text-foreground truncate">
                   {selectedKey === tKey ? "Today" : formatDisplayDate(selectedKey)}
                 </h3>
               </div>
 
-              {selectedHoliday && (
-                <div className="px-4 py-3 bg-gradient-to-r from-red-50 to-rose-50 dark:from-red-900/20 dark:to-rose-900/10 border-b border-border flex items-center gap-2.5 rmbgh-fade-up">
-                  <span className="text-xl leading-none">🎉</span>
-                  <div className="min-w-0">
-                    <p className="text-sm font-semibold text-red-700 dark:text-red-300 truncate">{selectedHoliday.name}</p>
-                    <p className="text-[10px] text-red-600/70 dark:text-red-300/60">{HOLIDAY_TYPE_LABEL[selectedHoliday.type]}</p>
+              <div className="flex-shrink-0 max-h-[35%] overflow-hidden">
+                {selectedHoliday && (
+                  <div className="px-3.5 py-2 bg-red-50/70 dark:bg-red-900/10 border-b border-border flex items-center gap-2">
+                    <span className="text-sm leading-none">🎉</span>
+                    <p className="text-[11px] font-semibold text-red-700 dark:text-red-300 truncate">{selectedHoliday.name}</p>
                   </div>
-                </div>
-              )}
+                )}
 
-              {selectedEvents.length === 0 ? (
-                <div className="flex flex-col items-center py-10 text-muted-foreground gap-2">
-                  <CalendarDays size={32} className="text-muted-foreground/15" />
-                  <p className="text-xs">{selectedHoliday ? "No filed events on this day" : "No events on this day"}</p>
-                </div>
-              ) : (
-                <div key={selectedKey} className="divide-y divide-border">
-                  {selectedEvents.map((p, idx) => (
-                    <div
-                      key={p.id}
-                      className="p-4 rmbgh-fade-up"
-                      style={{ animationDelay: `${idx * 60}ms` }}
-                    >
-                      <div className="flex items-start gap-3">
-                        {/* Colored left bar */}
-                        <div
-                          className={`w-1 self-stretch rounded-full flex-shrink-0 ${DOT_COLORS[idx % DOT_COLORS.length]}`}
-                        />
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-semibold text-foreground leading-tight">
-                            {p.event.title}
+                {selectedEvents.length === 0 && !selectedHoliday ? (
+                  <p className="text-[11px] text-muted-foreground px-3.5 py-2.5">No events on this day</p>
+                ) : (
+                  selectedEvents.map((p, idx) => (
+                    <div key={p.id} className="flex items-center gap-2 px-3.5 py-2 border-b border-border last:border-b-0">
+                      <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${DOT_COLORS[idx % DOT_COLORS.length]}`} />
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[11.5px] font-medium text-foreground truncate leading-tight">{p.event.title}</p>
+                        {(p.event.time || p.event.location) && (
+                          <p className="text-[10px] text-muted-foreground truncate">
+                            {eventTimeLabel(p.event.time)}
+                            {p.event.time && p.event.location ? " · " : ""}
+                            {p.event.location}
                           </p>
-                          <div className="flex flex-wrap gap-1.5 mt-2">
-                            {p.event.time && (
-                              <span className="inline-flex items-center gap-1 text-[11px] bg-muted rounded-md px-2 py-0.5 text-muted-foreground">
-                                <Clock size={10} /> {eventTimeLabel(p.event.time)}
-                              </span>
-                            )}
-                            {p.event.location && (
-                              <span className="inline-flex items-center gap-1 text-[11px] bg-muted rounded-md px-2 py-0.5 text-muted-foreground">
-                                <MapPin size={10} /> {p.event.location}
-                              </span>
-                            )}
-                          </div>
-                          <div className="flex items-center gap-1.5 mt-2.5">
-                            <Avatar name={p.from?.name} size="sm" />
-                            <span className="text-[10px] text-muted-foreground">Filed by {p.from?.name}</span>
-                          </div>
-                        </div>
+                        )}
                       </div>
                     </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Upcoming events */}
-            <div className="bg-card border border-border rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden">
-              <div className="px-4 py-3 border-b border-border bg-muted/30">
-                <h3 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
-                  <Sparkles size={13} className="text-primary" /> Upcoming
-                </h3>
+                  ))
+                )}
               </div>
 
-              {upcoming.length === 0 ? (
-                <div className="flex flex-col items-center py-10 text-muted-foreground gap-2">
-                  <p className="text-xs">No upcoming events</p>
-                </div>
-              ) : (
-                <div className="divide-y divide-border">
-                  {upcoming.map((p, idx) => {
+              {/* Upcoming — compact list, fills remaining space, clips instead of scrolling */}
+              <div className="px-3.5 py-2 border-t border-b border-border bg-muted/30 flex items-center gap-1.5 flex-shrink-0">
+                <Sparkles size={12} className="text-primary flex-shrink-0" />
+                <h3 className="text-xs font-semibold text-foreground">Upcoming</h3>
+              </div>
+
+              <div className="flex-1 min-h-0 overflow-hidden">
+                {upcoming.length === 0 ? (
+                  <p className="text-[11px] text-muted-foreground px-3.5 py-2.5">No upcoming events</p>
+                ) : (
+                  upcoming.map((p, idx) => {
                     const [, em, ed] = p.event.date.split("-").map(Number);
                     return (
                       <button
@@ -499,86 +464,24 @@ export default function CalendarPage() {
                           setCursor({ y: ey, m: emo - 1 });
                           setSelectedKey(p.event.date);
                         }}
-                        className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-muted/40 transition-all duration-200 group hover:pl-5"
+                        className="w-full flex items-center gap-2 px-3.5 py-1.5 text-left hover:bg-muted/40 transition-colors duration-150 border-b border-border last:border-b-0"
                       >
-                        {/* Date badge */}
-                        <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-violet-700 text-white flex flex-col items-center justify-center leading-none shadow-sm group-hover:shadow-md group-hover:scale-105 transition-all duration-200">
-                          <span className="text-[8px] font-semibold uppercase tracking-wide">
-                            {MONTHS[em - 1].slice(0, 3)}
-                          </span>
-                          <span className="text-sm font-bold">{ed}</span>
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="text-xs font-semibold text-foreground truncate group-hover:text-primary transition-colors">
-                            {p.event.title}
-                          </p>
-                          <p className="text-[10px] text-muted-foreground truncate mt-0.5">
-                            {eventTimeLabel(p.event.time) || "All day"}
-                            {p.event.location ? ` · ${p.event.location}` : ""}
-                          </p>
-                        </div>
-                        {/* Color accent dot */}
-                        <span className={`w-2 h-2 rounded-full flex-shrink-0 ${DOT_COLORS[idx % DOT_COLORS.length]} group-hover:scale-150 transition-transform duration-200`} />
+                        <span className="flex-shrink-0 text-[9px] font-semibold text-white bg-violet-600 rounded px-1 py-0.5 leading-none">
+                          {MONTHS[em - 1].slice(0, 3)} {ed}
+                        </span>
+                        <span className="text-[11px] text-foreground truncate flex-1">{p.event.title}</span>
+                        <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${DOT_COLORS[idx % DOT_COLORS.length]}`} />
                       </button>
                     );
-                  })}
-                </div>
-              )}
-            </div>
-
-            {/* Upcoming Philippine holidays */}
-            <div className="bg-card border border-border rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden">
-              <div className="px-4 py-3 border-b border-border bg-muted/30">
-                <h3 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
-                  🎉 Upcoming Holidays
-                </h3>
+                  })
+                )}
               </div>
 
-              {upcomingHolidays.length === 0 ? (
-                <div className="flex flex-col items-center py-8 text-muted-foreground gap-2">
-                  <p className="text-xs">No more holidays this year</p>
-                </div>
-              ) : (
-                <div className="divide-y divide-border">
-                  {upcomingHolidays.map((h) => {
-                    const [, hm, hd] = h.date.split("-").map(Number);
-                    return (
-                      <button
-                        key={h.date}
-                        onClick={() => {
-                          const [hy, hmo] = h.date.split("-").map(Number);
-                          setDirection(new Date(hy, hmo - 1, 1) >= new Date(y, m, 1) ? 1 : -1);
-                          setCursor({ y: hy, m: hmo - 1 });
-                          setSelectedKey(h.date);
-                        }}
-                        className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-muted/40 transition-all duration-200 group hover:pl-5"
-                      >
-                        <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-red-500 to-rose-600 text-white flex flex-col items-center justify-center leading-none shadow-sm group-hover:shadow-md group-hover:scale-105 transition-all duration-200">
-                          <span className="text-[8px] font-semibold uppercase tracking-wide">
-                            {MONTHS[hm - 1].slice(0, 3)}
-                          </span>
-                          <span className="text-sm font-bold">{hd}</span>
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="text-xs font-semibold text-foreground truncate group-hover:text-red-600 transition-colors">
-                            {h.name}
-                          </p>
-                          <p className="text-[10px] text-muted-foreground truncate mt-0.5">
-                            {HOLIDAY_TYPE_LABEL[h.type]}
-                          </p>
-                        </div>
-                        <span className={`w-2 h-2 rounded-full flex-shrink-0 ${HOLIDAY_DOT} group-hover:scale-150 transition-transform duration-200`} />
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-
-            {/* Legend */}
-            <div className="bg-card border border-border rounded-2xl shadow-sm px-4 py-3 flex items-center gap-4 text-[11px] text-muted-foreground">
-              <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-violet-500" /> Announcement event</span>
-              <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-red-500" /> Philippine holiday</span>
+              {/* Legend — single compact row */}
+              <div className="px-3.5 py-2 border-t border-border flex items-center gap-3 text-[10px] text-muted-foreground flex-shrink-0">
+                <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-violet-500" /> Event</span>
+                <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-red-500" /> Holiday</span>
+              </div>
             </div>
           </div>
         </div>

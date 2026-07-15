@@ -206,5 +206,13 @@
     "action": "role_change",
     "targetUser": "Ransh Dy",
     "details": "Changed role from user to admin"
+  },
+  {
+    "id": 1784078478450,
+    "timestamp": "2026-07-15T01:21:18.450Z",
+    "performedBy": "IT Superadmin",
+    "action": "approve",
+    "targetUser": "Maloi Ricalde",
+    "details": "Approved new account for Maloi Ricalde"
   }
 ]
