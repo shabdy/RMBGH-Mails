@@ -1,43 +1,5 @@
 [
   {
-    "id": 1784066780651,
-    "content": "**RMBGH Mailing System Policy**\n\n**Purpose & Scope**\nThis policy outlines the rules for using the RMBGH corporate mailing system. It applies to all employees, contractors, and third parties utilizing RMBGH email domains.\n\n**Acceptable Use**\n***Business Use:*** Use the email platform primarily for official company operations.\n***Professional Tone:*** Maintain a polite, ethical, and professional communication style.\n***Standard Signatures:*** Use approved company templates for all external signatures.\n\n**Prohibited Activities**\n***Personal Gain:*** Do not use work email for personal business or commercial sales.\n***Inappropriate Content:*** Do not send defamatory, offensive, or harassing materials.\n***Unsafe Content:*** Do not distribute spam, chain letters, or unauthorized mass emails.\n\n**Security & Privacy**\n***Data Protection:*** Encrypt messages containing confidential, financial, or sensitive company data.\n***Credential Safety:*** Never share account passwords or access tokens with anyone.\n***System Monitoring:*** RMBGH reserves the right to audit and monitor all corporate emails.\n***Zero Privacy:*** Users have no expectation of privacy regarding network email traffic.\n\n**Enforcement**\nViolations will result in disciplinary review. Penalties include loss of system access, termination, or legal action.",
-    "from": {
-      "id": 1,
-      "name": "IT Superadmin",
-      "email": "superadmin@rmbgh.com",
-      "department": "Information Technology",
-      "departmentId": "IT"
-    },
-    "date": "2026-07-14T22:06:20.651Z",
-    "viewedBy": [
-      {
-        "id": 1,
-        "name": "IT Superadmin",
-        "date": "2026-07-14T22:06:20.704Z",
-        "time": "2026-07-14T22:06:20.704Z"
-      },
-      {
-        "id": 1783051261533,
-        "name": "Ransh Dy",
-        "date": "2026-07-14T22:06:44.190Z",
-        "time": "2026-07-14T22:06:44.190Z"
-      }
-    ],
-    "comments": [],
-    "reactions": [
-      {
-        "userId": 1783051261533,
-        "name": "Ransh Dy",
-        "type": "love"
-      }
-    ],
-    "attachments": [],
-    "category": "Policies",
-    "pinned": false,
-    "event": null
-  },
-  {
     "id": 1784000522837,
     "content": "test post",
     "from": {
@@ -51,6 +13,12 @@
         "name": "IT Superadmin",
         "date": "2026-07-14T03:42:48.224Z",
         "time": "2026-07-14T03:42:48.224Z"
+      },
+      {
+        "id": 1783296783629,
+        "name": "JB Doquenia",
+        "date": "2026-07-15T19:53:32.173Z",
+        "time": "2026-07-15T19:53:32.173Z"
       }
     ],
     "comments": [
@@ -90,5 +58,85 @@
     "category": "Updates",
     "pinned": false,
     "event": null
+  },
+  {
+    "id": 1784078184975,
+    "content": "HAPPY NA DAY!!!",
+    "from": {
+      "id": 1,
+      "name": "IT Superadmin",
+      "email": "superadmin@rmbgh.com",
+      "department": "Information Technology",
+      "departmentId": "IT"
+    },
+    "date": "2026-07-15T01:16:24.975Z",
+    "viewedBy": [
+      {
+        "id": 1,
+        "name": "IT Superadmin",
+        "date": "2026-07-15T01:16:25.010Z",
+        "time": "2026-07-15T01:16:25.010Z"
+      },
+      {
+        "id": 1783296783629,
+        "name": "JB Doquenia",
+        "date": "2026-07-15T19:53:32.172Z",
+        "time": "2026-07-15T19:53:32.172Z"
+      }
+    ],
+    "comments": [],
+    "reactions": [],
+    "attachments": [],
+    "category": "Events",
+    "pinned": false,
+    "event": {
+      "title": "NA DAY",
+      "date": "2026-07-14",
+      "time": "",
+      "location": "4th Floor Multi Purpose Hall"
+    }
+  },
+  {
+    "id": 1784145129478,
+    "content": "Strategic Planning for 2027",
+    "from": {
+      "id": 1,
+      "name": "IT Superadmin",
+      "email": "superadmin@rmbgh.com",
+      "department": "Information Technology",
+      "departmentId": "IT"
+    },
+    "date": "2026-07-15T19:52:09.478Z",
+    "viewedBy": [
+      {
+        "id": 1,
+        "name": "IT Superadmin",
+        "date": "2026-07-15T19:52:09.514Z",
+        "time": "2026-07-15T19:52:09.514Z"
+      },
+      {
+        "id": 1783296783629,
+        "name": "JB Doquenia",
+        "date": "2026-07-15T19:53:32.159Z",
+        "time": "2026-07-15T19:53:32.159Z"
+      }
+    ],
+    "comments": [],
+    "reactions": [
+      {
+        "userId": 1783296783629,
+        "name": "JB Doquenia",
+        "type": "love"
+      }
+    ],
+    "attachments": [],
+    "category": "Events",
+    "pinned": true,
+    "event": {
+      "title": "Strategic Planning for 2027",
+      "date": "2026-07-17",
+      "time": "08:00",
+      "location": "4th Floor Multi Purpose Hall"
+    }
   }
 ]
