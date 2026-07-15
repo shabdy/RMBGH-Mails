@@ -187,6 +187,7 @@ function initData() {
   seed("drafts.json",   []);
   seed("posts.json",    []);
   seed("auditLog.json", []);
+  seed("notifications.json", []);
 
   // Pre-load everything into the in-memory store so the very first request
   // is already instant (no cold-read delay).
@@ -196,8 +197,47 @@ function initData() {
   readJSON("drafts.json",   []);
   readJSON("posts.json",    []);
   readJSON("auditLog.json", []);
+  readJSON("notifications.json", []);
 }
 initData();
+
+/* ─── Notifications ───────────────────────────────────────────────────────
+   Fired whenever someone posts, comments, replies, reacts, pins, or files
+   an event on the announcement feed. Recipients are looked up by id;
+   the acting user is always excluded so nobody gets notified about their
+   own activity. */
+function addNotifications(recipientIds, { type, message, postId = null, commentId = null, replyId = null, fromId, fromName }) {
+  const uniqueIds = [...new Set((recipientIds || []).map((id) => String(id)))]
+    .filter((id) => id !== String(fromId));
+  if (uniqueIds.length === 0) return;
+  const notifications = readJSON("notifications.json", []);
+  const now = new Date().toISOString();
+  for (const uid of uniqueIds) {
+    notifications.push({
+      id: `${Date.now()}-${crypto.randomBytes(4).toString("hex")}`,
+      userId: isNaN(Number(uid)) ? uid : Number(uid),
+      type, message, postId, commentId, replyId,
+      fromId, fromName,
+      date: now,
+      read: false,
+    });
+  }
+  writeJSON("notifications.json", notifications);
+}
+
+// Every active user except the actor — used for feed-wide broadcasts
+// (new posts, filed events).
+function allOtherUserIds(actorId) {
+  const users = readJSON("users.json", DEFAULT_USERS);
+  return users
+    .filter((u) => u.status === "Active" && String(u.id) !== String(actorId))
+    .map((u) => u.id);
+}
+
+function findUser(id) {
+  const users = readJSON("users.json", DEFAULT_USERS);
+  return users.find((u) => String(u.id) === String(id)) || null;
+}
 
 /* ─── normalize ─── */
 function normalizeMail(m) {
@@ -688,6 +728,18 @@ app.post("/api/posts", (req, res) => {
   };
   posts.push(newPost);
   writeJSON("posts.json", posts);
+
+  const authorId = userId || from?.id;
+  addNotifications(allOtherUserIds(authorId), {
+    type: eventBlock ? "event" : "post",
+    message: eventBlock
+      ? `${from?.name || "Someone"} filed a new event: ${eventBlock.title}`
+      : `${from?.name || "Someone"} posted a new announcement`,
+    postId: newPost.id,
+    fromId: authorId,
+    fromName: from?.name || "Someone",
+  });
+
   res.json(normalizePost(newPost, userId || from?.id));
 });
 
@@ -701,14 +753,67 @@ app.get("/api/events", (req, res) => {
   res.json(events);
 });
 
-/* Pin/unpin — an admin/superadmin moderation action that surfaces a post in
-   the feed's pinned sidebar and keeps it sorted to the top. */
+/* Who is allowed to pin a given post:
+   - superadmin: anyone's post
+   - admin (department Head): their own post, or any post from their department
+   - user: their own post only
+   All pinned posts stay visible to everyone regardless of who pinned them. */
+function canPinPost(authUser, post) {
+  const actingUser = findUser(authUser.id);
+  const isOwnPost  = String(post.from?.id) === String(authUser.id);
+  if (authUser.role === "superadmin") return true;
+  if (authUser.role === "admin") {
+    return isOwnPost || (actingUser?.departmentId && actingUser.departmentId === post.from?.departmentId);
+  }
+  return isOwnPost;
+}
+
+/* Pin/unpin — surfaces a post in the feed's pinned sidebar and keeps it
+   sorted to the top. Permission scope depends on role (see canPinPost). */
 app.patch("/api/posts/:id/pin", authenticate, (req, res) => {
-  if (!isAdmin(req.authUser)) return res.status(403).json({ error: "Only admins can pin announcements" });
   const posts = readJSON("posts.json", []);
   const idx   = posts.findIndex(p => p.id == req.params.id);
   if (idx === -1) return res.status(404).json({ error: "Not found" });
+  if (!canPinPost(req.authUser, posts[idx]))
+    return res.status(403).json({ error: "You don't have permission to pin this announcement" });
   posts[idx].pinned = !posts[idx].pinned;
+  writeJSON("posts.json", posts);
+  if (posts[idx].pinned && String(posts[idx].from?.id) !== String(req.authUser.id)) {
+    const actor = findUser(req.authUser.id);
+    addNotifications([posts[idx].from?.id], {
+      type: "pin",
+      message: `${actor ? `${actor.firstName} ${actor.lastName}` : "Someone"} pinned your announcement`,
+      postId: posts[idx].id,
+      fromId: req.authUser.id,
+      fromName: actor ? `${actor.firstName} ${actor.lastName}` : "Someone",
+    });
+  }
+  res.json(normalizePost(posts[idx], req.authUser.id));
+});
+
+/* Edit — only the original author may edit their own announcement. */
+app.patch("/api/posts/:id", authenticate, (req, res) => {
+  const posts = readJSON("posts.json", []);
+  const idx   = posts.findIndex(p => p.id == req.params.id);
+  if (idx === -1) return res.status(404).json({ error: "Not found" });
+  if (String(posts[idx].from?.id) !== String(req.authUser.id))
+    return res.status(403).json({ error: "Only the author can edit this announcement" });
+
+  const { content, category, event } = req.body;
+  const eventBlock = event !== undefined ? sanitizeEvent(event) : posts[idx].event;
+  const hasAttachments = (posts[idx].attachments || []).length > 0;
+  const nextContent = content !== undefined ? String(content).trim() : posts[idx].content;
+  if (!nextContent && !hasAttachments && !eventBlock)
+    return res.status(400).json({ error: "Post content is required" });
+
+  posts[idx] = {
+    ...posts[idx],
+    content: nextContent,
+    category: eventBlock ? "Events" : (POST_CATEGORIES.includes(category) ? category : posts[idx].category),
+    event: eventBlock,
+    edited: true,
+    editedAt: new Date().toISOString(),
+  };
   writeJSON("posts.json", posts);
   res.json(normalizePost(posts[idx], req.authUser.id));
 });
@@ -768,6 +873,16 @@ app.post("/api/posts/:id/comments", (req, res) => {
   const comment = { id: Date.now(), userId, name, text: text.trim(), date: new Date().toISOString(), reactions: [], replies: [] };
   posts[idx].comments = [...(posts[idx].comments || []), comment];
   writeJSON("posts.json", posts);
+
+  if (posts[idx].from?.id) {
+    addNotifications([posts[idx].from.id], {
+      type: "comment",
+      message: `${name || "Someone"} commented on your announcement`,
+      postId: posts[idx].id, commentId: comment.id,
+      fromId: userId, fromName: name || "Someone",
+    });
+  }
+
   res.json(normalizePost(posts[idx], userId));
 });
 
@@ -782,9 +897,18 @@ app.post("/api/posts/:id/comments/:commentId/replies", (req, res) => {
   const commentIdx = comments.findIndex(c => c.id == req.params.commentId);
   if (commentIdx === -1) return res.status(404).json({ error: "Comment not found" });
   const reply = { id: Date.now(), userId, name, text: text.trim(), date: new Date().toISOString(), reactions: [] };
-  comments[commentIdx] = { ...comments[commentIdx], replies: [...(comments[commentIdx].replies || []), reply] };
+  const parentComment = comments[commentIdx];
+  comments[commentIdx] = { ...parentComment, replies: [...(parentComment.replies || []), reply] };
   posts[idx].comments = comments;
   writeJSON("posts.json", posts);
+
+  addNotifications([parentComment.userId, posts[idx].from?.id], {
+    type: "reply",
+    message: `${name || "Someone"} replied to a comment on ${String(parentComment.userId) === String(posts[idx].from?.id) ? "your" : "an"} announcement`,
+    postId: posts[idx].id, commentId: parentComment.id, replyId: reply.id,
+    fromId: userId, fromName: name || "Someone",
+  });
+
   res.json(normalizePost(posts[idx], userId));
 });
 
@@ -811,9 +935,21 @@ app.post("/api/posts/:id/comments/:commentId/react", (req, res) => {
   const comments   = posts[idx].comments || [];
   const commentIdx = comments.findIndex(c => c.id == req.params.commentId);
   if (commentIdx === -1) return res.status(404).json({ error: "Comment not found" });
-  comments[commentIdx] = { ...comments[commentIdx], reactions: toggleReactionOn(comments[commentIdx], userId, name, type) };
+  const nextReactions = toggleReactionOn(comments[commentIdx], userId, name, type);
+  const didAdd = nextReactions.some((r) => String(r.userId) === String(userId));
+  comments[commentIdx] = { ...comments[commentIdx], reactions: nextReactions };
   posts[idx].comments = comments;
   writeJSON("posts.json", posts);
+
+  if (didAdd) {
+    addNotifications([comments[commentIdx].userId], {
+      type: "react",
+      message: `${name || "Someone"} reacted to your comment`,
+      postId: posts[idx].id, commentId: comments[commentIdx].id,
+      fromId: userId, fromName: name || "Someone",
+    });
+  }
+
   res.json(normalizePost(posts[idx], userId));
 });
 
@@ -830,10 +966,22 @@ app.post("/api/posts/:id/comments/:commentId/replies/:replyId/react", (req, res)
   const replies  = comments[commentIdx].replies || [];
   const replyIdx = replies.findIndex(r => r.id == req.params.replyId);
   if (replyIdx === -1) return res.status(404).json({ error: "Reply not found" });
-  replies[replyIdx] = { ...replies[replyIdx], reactions: toggleReactionOn(replies[replyIdx], userId, name, type) };
+  const nextReactions = toggleReactionOn(replies[replyIdx], userId, name, type);
+  const didAdd = nextReactions.some((r) => String(r.userId) === String(userId));
+  replies[replyIdx] = { ...replies[replyIdx], reactions: nextReactions };
   comments[commentIdx] = { ...comments[commentIdx], replies };
   posts[idx].comments = comments;
   writeJSON("posts.json", posts);
+
+  if (didAdd) {
+    addNotifications([replies[replyIdx].userId], {
+      type: "react",
+      message: `${name || "Someone"} reacted to your reply`,
+      postId: posts[idx].id, commentId: comments[commentIdx].id, replyId: replies[replyIdx].id,
+      fromId: userId, fromName: name || "Someone",
+    });
+  }
+
   res.json(normalizePost(posts[idx], userId));
 });
 
@@ -846,16 +994,63 @@ app.post("/api/posts/:id/react", (req, res) => {
   if (idx === -1) return res.status(404).json({ error: "Not found" });
   const reactions  = posts[idx].reactions || [];
   const existingIdx = reactions.findIndex(r => String(r.userId) === String(userId));
+  let didAdd = false;
   if (existingIdx !== -1 && reactions[existingIdx].type === type) {
     posts[idx].reactions = reactions.filter((_, i) => i !== existingIdx); // toggle off
   } else if (existingIdx !== -1) {
     reactions[existingIdx] = { userId, name, type };
     posts[idx].reactions = reactions;
+    didAdd = true;
   } else {
     posts[idx].reactions = [...reactions, { userId, name, type }];
+    didAdd = true;
   }
   writeJSON("posts.json", posts);
+
+  if (didAdd && posts[idx].from?.id) {
+    addNotifications([posts[idx].from.id], {
+      type: "react",
+      message: `${name || "Someone"} reacted to your announcement`,
+      postId: posts[idx].id,
+      fromId: userId, fromName: name || "Someone",
+    });
+  }
+
   res.json(normalizePost(posts[idx], userId));
+});
+
+/* ═══════════════════ NOTIFICATIONS ═══════════════════ */
+app.get("/api/notifications", authenticate, (req, res) => {
+  const notifications = readJSON("notifications.json", []);
+  const mine = notifications
+    .filter((n) => String(n.userId) === String(req.authUser.id))
+    .sort((a, b) => new Date(b.date) - new Date(a.date))
+    .slice(0, 50)
+    .map((n) => ({ ...n, date: n.date }));
+  res.json(mine);
+});
+
+app.post("/api/notifications/:id/read", authenticate, (req, res) => {
+  const notifications = readJSON("notifications.json", []);
+  const idx = notifications.findIndex((n) => String(n.id) === String(req.params.id) && String(n.userId) === String(req.authUser.id));
+  if (idx === -1) return res.status(404).json({ error: "Not found" });
+  notifications[idx].read = true;
+  writeJSON("notifications.json", notifications);
+  res.json(notifications[idx]);
+});
+
+app.post("/api/notifications/read-all", authenticate, (req, res) => {
+  const notifications = readJSON("notifications.json", []);
+  let changed = false;
+  const next = notifications.map((n) => {
+    if (String(n.userId) === String(req.authUser.id) && !n.read) {
+      changed = true;
+      return { ...n, read: true };
+    }
+    return n;
+  });
+  if (changed) writeJSON("notifications.json", next);
+  res.json({ success: true });
 });
 
 /* ═══════════════════ AUDIT LOG ═══════════════════ */

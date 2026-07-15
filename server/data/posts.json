@@ -1,7 +1,7 @@
 [
   {
-    "id": 1784066780651,
-    "content": "**RMBGH Mailing System Policy**\n\n**Purpose & Scope**\nThis policy outlines the rules for using the RMBGH corporate mailing system. It applies to all employees, contractors, and third parties utilizing RMBGH email domains.\n\n**Acceptable Use**\n***Business Use:*** Use the email platform primarily for official company operations.\n***Professional Tone:*** Maintain a polite, ethical, and professional communication style.\n***Standard Signatures:*** Use approved company templates for all external signatures.\n\n**Prohibited Activities**\n***Personal Gain:*** Do not use work email for personal business or commercial sales.\n***Inappropriate Content:*** Do not send defamatory, offensive, or harassing materials.\n***Unsafe Content:*** Do not distribute spam, chain letters, or unauthorized mass emails.\n\n**Security & Privacy**\n***Data Protection:*** Encrypt messages containing confidential, financial, or sensitive company data.\n***Credential Safety:*** Never share account passwords or access tokens with anyone.\n***System Monitoring:*** RMBGH reserves the right to audit and monitor all corporate emails.\n***Zero Privacy:*** Users have no expectation of privacy regarding network email traffic.\n\n**Enforcement**\nViolations will result in disciplinary review. Penalties include loss of system access, termination, or legal action.",
+    "id": 1784003416542,
+    "content": "Sample announcement",
     "from": {
       "id": 1,
       "name": "IT Superadmin",
@@ -9,82 +9,210 @@
       "department": "Information Technology",
       "departmentId": "IT"
     },
-    "date": "2026-07-14T22:06:20.651Z",
+    "date": "2026-07-14T04:30:16.542Z",
     "viewedBy": [
       {
         "id": 1,
         "name": "IT Superadmin",
-        "date": "2026-07-14T22:06:20.704Z",
-        "time": "2026-07-14T22:06:20.704Z"
+        "date": "2026-07-14T04:30:22.208Z",
+        "time": "2026-07-14T04:30:22.208Z"
+      },
+      {
+        "id": 1783255824240,
+        "name": "Colin Arias",
+        "date": "2026-07-14T04:32:42.257Z",
+        "time": "2026-07-14T04:32:42.257Z"
       },
       {
         "id": 1783051261533,
         "name": "Ransh Dy",
-        "date": "2026-07-14T22:06:44.190Z",
-        "time": "2026-07-14T22:06:44.190Z"
+        "date": "2026-07-14T04:33:43.875Z",
+        "time": "2026-07-14T04:33:43.875Z"
+      },
+      {
+        "id": 1783481076209,
+        "name": "Aiah Arceta",
+        "date": "2026-07-14T04:34:21.818Z",
+        "time": "2026-07-14T04:34:21.818Z"
       }
     ],
     "comments": [],
+    "reactions": [],
+    "attachments": [],
+    "category": "Updates",
+    "pinned": false,
+    "event": null
+  },
+  {
+    "id": 1784003523746,
+    "content": "**RMBGH Official Mailing System and Communication Policy**\n\n\n**1. Objective**\nThis policy defines the rules for using the Rosario Maclang Bautista General Hospital (RMBGH) electronic mail system. It ensures secure, professional, and legally compliant communication across all hospital operations.\n\n**2. Scope**\nThis policy applies to all employees, medical staff, contractors, and interns using official hospital email addresses (e.g., @quezoncity.gov.ph or official RMBGH subdomains).\n\n**3. Acceptable Use**\n- Business Purpose: Use hospital email strictly for official healthcare, administrative, and operational communications.\n- Professional Tone: Maintain a professional, polite, and clear tone in all messages.\n- Official Signatures: Include your full name, job title, department, and contact information in all outgoing emails.\n\n**4. Data Privacy and Confidentiality**\n- Patient Privacy: Never send Patient Health Information (PHI) to external or personal email addresses.\n- Encryption: Encrypt all emails containing sensitive medical records or financial details.No Auto-Forwarding: Do not set up automatic forwarding to personal email accounts (like Gmail or Yahoo).\n\n**5. Prohibited Activities**\n- Do not use hospital email for personal business, political campaigns, or commercial gain.\n- Do not distribute offensive, defamatory, or discriminatory material.\n- Do not share email passwords or allow unauthorized personnel to use your account.\n\n**6. Monitoring and Compliance**\nThe RMBGH IT Department monitors the mail system to protect network security.\nUsers have no expectation of privacy for messages sent or received on hospital networks.\nViolating this policy may lead to disciplinary action, including suspension or termination.",
+    "from": {
+      "id": 1,
+      "name": "IT Superadmin",
+      "email": "superadmin@rmbgh.com",
+      "department": "Information Technology",
+      "departmentId": "IT"
+    },
+    "date": "2026-07-14T04:32:03.746Z",
+    "viewedBy": [
+      {
+        "id": 1,
+        "name": "IT Superadmin",
+        "date": "2026-07-14T04:32:03.898Z",
+        "time": "2026-07-14T04:32:03.898Z"
+      },
+      {
+        "id": 1783255824240,
+        "name": "Colin Arias",
+        "date": "2026-07-14T04:32:42.260Z",
+        "time": "2026-07-14T04:32:42.260Z"
+      },
+      {
+        "id": 1783051261533,
+        "name": "Ransh Dy",
+        "date": "2026-07-14T04:33:43.870Z",
+        "time": "2026-07-14T04:33:43.870Z"
+      },
+      {
+        "id": 1783481076209,
+        "name": "Aiah Arceta",
+        "date": "2026-07-14T04:34:21.813Z",
+        "time": "2026-07-14T04:34:21.813Z"
+      }
+    ],
+    "comments": [
+      {
+        "id": 1784003574141,
+        "userId": 1783255824240,
+        "name": "Colin Arias",
+        "text": "Wow!",
+        "date": "2026-07-14T04:32:54.141Z",
+        "reactions": [],
+        "replies": []
+      }
+    ],
     "reactions": [
       {
-        "userId": 1783051261533,
-        "name": "Ransh Dy",
+        "userId": 1783255824240,
+        "name": "Colin Arias",
         "type": "love"
       }
     ],
     "attachments": [],
     "category": "Policies",
+    "pinned": true,
+    "event": null,
+    "edited": true,
+    "editedAt": "2026-07-14T04:50:06.556Z"
+  },
+  {
+    "id": 1784003585997,
+    "content": "Test Post",
+    "from": {
+      "id": 1783255824240,
+      "name": "Colin Arias",
+      "email": "carias@rmbgh.com",
+      "department": "Information Technology",
+      "departmentId": "IT"
+    },
+    "date": "2026-07-14T04:33:05.997Z",
+    "viewedBy": [
+      {
+        "id": 1783255824240,
+        "name": "Colin Arias",
+        "date": "2026-07-14T04:33:06.146Z",
+        "time": "2026-07-14T04:33:06.146Z"
+      },
+      {
+        "id": 1783051261533,
+        "name": "Ransh Dy",
+        "date": "2026-07-14T04:33:43.873Z",
+        "time": "2026-07-14T04:33:43.873Z"
+      },
+      {
+        "id": 1783481076209,
+        "name": "Aiah Arceta",
+        "date": "2026-07-14T04:34:21.816Z",
+        "time": "2026-07-14T04:34:21.816Z"
+      },
+      {
+        "id": 1,
+        "name": "IT Superadmin",
+        "date": "2026-07-14T04:37:02.039Z",
+        "time": "2026-07-14T04:37:02.039Z"
+      }
+    ],
+    "comments": [],
+    "reactions": [],
+    "attachments": [],
+    "category": "Updates",
     "pinned": false,
     "event": null
   },
   {
-    "id": 1784000522837,
-    "content": "test post",
+    "id": 1784003639606,
+    "content": "Sample Test Post",
     "from": {
-      "id": 1,
-      "name": "Test"
+      "id": 1783051261533,
+      "name": "Ransh Dy",
+      "email": "rdy@rmbgh.com",
+      "department": "Information Technology",
+      "departmentId": "IT"
     },
-    "date": "2026-07-14T03:42:02.837Z",
+    "date": "2026-07-14T04:33:59.606Z",
     "viewedBy": [
+      {
+        "id": 1783051261533,
+        "name": "Ransh Dy",
+        "date": "2026-07-14T04:33:59.757Z",
+        "time": "2026-07-14T04:33:59.757Z"
+      },
+      {
+        "id": 1783481076209,
+        "name": "Aiah Arceta",
+        "date": "2026-07-14T04:34:21.820Z",
+        "time": "2026-07-14T04:34:21.820Z"
+      },
       {
         "id": 1,
         "name": "IT Superadmin",
-        "date": "2026-07-14T03:42:48.224Z",
-        "time": "2026-07-14T03:42:48.224Z"
+        "date": "2026-07-14T04:37:02.037Z",
+        "time": "2026-07-14T04:37:02.037Z"
       }
     ],
-    "comments": [
+    "comments": [],
+    "reactions": [],
+    "attachments": [],
+    "category": "Updates",
+    "pinned": false,
+    "event": null
+  },
+  {
+    "id": 1784003892508,
+    "content": "Announcement",
+    "from": {
+      "id": 1783481076209,
+      "name": "Aiah Arceta",
+      "email": "aa@rmbgh.com",
+      "department": "Human Resources",
+      "departmentId": "HR"
+    },
+    "date": "2026-07-14T04:38:12.508Z",
+    "viewedBy": [
       {
-        "id": 1784000522891,
-        "userId": 1,
-        "name": "Test",
-        "text": "nice",
-        "date": "2026-07-14T03:42:02.891Z",
-        "reactions": [
-          {
-            "userId": 1,
-            "name": "Test",
-            "type": "love"
-          }
-        ],
-        "replies": [
-          {
-            "id": 1784000531849,
-            "userId": 1,
-            "name": "Test",
-            "text": "reply text",
-            "date": "2026-07-14T03:42:11.849Z",
-            "reactions": [
-              {
-                "userId": 1,
-                "name": "Test",
-                "type": "haha"
-              }
-            ]
-          }
-        ]
+        "id": 1783481076209,
+        "name": "Aiah Arceta",
+        "date": "2026-07-14T04:38:12.661Z",
+        "time": "2026-07-14T04:38:12.661Z"
+      },
+      {
+        "id": 1,
+        "name": "IT Superadmin",
+        "date": "2026-07-14T04:38:52.872Z",
+        "time": "2026-07-14T04:38:52.872Z"
       }
     ],
+    "comments": [],
     "reactions": [],
     "attachments": [],
     "category": "Updates",

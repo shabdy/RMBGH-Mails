@@ -658,6 +658,13 @@
         "dept": "Information Technology",
         "time": "8:01 AM",
         "date": "Jul 12, 2026"
+      },
+      {
+        "id": 1783481076209,
+        "name": "Aiah Arceta",
+        "dept": "Human Resources",
+        "time": "4:36 AM",
+        "date": "Jul 14, 2026"
       }
     ],
     "pinnedBy": [],
@@ -821,6 +828,13 @@
         "dept": "Information Technology",
         "time": "8:45 AM",
         "date": "Jul 13, 2026"
+      },
+      {
+        "id": 1783255824240,
+        "name": "Colin Arias",
+        "dept": "Information Technology",
+        "time": "4:07 AM",
+        "date": "Jul 14, 2026"
       }
     ],
     "pinnedBy": [],
@@ -848,5 +862,78 @@
     "id": 1783932198067,
     "type": "mail",
     "date": "2026-07-13T08:43:18.067Z"
+  },
+  {
+    "readBy": [
+      {
+        "id": 1783051261533,
+        "name": "Ransh Dy",
+        "dept": "Information Technology",
+        "time": "4:35 AM",
+        "date": "Jul 14, 2026"
+      }
+    ],
+    "pinnedBy": [],
+    "importantBy": [],
+    "deletedBy": [],
+    "status": "delivered",
+    "priority": "normal",
+    "title": "Shared Announcement: **RMBGH Official Mailing System and Communication Policy**\n\n…",
+    "content": "<p style=\"font-size:11px;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;font-weight:600\">📢 Shared Announcement — from IT Superadmin</p><p>**RMBGH Official Mailing System and Communication Policy**<br/><br/>**1. Objective**<br/>This policy defines the rules for using the Rosario Maclang Bautista General Hospital (RMBGH) electronic mail system. It ensures secure, professional, and legally compliant communication across all hospital operations.<br/><br/>**2. Scope**<br/>This policy applies to all employees, medical staff, contractors, and interns using official hospital email addresses (e.g., @quezoncity.gov.ph or official RMBGH subdomains).<br/><br/>**3. Acceptable Use**<br/>- Business Purpose: Use hospital email strictly for official healthcare, administrative, and operational communications.<br/>- Professional Tone: Maintain a professional, polite, and clear tone in all messages.<br/>- Official Signatures: Include your full name, job title, department, and contact information in all outgoing emails.<br/><br/>**4. Data Privacy and Confidentiality**<br/>- Patient Privacy: Never send Patient Health Information (PHI) to external or personal email addresses.<br/>- Encryption: Encrypt all emails containing sensitive medical records or financial details.No Auto-Forwarding: Do not set up automatic forwarding to personal email accounts (like Gmail or Yahoo).<br/><br/>**5. Prohibited Activities**<br/>- Do not use hospital email for personal business, political campaigns, or commercial gain.<br/>- Do not distribute offensive, defamatory, or discriminatory material.<br/>- Do not share email passwords or allow unauthorized personnel to use your account.<br/><br/>**6. Monitoring and Compliance**<br/>The RMBGH IT Department monitors the mail system to protect network security.<br/>Users have no expectation of privacy for messages sent or received on hospital networks.<br/>Violating this policy may lead to disciplinary action, including suspension or termination.</p>",
+    "recipients": [
+      {
+        "id": 1783051261533,
+        "name": "Ransh Dy",
+        "email": "rdy@rmbgh.com",
+        "department": "Information Technology",
+        "departmentId": "IT",
+        "role": "admin"
+      }
+    ],
+    "recipientType": "specific",
+    "targetDepartmentId": null,
+    "emailType": "",
+    "emailTypeLabel": "",
+    "attachment": null,
+    "requiresReceipt": false,
+    "from": {
+      "id": 1783481076209,
+      "name": "Aiah Arceta",
+      "email": "aa@rmbgh.com",
+      "department": "Human Resources",
+      "departmentId": "HR"
+    },
+    "userId": 1783481076209,
+    "id": 1784003687792,
+    "type": "mail",
+    "date": "2026-07-14T04:34:47.792Z"
+  },
+  {
+    "readBy": [],
+    "pinnedBy": [],
+    "importantBy": [],
+    "deletedBy": [],
+    "status": "delivered",
+    "priority": "normal",
+    "title": "Subject",
+    "content": "<p>Sample sample</p>",
+    "recipients": [],
+    "recipientType": "all",
+    "targetDepartmentId": null,
+    "emailType": "",
+    "emailTypeLabel": "",
+    "attachment": null,
+    "requiresReceipt": false,
+    "from": {
+      "id": 1783481076209,
+      "name": "Aiah Arceta",
+      "email": "aa@rmbgh.com",
+      "department": "Human Resources",
+      "departmentId": "HR"
+    },
+    "userId": 1783481076209,
+    "id": 1784003789369,
+    "type": "mail",
+    "date": "2026-07-14T04:36:29.369Z"
   }
 ]
