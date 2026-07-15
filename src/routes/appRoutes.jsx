@@ -9,6 +9,7 @@ import ProtectedRoute, { AdminRoute } from "./protectedRoutes";
 
 import { AnnouncementProvider } from "../context/AnnouncementContext";
 import { PostsProvider } from "../context/PostsContext";
+import { NotificationsProvider } from "../context/NotificationsContext";
 
 // Lazy-load every page so the initial bundle only ships the login screen.
 const Dashboard    = lazy(() => import("../pages/dashboard/Dashboard"));
@@ -48,7 +49,9 @@ function App() {
             <ProtectedRoute>
               <AnnouncementProvider>
                 <PostsProvider>
-                  <AppLayout />
+                  <NotificationsProvider>
+                    <AppLayout />
+                  </NotificationsProvider>
                 </PostsProvider>
               </AnnouncementProvider>
             </ProtectedRoute>

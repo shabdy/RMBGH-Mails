@@ -3,11 +3,26 @@
     "id": 1784000522837,
     "content": "test post",
     "from": {
-      "id": 1,
-      "name": "Test"
+      "id": 1783051261533,
+      "name": "Ransh Dy",
+      "email": "rdy@rmbgh.com",
+      "department": "Information Technology",
+      "departmentId": "IT"
     },
-    "date": "2026-07-14T03:42:02.837Z",
+    "date": "2026-07-14T04:33:59.606Z",
     "viewedBy": [
+      {
+        "id": 1783051261533,
+        "name": "Ransh Dy",
+        "date": "2026-07-14T04:33:59.757Z",
+        "time": "2026-07-14T04:33:59.757Z"
+      },
+      {
+        "id": 1783481076209,
+        "name": "Aiah Arceta",
+        "date": "2026-07-14T04:34:21.820Z",
+        "time": "2026-07-14T04:34:21.820Z"
+      },
       {
         "id": 1,
         "name": "IT Superadmin",
@@ -21,38 +36,39 @@
         "time": "2026-07-15T19:53:32.173Z"
       }
     ],
-    "comments": [
+    "comments": [],
+    "reactions": [],
+    "attachments": [],
+    "category": "Updates",
+    "pinned": false,
+    "event": null
+  },
+  {
+    "id": 1784003892508,
+    "content": "Announcement",
+    "from": {
+      "id": 1783481076209,
+      "name": "Aiah Arceta",
+      "email": "aa@rmbgh.com",
+      "department": "Human Resources",
+      "departmentId": "HR"
+    },
+    "date": "2026-07-14T04:38:12.508Z",
+    "viewedBy": [
       {
-        "id": 1784000522891,
-        "userId": 1,
-        "name": "Test",
-        "text": "nice",
-        "date": "2026-07-14T03:42:02.891Z",
-        "reactions": [
-          {
-            "userId": 1,
-            "name": "Test",
-            "type": "love"
-          }
-        ],
-        "replies": [
-          {
-            "id": 1784000531849,
-            "userId": 1,
-            "name": "Test",
-            "text": "reply text",
-            "date": "2026-07-14T03:42:11.849Z",
-            "reactions": [
-              {
-                "userId": 1,
-                "name": "Test",
-                "type": "haha"
-              }
-            ]
-          }
-        ]
+        "id": 1783481076209,
+        "name": "Aiah Arceta",
+        "date": "2026-07-14T04:38:12.661Z",
+        "time": "2026-07-14T04:38:12.661Z"
+      },
+      {
+        "id": 1,
+        "name": "IT Superadmin",
+        "date": "2026-07-14T04:38:52.872Z",
+        "time": "2026-07-14T04:38:52.872Z"
       }
     ],
+    "comments": [],
     "reactions": [],
     "attachments": [],
     "category": "Updates",

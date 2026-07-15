@@ -250,6 +250,24 @@ export function PostsProvider({ children }) {
     }
   };
 
+  const editPost = async (id, updates) => {
+    let prevSnapshot;
+    setPosts((prev) => prev.map((p) => {
+      if (p.id !== id) return p;
+      prevSnapshot = p;
+      return { ...p, ...updates, edited: true };
+    }));
+    try {
+      const { data } = await api.patch(`/posts/${id}`, updates);
+      setPosts((prev) => prev.map((p) => (p.id === id ? data : p)));
+      return data;
+    } catch (err) {
+      console.error("Edit post failed:", err);
+      if (prevSnapshot) setPosts((prev) => prev.map((p) => (p.id === id ? prevSnapshot : p)));
+      throw err;
+    }
+  };
+
   const togglePin = async (id) => {
     let prevSnapshot;
     setPosts((prev) => prev.map((p) => {
@@ -271,7 +289,7 @@ export function PostsProvider({ children }) {
       value={{
         posts, currentUser: buildCurrentUser(), createPost, deletePost, markViewed,
         addComment, addReply, react, reactToComment, reactToReply,
-        uploadFiles, togglePin, reload: loadPosts,
+        uploadFiles, togglePin, editPost, reload: loadPosts,
       }}
     >
       {children}
